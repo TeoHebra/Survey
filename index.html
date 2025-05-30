@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Novelty Survey</title>
+  <!-- SurveyJS styles & scripts -->
+  <link href="https://unpkg.com/survey-core/defaultV2.min.css" rel="stylesheet"/>
+  <script src="https://unpkg.com/jquery/dist/jquery.min.js"></script>
+  <script src="https://unpkg.com/survey-core/survey.min.js"></script>
+  <script src="https://unpkg.com/survey-jquery/survey.jquery.min.js"></script>
+  <style>
+    body { max-width: 800px; margin: 2em auto; font-family: sans-serif; }
+  </style>
+</head>
+<body>
+  <h1>Metabolite Novelty Survey</h1>
+  <div id="surveyContainer"></div>
+
+  <script>
+    Survey.StylesManager.applyTheme("defaultV2");
+
+    // 1. Block 0: Intro & consent
+    const introPage = {
+      name: "intro",
+      elements: [
+        {
+          type: "html",
+          html: `
+            <p><strong>Purpose:</strong> We’re investigating how researchers define “novel” metabolites.</p>
+            <p><strong>Anonymity:</strong> Your answers are recorded anonymously.</p>
+            <p><strong>Time:</strong> ~5 minutes.</p>
+            <p><strong>Voluntary:</strong> You may stop at any time.</p>
+            <p><em>By clicking “Next,” you consent to participate.</em></p>
+          `
+        }
+      ]
+    };
+
+    // 2. Block 1: Open question
+    const openQuestionPage = {
+      name: "open1",
+      elements: [
+        {
+          type: "comment",
+          name: "novelty_definition",
+          title: "In your own words, what makes a metabolite “novel”?"
+        }
+      ]
+    };
+
+    // 3. Block 2: Scaling assessment pools
+    function getRandomItems(arr, n) {
+      const copy = arr.slice();
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy.slice(0, n);
+    }
+
+    const structuralPool = [
+      { value: "S1", text: "Incorporation of rare elements such as selenium or boron increases a metabolite’s novelty." },
+      { value: "S2", text: "A new ring system is an indicator of novelty." },
+      { value: "S3_R", text: "N-acylation or similar motif-based decoration are unimportant when claiming novelty. (R)" },
+      { value: "S4_R", text: "Changing the oxidation state of a functional group is of little novelty. (R)" }
+    ];
+    const biosyntheticPool = [
+      { value: "B1", text: "An enzyme that catalyses an unprecedented reaction is novel." },
+      { value: "B2", text: "Use of uncommon cofactors increases the novelty of a pathway." },
+      { value: "B3_R", text: "Including a tailoring enzyme from another pathway is of low novelty. (R)" },
+      { value: "B4_R", text: "If the final product resembles a known compound, the catalysis is not novel. (R)" }
+    ];
+    const functionalPool = [
+      { value: "F1", text: "Bioactivity in an under-explored target class is an important factor for novelty." },
+      { value: "F2_R", text: "Without demonstrated bioactivity, a new structure is not an important novelty discovery. (R)" },
+      { value: "F3", text: "Selective activity against a previously untreatable pathogen is an important novelty signal." },
+      { value: "F4", text: "Dual-function metabolites (e.g. toxin + signal) are an important form of novelty." }
+    ];
+    const ecologicalPool = [
+      { value: "E1", text: "Production by a taxon where the compound was never seen is an important novelty factor." },
+      { value: "E2", text: "Chemical convergence across distant lineages is an important novelty cue." },
+      { value: "E3_R", text: "Finding a known metabolite in a new species is not an important novelty event. (R)" },
+      { value: "E4", text: "Chemical-diversity hotspots in unexplored biomes are important indicators of future novelty." }
+    ];
+
+    const selectedStructural = getRandomItems(structuralPool, 2);
+    const selectedBiosynthetic = getRandomItems(biosyntheticPool, 2);
+    const selectedFunctional = getRandomItems(functionalPool, 2);
+    const selectedEcological = getRandomItems(ecologicalPool, 2);
+
+    // common Likert columns + NA
+    const likertCols = [
+      { value: 1, text: "1<br>Strongly disagree" },
+      { value: 2, text: "2<br>Disagree" },
+      { value: 3, text: "3<br>Slightly disagree" },
+      { value: 4, text: "4<br>Neutral" },
+      { value: 5, text: "5<br>Slightly agree" },
+      { value: 6, text: "6<br>Agree" },
+      { value: 7, text: "7<br>Strongly agree" },
+      { value: "NA", text: "Not applicable / no opinion" }
+    ];
+
+    // 4. Block 2 page
+    const scalePage = {
+      name: "scale2",
+      elements: [
+        {
+          type: "html",
+          html: "<h3>Block 2: Scaling assessment</h3><p>Purpose: Capture respondents’ latent rules-of-thumb about novelty—independent of any single molecule.</p>"
+        },
+        {
+          type: "matrix",
+          name: "structural_novelty",
+          title: "Structural Novelty",
+          columns: likertCols,
+          rows: selectedStructural
+        },
+        {
+          type: "matrix",
+          name: "biosynthetic_novelty",
+          title: "Biosynthetic / Catalytic Novelty",
+          columns: likertCols,
+          rows: selectedBiosynthetic
+        },
+        {
+          type: "matrix",
+          name: "functional_novelty",
+          title: "Functional / Phenotypic Novelty",
+          columns: likertCols,
+          rows: selectedFunctional
+        },
+        {
+          type: "matrix",
+          name: "ecological_novelty",
+          title: "Ecological / Phylogenetic Novelty",
+          columns: likertCols,
+          rows: selectedEcological
+        }
+      ]
+    };
+
+    // assemble survey
+    const surveyJSON = {
+      title: "Metabolite Novelty Survey",
+      showQuestionNumbers: "off",
+      pages: [introPage, openQuestionPage, scalePage],
+      pagePrevText: "Back",
+      pageNextText: "Next",
+      completeText: "Submit"
+    };
+
+    const survey = new Survey.Model(surveyJSON);
+
+    survey.onComplete.add(function (sender) {
+      const endpoint = "https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec"; // ← REPLACE
+      fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(sender.data)
+      })
+      .then(()=> {
+        document.querySelector("#surveyContainer")
+          .innerHTML = "<h2>Thank you! Your responses have been recorded.</h2>";
+      })
+      .catch(err => console.error(err));
+    });
+
+    // render
+    $("#surveyContainer").Survey({ model: survey });
+  </script>
+</body>
+</html>
