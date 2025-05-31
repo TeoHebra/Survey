@@ -1,519 +1,195 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Metabolite Novelty Survey</title>
-  <!-- SurveyJS styles & scripts -->
-  <link href="https://unpkg.com/survey-core/defaultV2.min.css" rel="stylesheet"/>
-  <script src="https://unpkg.com/jquery/dist/jquery.min.js"></script>
-  <script src="https://unpkg.com/survey-core/survey.min.js"></script>
-  <script src="https://unpkg.com/survey-jquery/survey.jquery.min.js"></script>
+
+  <!-- RESPONSIVE -->
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+  <!-- SURVEYJS THEME (pinned) -->
+  <link rel="stylesheet"
+        href="https://unpkg.com/survey-core@2.1.0/defaultV2.min.css">
+
+  <!-- CUSTOM BRAND TWEAKS -->
   <style>
-    body { max-width: 800px; margin: 2em auto; font-family: sans-serif; }
-    .vignette-title { font-weight: bold; margin-top: 1.5em; }
-    .vignette-image { max-width: 100%; margin: 0.5em 0; }
+    :root {
+      --sjs-primary-backcolor: #0060df;       /* buttons etc. */
+      --sjs-primary-backcolor-dark: #0047a6;  /* pressed/hover state */
+    }
+    body {
+      max-width: min(90vw, 48rem);
+      margin: 2rem auto;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.55;
+    }
+    .sv_matrix,
+    .sv_matrix_dynamic {
+      overflow-x: auto; /* mobile-friendly Likert table */
+    }
+    footer {
+      margin-top: 3rem;
+      font-size: .875rem;
+      color: #555;
+    }
   </style>
+
+  <!-- LIBRARIES (all deferred) -->
+  <script src="https://unpkg.com/knockout@3.5.1/build/output/knockout-latest.js" defer></script>
+  <script src="https://unpkg.com/seedrandom@3.0.5/seedrandom.min.js" defer></script>
+  <script src="https://unpkg.com/survey-core@2.1.0/survey.core.min.js" defer></script>
+  <script src="https://unpkg.com/survey-knockout-ui@2.1.0/survey-knockout-ui.min.js" defer></script>
 </head>
+
 <body>
-  <h1>Metabolite Novelty Survey</h1>
+  <h1 id="title">Metabolite Novelty Survey</h1>
   <div id="surveyContainer"></div>
 
-  <script>
-    Survey.StylesManager.applyTheme("defaultV2");
+  <footer>
+    Questions about this study? Contact <strong>Dr Ada Lovelace</strong>
+    (<a href="mailto:ada@example.edu">ada@example.edu</a>). Approved by
+    University IRB #2025-042.
+  </footer>
 
-    //
-    // ─── BLOCK 0: INTRO & CONSENT ────────────────────────────────────────────────
-    //
-    const introPage = {
-      name: "intro",
+  <script>
+    // ----------  RANDOMISATION HELPER  ----------
+    // Generate a unique seed per respondent for reproducible randomisation
+    const clientSeed = Survey.Helpers.randomizeId();
+    const rng = new Math.seedrandom(clientSeed);
+
+    function sample(array, n) {
+      // Shuffle using SurveyJS helper + seedrandom, then take first n
+      return Survey.Helpers.shuffle(array, rng).slice(0, n);
+    }
+
+    // ----------  SURVEY PAGES ----------
+    // 1) Consent page
+    const consentPage = {
+      name: "consent",
+      title: "Consent",
       elements: [
         {
-          type: "html",
-          html: `
-            <p><strong>Purpose:</strong> We’re investigating how researchers define “novel” metabolites.</p>
-            <p><strong>Anonymity:</strong> Your answers are recorded anonymously.</p>
-            <p><strong>Time:</strong> ~8 minutes.</p>
-            <p><strong>Voluntary:</strong> You may stop at any time.</p>
-            <p><em>By clicking “Next,” you consent to participate.</em></p>
-          `
+          type: "radiogroup",
+          name: "consent",
+          title: "Do you consent to participate in this study?",
+          isRequired: true,
+          choices: [
+            "Yes, I consent",
+            "No, I do not consent"
+          ],
+          colCount: 1
         }
       ]
     };
 
-    //
-    // ─── BLOCK 1: OPEN QUESTION ─────────────────────────────────────────────────
-    //
+    // 2) Open-ended definition page
     const openQuestionPage = {
-      name: "open1",
+      name: "defineme",
+      title: "In your own words …",
       elements: [
         {
           type: "comment",
-          name: "novelty_definition",
-          title: "In your own words, what makes a metabolite “novel”?"
+          name: "definition",
+          title: "How would you define a <em>novel metabolite</em>?",
+          isRequired: true
         }
-      ]
+      ],
+      visibleIf: "{consent} = 'Yes, I consent'"
     };
 
-    //
-    // ─── BLOCK 2: SCALING ASSESSMENT ─────────────────────────────────────────────
-    //
-    function getRandomItems(arr, n) {
-      const copy = arr.slice();
-      for (let i = copy.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [copy[i], copy[j]] = [copy[j], copy[i]];
-      }
-      return copy.slice(0, n);
-    }
+    // 3) Likert scale page with “Not applicable” as a separate row
+    const likertChoices = ["1", "2", "3", "4", "5", "6", "7"];
+    const likertCols = likertChoices.map(c => ({ value: c, text: c }));
 
-    const structuralPool = [
-      { value: "S1", text: "Incorporation of rare elements such as selenium or boron increases a metabolite’s novelty." },
-      { value: "S2", text: "A new ring system is an indicator of novelty." },
-      { value: "S3_R", text: "N-acylation or similar motif-based decoration are unimportant when claiming novelty. (R)" },
-      { value: "S4_R", text: "Changing the oxidation state of a functional group is of little novelty. (R)" }
+    const statements = [
+      "Is absent from any public spectral library",
+      "Has never been mentioned in peer-reviewed literature (R)",
+      "Is <em>structurally</em> unrelated to known metabolites (R)",
+      "Appears only in extreme environmental niches"
     ];
-    const biosyntheticPool = [
-      { value: "B1", text: "An enzyme that catalyses an unprecedented reaction is novel." },
-      { value: "B2", text: "Use of uncommon cofactors increases the novelty of a pathway." },
-      { value: "B3_R", text: "Including a tailoring enzyme from another pathway is of low novelty. (R)" },
-      { value: "B4_R", text: "If the final product resembles a known compound, the catalysis is not novel. (R)" }
-    ];
-    const functionalPool = [
-      { value: "F1", text: "Bioactivity in an under-explored target class is an important factor for novelty." },
-      { value: "F2_R", text: "Without demonstrated bioactivity, a new structure is not an important novelty discovery. (R)" },
-      { value: "F3", text: "Selective activity against a previously untreatable pathogen is an important novelty signal." },
-      { value: "F4", text: "Dual-function metabolites (e.g. toxin + signal) are an important form of novelty." }
-    ];
-    const ecologicalPool = [
-      { value: "E1", text: "Production by a taxon where the compound was never seen is an important novelty factor." },
-      { value: "E2", text: "Chemical convergence across distant lineages is an important novelty cue." },
-      { value: "E3_R", text: "Finding a known metabolite in a new species is not an important novelty event. (R)" },
-      { value: "E4", text: "Chemical-diversity hotspots in unexplored biomes are important indicators of future novelty." }
-    ];
+    // Randomise order of statements
+    const matrixRows = sample(
+      statements.map((text, i) => ({ value: `stmt${i + 1}`, text })),
+      statements.length
+    );
 
-    const selectedStructural   = getRandomItems(structuralPool, 2);
-    const selectedBiosynthetic = getRandomItems(biosyntheticPool, 2);
-    const selectedFunctional   = getRandomItems(functionalPool, 2);
-    const selectedEcological   = getRandomItems(ecologicalPool, 2);
-
-    const likertCols = [
-      { value: 1,   text: "1<br>Strongly disagree" },
-      { value: 2,   text: "2<br>Disagree" },
-      { value: 3,   text: "3<br>Slightly disagree" },
-      { value: 4,   text: "4<br>Neutral" },
-      { value: 5,   text: "5<br>Slightly agree" },
-      { value: 6,   text: "6<br>Agree" },
-      { value: 7,   text: "7<br>Strongly agree" },
-      { value: "NA", text: "Not applicable / no opinion" }
-    ];
+    // Add “Not applicable” as its own row at the end
+    matrixRows.push({ value: "na", text: "Not applicable" });
 
     const scalePage = {
-      name: "scale2",
+      name: "criteria",
+      title: "How strongly do you agree with each statement?",
       elements: [
         {
-          type: "html",
-          html: "<h3>Block 2: Scaling assessment</h3><p>Purpose: Capture respondents’ latent rules-of-thumb about novelty—independent of any single molecule.</p>"
-        },
-        {
           type: "matrix",
-          name: "structural_novelty",
-          title: "Structural Novelty",
+          name: "likert",
+          isAllRowRequired: true,
           columns: likertCols,
-          rows: selectedStructural
-        },
-        {
-          type: "matrix",
-          name: "biosynthetic_novelty",
-          title: "Biosynthetic / Catalytic Novelty",
-          columns: likertCols,
-          rows: selectedBiosynthetic
-        },
-        {
-          type: "matrix",
-          name: "functional_novelty",
-          title: "Functional / Phenotypic Novelty",
-          columns: likertCols,
-          rows: selectedFunctional
-        },
-        {
-          type: "matrix",
-          name: "ecological_novelty",
-          title: "Ecological / Phylogenetic Novelty",
-          columns: likertCols,
-          rows: selectedEcological
+          rows: matrixRows
         }
-      ]
+      ],
+      visibleIf: "{consent} = 'Yes, I consent'"
     };
 
-    //
-    // ─── BLOCK 3: FORCED-CHOICE / RANKING ────────────────────────────────────────
-    //
-    let chosenSubDomain = null;  
-    // We’ll store whichever sub-domain we decide so we can unhide the correct sub-question.
-
-    // Page 3.1: Master‐category ranking
-    const masterPage = {
-      name: "block3_master",
-      elements: [
-        {
-          type: "html",
-          html: `
-            <h3>Block 3: Category Ranking</h3>
-            <p>“Drag the four cards so that #1 marks the domain you consider <strong>most important</strong> when deciding whether a metabolite is truly novel, and #4 the <strong>least important</strong>.”<br/>
-            Please break ties by gut feeling; there is no “right” answer.</p>
-          `
-        },
-        {
-          type: "ranking",
-          name: "master_ranking",
-          title: "Rank the domains",
-          choices: [
-            { value: "structure",    text: "Structural / Scaffold novelty" },
-            { value: "biosynthetic", text: "Biosynthetic / Catalytic novelty" },
-            { value: "functional",   text: "Functional / Phenotypic novelty" },
-            { value: "evolutionary", text: "Evolutionary / Ecological novelty" }
-          ]
-        }
-      ]
-    };
-
-    // Page 3.2: Subcategory ranking (hidden by default; we’ll unhide one at a time)
-    const subPage = {
-      name: "block3_sub",
-      elements: [
-        {
-          type: "html",
-          name: "sub_intro",
-          html: `
-            <p>Now, among your top two domains from the previous page, one category was randomly selected. Please rank its subcategories from #1 (most important) to #<span id="sub-count">X</span> (least important).</p>
-          `
-        },
-        {
-          type: "ranking",
-          name: "sub_structure",
-          title: "Structural / Scaffold novelty – Rank these subcategories",
-          choices: [
-            { value: "new_scaffold",    text: "New carbon/heteroatom scaffold" },
-            { value: "unusual_fg",      text: "Unusual functional group (e.g., N = N = N)" },
-            { value: "rare_stereo",     text: "Rare stereochemical pattern" },
-            { value: "exotic_atoms",    text: "Presence of “exotic” atoms (e.g., F or Br)" },
-            { value: "extreme_size",    text: "Extreme size/complexity related to carbons (ratio C/Hetero is high or low)" }
-          ],
-          visible: false
-        },
-        {
-          type: "ranking",
-          name: "sub_biosynthetic",
-          title: "Biosynthetic / Catalytic novelty – Rank these subcategories",
-          choices: [
-            { value: "new_enzyme",          text: "Entirely new enzyme class (e.g. new fold + AA homology low)" },
-            { value: "known_new_chem",      text: "Known folds, new catalytic chemistry" },
-            { value: "uncommon_cofactors",  text: "Use of uncommon cofactors" },
-            { value: "convergent_pathways", text: "Compounds produced by convergence of 2 pathways" }
-          ],
-          visible: false
-        },
-        {
-          type: "ranking",
-          name: "sub_functional",
-          title: "Functional / Phenotypic novelty – Rank these subcategories",
-          choices: [
-            { value: "new_bioactivity",   text: "New bioactivity spectrum" },
-            { value: "new_mode_action",   text: "New mode of action for a known target" },
-            { value: "new_eco_role",      text: "New Ecological role for a taxonomic rank" }
-          ],
-          visible: false
-        },
-        {
-          type: "ranking",
-          name: "sub_evolutionary",
-          title: "Evolutionary / Ecological novelty – Rank these subcategories",
-          choices: [
-            { value: "new_taxon",         text: "Produced by a previously unsuspected taxon" },
-            { value: "signature_compound",text: "Unique to a taxon (signature compound)" },
-            { value: "horizontal_transfer",text: "Horizontal transfer" }
-          ],
-          visible: false
-        }
-      ]
-    };
-
-    //
-    // ─── BLOCK 4: THRESHOLD VIGNETTES ────────────────────────────────────────────
-    //
-    const structuralVignettes = [
-      { id: "S1", title: `S-1. <code>CCCC[C@H]1CCCC[C@H](C)CC2=CC(O)=C(C(O)=C2)[C@@H](CCCC)CCCC[C@H](C)CC3=CC(O)=C1C(O)=C3</code>`, imageUrl: "" },
-      { id: "S2", title: `S-2. <code>O=C(NCC(O)=O)[C@@H]1CSC(C2=CC=C(O)C(Cl)=C2O)=N1</code>`,                  imageUrl: "" },
-      { id: "S3", title: `S-3. Bipolarsterol A`,                                                           imageUrl: "" },
-      { id: "S4", title: `S-4. Fluoro AA (from Andrej)`,                                                     imageUrl: "" },
-      { id: "S5", title: `S-5. [Insert your structure or description here]`,                                 imageUrl: "" },
-      { id: "S6", title: `S-6. Iullia novelty score: <code>C1CN(C(=N1)N[N+](=O)[O-])CC2=CN=C(C=C2)Cl</code>`,imageUrl: "" },
-      { id: "S7", title: `S-7. Iullia novelty score: <code>CC(C1CCC2(C)C13C(O)C=C(C(OC)=O)C(OO3)C2)C</code>`,imageUrl: "" },
-      { id: "S8", title: `S-8. Iullia novelty score: <code>CC1=CC2=C(N(C[C@H](O)[C@H](O)[C@H](O)COP(O)(OP(O)(OC[C@@H]3[C@@H](O)[C@@H](O)[C@H](N4C=NC5=C(N)N=CN=C54)O3)=O)=O)C6=NC(NC(C6=N2)=O)=O)C=C1C</code>`, imageUrl: "" }
-    ];
-
-    const biosyntheticVignettes = [
-      { id: "B1", title: `B-1. <a href="https://www.nature.com/articles/s41589-022-01013-7" target="_blank">Nature Chem. Biol. s41589-022-01013-7</a>`, imageUrl: "" },
-      { id: "B2", title: `B-2. <a href="https://www.nature.com/articles/s41557-024-01646-2" target="_blank">Nature s41557-024-01646-2</a>`, imageUrl: "" },
-      { id: "B3", title: `B-3. <a href="https://www.nature.com/articles/s41557-024-01603-z" target="_blank">Nature s41557-024-01603-z</a>`, imageUrl: "" },
-      { id: "B4", title: `B-4. <a href="https://www.nature.com/articles/s41467-024-49650-x" target="_blank">Nat. Comm. s41467-024-49650-x</a>`, imageUrl: "" },
-      { id: "B5", title: `B-5. DOI: 10.1002/anie.202414941`, imageUrl: "" },
-      { id: "B6", title: `B-6. DOI: s41589-025-01898-0`, imageUrl: "" },
-      { id: "B7", title: `B-7. DOI: s41589-023-01445-9`, imageUrl: "" },
-      { id: "B8", title: `B-8. DOI: 10.1002/anie.202304646`, imageUrl: "" }
-    ];
-
-    const functionalVignettes = [
-      { id: "F1", title: `F-1. Clovibactin (S0092-8674(23)00853-X): “Clovibactin, a depsipeptide from an uncultured soil bacterium, kills all tested Gram-positive superbugs with no detectable resistance after 30 passages.”`, imageUrl: "" },
-      { id: "F2", title: `F-2. Evybactin (s41589-022-01102-7): “Evybactin selectively wipes out Mycobacterium tuberculosis by stalling DNA gyrase; it is inactive vs. commensal flora.”`, imageUrl: "" },
-      { id: "F3", title: `F-3. Erucamide (10.1126/science.ads0377): “Erucamide, a ubiquitous plant fatty-amide, blocks bacterial T3SS needles.”`, imageUrl: "" },
-      { id: "F4", title: `F-4. Photoxenobactin C (s41557-022-00923-2): “Photoxenobactin C, with a dithioperoxoate terminus, is a non-siderophore insecticide.”`, imageUrl: "" }
-    ];
-
-    const evolutionaryVignettes = [
-      { id: "E1", title: `E-1. (s40168-023-01521-1) “First lanthipeptides in archaea.”`, imageUrl: "" },
-      { id: "E2", title: `E-2. DOI 10.1073/pnas.2311245121: “Psilocybin biosynthesis first arose in Psilocybe, with 4–5 possible horizontal transfers between 40 and 9 mya.”`, imageUrl: "" },
-      { id: "E3", title: `E-3. DOI 10.1073/pnas.2307981120: “Discovery of two benzoxazinoid pathways showing independent evolution in flowering plants at least three times.”`, imageUrl: "" },
-      { id: "E4", title: `E-4. DOI 10.1073/pnas.2303327120: “Beauveria fungi obtained a bacterial Fcs1 Pictet-Spenglerase, enabling β-carboline alkaloid biosynthesis.”`, imageUrl: "" }
-    ];
-
-    const domainVignettes = {
-      structure:    structuralVignettes,
-      biosynthetic: biosyntheticVignettes,
-      functional:   functionalVignettes,
-      evolutionary: evolutionaryVignettes
-    };
-
-    // Block 4 placeholder (we’ll fill it in on demand)
-    const block4Page = {
-      name: "block4",
-      elements: []
-    };
-
-    //
-    // ─── ASSEMBLE ALL PAGES ─────────────────────────────────────────────────────
-    //
+    // ----------  ASSEMBLE SURVEY ----------
     const surveyJSON = {
       title: "Metabolite Novelty Survey",
+      showProgressBar: "bottom",
+      progressBarType: "pages",
       showQuestionNumbers: "off",
+      completedHtml: "<h2>Thank you! Your responses were recorded.</h2>",
       pages: [
-        introPage,        // Block 0
-        openQuestionPage, // Block 1
-        scalePage,        // Block 2
-        masterPage,       // Block 3.1
-        subPage,          // Block 3.2
-        block4Page        // Block 4 (populated dynamically)
+        consentPage,
+        openQuestionPage,
+        scalePage
       ],
       pagePrevText: "Back",
       pageNextText: "Next",
       completeText: "Submit"
     };
 
-    //
-    // ─── INITIALIZE SURVEY ───────────────────────────────────────────────────────
-    //
     const survey = new Survey.Model(surveyJSON);
 
-    //
-    // ─── BLOCK 3: onValueChanged (optional) ─────────────────────────────────────
-    //
-    // We still track live changes if the user re‐orders before clicking “Next.”
-    survey.onValueChanged.add(function (sender, options) {
-      if (options.name === "master_ranking") {
-        const ranks = sender.getValue("master_ranking");
-        if (Array.isArray(ranks) && ranks.length >= 2) {
-          // Pick one of the top 2 immediately (so user sees it live if they drag now)
-          const topTwo       = [ranks[0], ranks[1]];
-          chosenSubDomain = topTwo[Math.floor(Math.random() * 2)];
-
-          // Hide everything first, then unhide only the chosen sub‐question:
-          ["sub_structure", "sub_biosynthetic", "sub_functional", "sub_evolutionary"].forEach((qn) => {
-            const qObj = sender.getQuestionByName(qn);
-            if (qObj) qObj.visible = false;
-          });
-          const subName = "sub_" + chosenSubDomain;
-          const chosenQ = sender.getQuestionByName(subName);
-          if (chosenQ) chosenQ.visible = true;
-
-          // Update the “#X” span so the instructions show the correct # of items:
-          const countMap = {
-            "sub_structure":    structuralPool.length === 4 ? 5 : structuralPool.length,
-            "sub_biosynthetic": biosyntheticPool.length,
-            "sub_functional":   functionalPool.length,
-            "sub_evolutionary": ecologicalPool.length
-          };
-          const totalItems = countMap[subName] || 0;
-          const subIntro = sender.getQuestionByName("sub_intro");
-          if (subIntro) {
-            subIntro.html = `
-              <p>Now, among your top two domains from the previous page, one category was randomly selected. 
-              Please rank its subcategories from #1 (most important) to #${totalItems} (least important).</p>
-            `;
-          }
+    // ----------  CONSENT LOGIC ----------
+    survey.onCurrentPageChanging.add(function (sender, options) {
+      // Check if we're leaving the consent page
+      if (
+        options.oldCurrentPage &&
+        options.oldCurrentPage.name === "consent"
+      ) {
+        const answer = sender.getValue("consent");
+        // If the respondent clicked “No, I do not consent”, cancel navigation and finish survey
+        if (answer === "No, I do not consent") {
+          options.allowChanging = false; // prevent page change
+          sender.completeLastPage();     // trigger completion
         }
       }
     });
 
-    //
-    // ─── BLOCK 3: onCurrentPageChanged (fallback) ────────────────────────────────
-    //
-    survey.onCurrentPageChanged.add(function (sender, options) {
-      const pageName = sender.currentPage.name;
-
-      // If the user has just navigated to the "block3_sub" page, and we haven't chosen yet,
-      // pick the sub-domain based on whatever "master_ranking" currently is (even if they didn't drag).
-      if (pageName === "block3_sub" && chosenSubDomain === null) {
-        const ranks = sender.data.master_ranking || [];
-        if (Array.isArray(ranks) && ranks.length >= 2) {
-          const topTwo       = [ranks[0], ranks[1]];
-          chosenSubDomain = topTwo[Math.floor(Math.random() * 2)];
-
-          // Hide all sub_* first
-          ["sub_structure", "sub_biosynthetic", "sub_functional", "sub_evolutionary"].forEach((qn) => {
-            const qObj = sender.getQuestionByName(qn);
-            if (qObj) qObj.visible = false;
-          });
-
-          // Unhide only selected sub‐question
-          const subName = "sub_" + chosenSubDomain;
-          const chosenQ = sender.getQuestionByName(subName);
-          if (chosenQ) chosenQ.visible = true;
-
-          // Update “#X” placeholder
-          const countMap = {
-            "sub_structure":    structuralPool.length === 4 ? 5 : structuralPool.length,
-            "sub_biosynthetic": biosyntheticPool.length,
-            "sub_functional":   functionalPool.length,
-            "sub_evolutionary": ecologicalPool.length
-          };
-          const totalItems = countMap[subName] || 0;
-          const subIntro = sender.getQuestionByName("sub_intro");
-          if (subIntro) {
-            subIntro.html = `
-              <p>Now, among your top two domains from the previous page, one category was randomly selected. 
-              Please rank its subcategories from #1 (most important) to #${totalItems} (least important).</p>
-            `;
-          }
-
-          // Force a rerender so the chosen subranking becomes visible immediately
-          sender.render();
-        }
-      }
-
-      //
-      // ─── BLOCK 4: onCurrentPageChanged ──────────────────────────────────────────
-      //
-      // Populate Block 4 vignettes only once, when the user first arrives.
-      const block4 = sender.currentPage;
-      if (pageName === "block4" && block4.elements.length === 0) {
-        const data = sender.data;
-        const masterRanks = data.master_ranking || [];
-
-        // If somehow they skipped Block 3 entirely, just return early
-        if (!Array.isArray(masterRanks) || masterRanks.length < 2) {
-          return;
-        }
-
-        // 1) Identify top domain, second domain, and low domains
-        const topDomain    = masterRanks[0];
-        const secondDomain = masterRanks[1];
-        const lowDomains   = [masterRanks[2], masterRanks[3]];
-
-        // 2) From topDomain, pick 4 random vignettes
-        const topPool      = domainVignettes[topDomain] || [];
-        const fourFromTop  = getRandomItems(topPool, 4);
-
-        // 3) From secondDomain, pick 1 random vignette
-        const secondPool   = domainVignettes[secondDomain] || [];
-        const oneFromSecond = getRandomItems(secondPool, 1);
-
-        // 4) From one random “low” domain, pick 1 vignette
-        const randomLowDomain = lowDomains[Math.floor(Math.random() * lowDomains.length)];
-        const lowPool         = domainVignettes[randomLowDomain] || [];
-        const oneFromLow      = getRandomItems(lowPool, 1);
-
-        // 5) Combine them into exactly 6 vignettes
-        const selectedVignettes = [
-          ...fourFromTop,
-          ...oneFromSecond,
-          ...oneFromLow
-        ];
-
-        // 6) For each selected vignette, add three questions
-        selectedVignettes.forEach((v, idx) => {
-          // a) Title + optional image
-          const htmlContent = [`<div class="vignette-title">${v.title}</div>`];
-          if (v.imageUrl && v.imageUrl.length) {
-            htmlContent.push(`<img class="vignette-image" src="${v.imageUrl}" alt="${v.id}">`);
-          }
-          block4.addNewPageElement({
-            type: "html",
-            html: htmlContent.join("\n")
-          });
-
-          // b) Binary “Would you consider this novel?”
-          block4.addNewPageElement({
-            type: "radiogroup",
-            name: `v_${v.id}_novel`,
-            title: "Would you consider this novel?",
-            isRequired: true,
-            choices: [
-              { value: "Yes", text: "Yes" },
-              { value: "No",  text: "No" }
-            ]
-          });
-
-          // c) Confidence slider (0–10)
-          block4.addNewPageElement({
-            type: "rating",
-            name: `v_${v.id}_confidence`,
-            title: "Confidence (0–10)",
-            isRequired: true,
-            rateMin: 0,
-            rateMax: 10,
-            minRateDescription: "0",
-            maxRateDescription: "10"
-          });
-
-          // d) “Wow” (excitement) slider (0–10)
-          block4.addNewPageElement({
-            type: "rating",
-            name: `v_${v.id}_wow`,
-            title: "Scientific excitement / “Wow” effect (0–10)",
-            isRequired: true,
-            rateMin: 0,
-            rateMax: 10,
-            minRateDescription: "0",
-            maxRateDescription: "10"
-          });
-        });
-
-        // Re-render now that we’ve added elements
-        sender.render();
-      }
-    });
-
-    //
-    // ─── ON COMPLETE: POST DATA TO YOUR APPS SCRIPT ───────────────────────────────
-    //
+    // ----------  SUBMIT HANDLER ----------
     survey.onComplete.add(function (sender) {
-      const endpoint = "https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec"; // ← REPLACE with your Apps Script Web App URL
-      fetch(endpoint, {
+      // Attach the randomisation seed for reproducibility
+      sender.data.__seed = clientSeed;
+
+      fetch("/api/submit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(sender.data)
       })
-      .then(() => {
-        document.querySelector("#surveyContainer")
-          .innerHTML = "<h2>Thank you! Your responses have been recorded.</h2>";
+      .then(function () {
+        // Replace survey container with a thank-you message
+        document.getElementById("surveyContainer").innerHTML =
+          "<h2>Thank you! Your responses were recorded.</h2>";
       })
-      .catch(err => console.error(err));
+      .catch(function (error) {
+        console.error("Submission error:", error);
+      });
     });
 
-    //
-    // ─── RENDER THE SURVEY ───────────────────────────────────────────────────────
-    //
-    $("#surveyContainer").Survey({ model: survey });
+    // ----------  RENDER SURVEY ----------
+    document.addEventListener("DOMContentLoaded", function () {
+      survey.render("surveyContainer");
+    });
   </script>
 </body>
 </html>
