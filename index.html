@@ -1,210 +1,119 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="utf-8">
   <title>Metabolite Novelty Survey</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!-- SURVEYJS THEME (pinned v2.1.0) -->
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/survey-core@2.1.0/defaultV2.min.css"
-  />
+  <!-- Mobile & colour hints -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#ffffff">
 
-  <!-- CUSTOM BRAND COLORS & RESPONSIVE FIXES -->
+  <!-- SurveyJS (v1) – Core + minimal CSS only -->
+  <link rel="stylesheet" href="https://unpkg.com/survey-core@1.10.4/modern.min.css">
+  <script defer src="https://unpkg.com/survey-core@1.10.4/survey.core.min.js"></script>
+
+  <!-- Tiny baseline styles -->
   <style>
-    :root {
-      /* Change these two to match your brand’s primary color */
-      --sjs-primary-backcolor: #0060df;
-      --sjs-primary-backcolor-dark: #0047a6;
-    }
-    body {
-      max-width: min(90vw, 48rem);
-      margin: 2rem auto;
-      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-      line-height: 1.55;
-    }
-    .sv_matrix,
-    .sv_matrix_dynamic {
-      overflow-x: auto; /* Horizontal scroll on small screens */
-    }
-    footer {
-      margin-top: 3rem;
-      font-size: 0.875rem;
-      color: #555;
-    }
+    :root{--max-w:48rem;--gap:1.5rem;font-size:16px}
+    body{margin:0 auto;padding:var(--gap);max-width:var(--max-w);
+         font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+         line-height:1.5;background:#fafafa;color:#222}
+    header,main{margin-bottom:var(--gap)}
+    .sr-only{position:absolute;left:-9999px}
+    noscript p{background:#ffe8e8;padding:.75rem;border-radius:.25rem}
   </style>
 </head>
 
 <body>
-  <h1 id="title">Metabolite Novelty Survey</h1>
-  <div id="surveyContainer"></div>
+  <a href="#survey" class="sr-only">Skip to survey</a>
+  <header>
+    <h1>Metabolite Novelty Survey</h1>
+    <p>Please allow approximately <strong>5 minutes</strong> to complete this anonymous questionnaire.</p>
+  </header>
 
-  <footer>
-    Questions about this study? Contact <strong>Dr Ada Lovelace</strong> (
-    <a href="mailto:ada@example.edu">ada@example.edu</a> ). Approved by
-    University IRB #2025-042.
-  </footer>
+  <!-- JS-only placeholder -->
+  <main id="survey"></main>
 
-  <!--
-    ───────────────────────────────────────────────────────────────────
-    IMPORTANT: All four scripts go HERE at the bottom—no "defer" on any of them.
-    This ensures that, when you open index.html via GitHub Pages (HTTPS),
-    Knockout is already loaded before SurveyJS tries to use it, etc.
-    If you leave them in the <head> or put "defer," the survey won’t render.
-    ───────────────────────────────────────────────────────────────────
-  -->
+  <!-- No-JS fallback -->
+  <noscript>
+    <p>This survey requires JavaScript. If your organisation blocks it, email <a href="mailto:study@example.org">study@example.org</a> for a PDF version.</p>
+  </noscript>
 
-  <!-- 1) Knockout (required by survey-knockout-ui) -->
-  <script src="https://unpkg.com/knockout@3.5.1/build/output/knockout-latest.js"></script>
+  <script defer>
+  /* ===== Survey definition ====================================== */
+  const surveyJSON = {
+    showQuestionNumbers: "off",
+    firstPageIsStarted: true,
+    startSurveyText: "Begin",
+    pagePrevText: "Back",
+    pageNextText: "Next",
+    completeText: "Submit",
+    pages: [
+      { name:"intro",
+        elements:[{type:"html", html:
+          `<p><strong>Purpose:</strong> We are investigating how researchers define “novel” metabolites.</p>
+           <p><strong>Anonymity:</strong> No personal data are collected.</p>
+           <p><strong>Duration:</strong> Approximately 5 minutes.</p>
+           <p><strong>Voluntary:</strong> You may exit at any time.</p>
+           <p><em>Click “Begin” below if you consent to participate.</em></p>`}]
+      },
+      { name:"open",
+        elements:[{type:"comment", name:"novelty_definition",
+                   title:"In your own words, what makes a metabolite “novel”?"}]
+      },
+      { name:"scale",
+        elements:[
+          { type:"matrix", name:"structural_novelty", title:"Structural Novelty",
+            isAllRowRequired:true,
+            columns:[1,2,3,4,5,6,7].map(v=>({value:v,text:v.toString()})).concat([{value:"NA",text:"N/A"}]),
+            rows:[
+              "Incorporation of rare elements such as selenium or boron increases a metabolite’s novelty.",
+              "A new ring system is an indicator of novelty.",
+              "N-acylation or similar motif-based decoration is unimportant when claiming novelty.",
+              "Changing the oxidation state of a functional group is of little novelty."
+            ],
+            randomizeRows:true
+          },
+          { type:"matrix", name:"biosynthetic_novelty", title:"Biosynthetic / Catalytic Novelty",
+            isAllRowRequired:true, randomizeRows:true,
+            columns:"inherit",
+            rows:[
+              "An enzyme that catalyses an unprecedented reaction is novel.",
+              "Use of uncommon cofactors increases the novelty of a pathway.",
+              "Including a tailoring enzyme from another pathway is of low novelty.",
+              "If the final product resembles a known compound, the catalysis is not novel."
+            ]
+          },
+          /* Repeat for functional/ecological… */
+        ]
+      }
+    ]
+  };
 
-  <!-- 2) seedrandom (for reproducible randomisation) -->
-  <script src="https://unpkg.com/seedrandom@3.0.5/seedrandom.min.js"></script>
-
-  <!-- 3) SurveyJS Core (pinned to v2.1.0) -->
-  <script src="https://unpkg.com/survey-core@2.1.0/survey.core.min.js"></script>
-
-  <!-- 4) SurveyJS Knockout UI (pinned to v2.1.0) -->
-  <script src="https://unpkg.com/survey-knockout-ui@2.1.0/survey-knockout-ui.min.js"></script>
-
-  <!-- 5) Custom survey code -->
-  <script>
-    // ─────── Randomisation Helper ───────
-    // We generate a unique seed per respondent for reproducible item order.
-    const clientSeed = Survey.Helpers.randomizeId();
-    const rng = new Math.seedrandom(clientSeed);
-
-    function sample(array, n) {
-      // Shuffle "array" via SurveyJS helper + seedrandom, then take the first n.
-      return Survey.Helpers.shuffle(array, rng).slice(0, n);
-    }
-
-    // ─────── Define Survey Pages ───────
-
-    // 1) Consent Page
-    const consentPage = {
-      name: "consent",
-      title: "Consent",
-      elements: [
-        {
-          type: "radiogroup",
-          name: "consent",
-          title: "Do you consent to participate in this study?",
-          isRequired: true,
-          choices: [
-            "Yes, I consent",
-            "No, I do not consent"
-          ],
-          colCount: 1
-        }
-      ]
-    };
-
-    // 2) Open-ended Definition Page (only if “Yes”)
-    const openQuestionPage = {
-      name: "defineme",
-      title: "In your own words …",
-      visibleIf: "{consent} = 'Yes, I consent'",
-      elements: [
-        {
-          type: "comment",
-          name: "definition",
-          title: "How would you define a <em>novel metabolite</em>?",
-          isRequired: true
-        }
-      ]
-    };
-
-    // 3) Likert Scale Page (only if “Yes”)
-    const likertChoices = ["1", "2", "3", "4", "5", "6", "7"];
-    const likertCols = likertChoices.map((c) => ({ value: c, text: c }));
-
-    // Four candidate statements; two are reverse-worded (marked “(R)”).
-    const statements = [
-      "Is absent from any public spectral library",
-      "Has never been mentioned in peer-reviewed literature (R)",
-      "Is <em>structurally</em> unrelated to known metabolites (R)",
-      "Appears only in extreme environmental niches"
-    ];
-
-    // Randomize their order for each respondent:
-    const matrixRows = sample(
-      statements.map((text, i) => ({ value: `stmt${i + 1}`, text: text })),
-      statements.length
-    );
-    // Finally, append “Not applicable” as its own row:
-    matrixRows.push({ value: "na", text: "Not applicable" });
-
-    const scalePage = {
-      name: "criteria",
-      title: "How strongly do you agree with each statement?",
-      visibleIf: "{consent} = 'Yes, I consent'",
-      elements: [
-        {
-          type: "matrix",
-          name: "likert",
-          isAllRowRequired: true,
-          columns: likertCols,
-          rows: matrixRows
-        }
-      ]
-    };
-
-    // ─────── Assemble the Survey ───────
-    const surveyJSON = {
-      title: "Metabolite Novelty Survey",
-      showProgressBar: "bottom",
-      progressBarType: "pages",
-      showQuestionNumbers: "off",
-      completedHtml: "<h2>Thank you! Your responses were recorded.</h2>",
-      pages: [consentPage, openQuestionPage, scalePage],
-      pagePrevText: "Back",
-      pageNextText: "Next",
-      completeText: "Submit"
-    };
+  /* ===== Build once DOM is ready ================================ */
+  window.addEventListener('DOMContentLoaded', () => {
+    Survey.StylesManager.applyTheme("modern");
 
     const survey = new Survey.Model(surveyJSON);
 
-    // ─────── Consent Logic ───────
-    survey.onCurrentPageChanging.add(function (sender, options) {
-      // If the user is leaving the “consent” page:
-      if (
-        options.oldCurrentPage &&
-        options.oldCurrentPage.name === "consent"
-      ) {
-        const answer = sender.getValue("consent");
-        if (answer === "No, I do not consent") {
-          // Prevent moving forward; immediately complete the survey
-          options.allowChanging = false;
-          sender.completeLastPage();
-        }
+    survey.onComplete.add(async ({data})=>{
+      try{
+        const res = await fetch("https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec",{
+          method:"POST",
+          headers:{ "Content-Type":"application/json" },
+          body: JSON.stringify(data),
+        });
+        if(!res.ok) throw new Error(`Server ${res.status}`);
+        document.getElementById("survey").innerHTML =
+          "<h2>Thank you! Your responses have been securely recorded.</h2>";
+      }catch(err){
+        alert("Sorry — we could not save your answers. Please try again later.");
+        console.error(err);
       }
     });
 
-    // ─────── Submission Handler ───────
-    survey.onComplete.add(function (sender) {
-      // Store the seed so you can reproduce random‐order later:
-      sender.data.__seed = clientSeed;
-
-      // Post JSON to your endpoint. Change “/api/submit” to your own URL if needed.
-      fetch("/api/submit", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(sender.data)
-      })
-        .then(function () {
-          // Replace the survey area with a final “Thank you” message:
-          document.getElementById("surveyContainer").innerHTML =
-            "<h2>Thank you! Your responses were recorded.</h2>";
-        })
-        .catch(function (error) {
-          console.error("Submission error:", error);
-        });
-    });
-
-    // ─────── Render the Survey ───────
-    // Because all scripts are at the bottom, `surveyContainer` already exists.
-    survey.render("surveyContainer");
+    survey.render("survey");
+  });
   </script>
 </body>
 </html>
