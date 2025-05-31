@@ -148,6 +148,10 @@
     //
     // ─── BLOCK 3: FORCED-CHOICE / RANKING ────────────────────────────────────────
     //
+    let chosenSubDomain = null;  
+    // We’ll store whichever sub-domain we decide so we can unhide the correct sub-question.
+
+    // Page 3.1: Master‐category ranking
     const masterPage = {
       name: "block3_master",
       elements: [
@@ -173,6 +177,7 @@
       ]
     };
 
+    // Page 3.2: Subcategory ranking (hidden by default; we’ll unhide one at a time)
     const subPage = {
       name: "block3_sub",
       elements: [
@@ -236,142 +241,42 @@
     //
     // ─── BLOCK 4: THRESHOLD VIGNETTES ────────────────────────────────────────────
     //
-    // Define each domain’s full vignette pool here. Add "title" and optional "imageUrl" for each vignette.
-    // – “id” must be unique. The code below uses id to build question‐names like "v_S1_novel", "v_S1_confidence", etc.
-    //
     const structuralVignettes = [
-      {
-        id: "S1",
-        title: `S-1. <code>CCCC[C@H]1CCCC[C@H](C)CC2=CC(O)=C(C(O)=C2)[C@@H](CCCC)CCCC[C@H](C)CC3=CC(O)=C1C(O)=C3</code>`,
-        imageUrl: "" // e.g. "images/S1.png"
-      },
-      {
-        id: "S2",
-        title: `S-2. <code>O=C(NCC(O)=O)[C@@H]1CSC(C2=CC=C(O)C(Cl)=C2O)=N1</code>`,
-        imageUrl: ""
-      },
-      {
-        id: "S3",
-        title: `S-3. Bipolarsterol A`,
-        imageUrl: ""
-      },
-      {
-        id: "S4",
-        title: `S-4. Fluoro AA (from Andrej)`,
-        imageUrl: ""
-      },
-      {
-        id: "S5",
-        title: `S-5. [Insert your structure or description here]`,
-        imageUrl: ""
-      },
-      {
-        id: "S6",
-        title: `S-6. Iullia novelty score: <code>C1CN(C(=N1)N[N+](=O)[O-])CC2=CN=C(C=C2)Cl</code>`,
-        imageUrl: ""
-      },
-      {
-        id: "S7",
-        title: `S-7. Iullia novelty score: <code>CC(C1CCC2(C)C13C(O)C=C(C(OC)=O)C(OO3)C2)C</code>`,
-        imageUrl: ""
-      },
-      {
-        id: "S8",
-        title: `S-8. Iullia novelty score: <code>CC1=CC2=C(N(C[C@H](O)[C@H](O)[C@H](O)COP(O)(OP(O)(OC[C@@H]3[C@@H](O)[C@@H](O)[C@H](N4C=NC5=C(N)N=CN=C54)O3)=O)=O)C6=NC(NC(C6=N2)=O)=O)C=C1C</code>`,
-        imageUrl: ""
-      }
+      { id: "S1", title: `S-1. <code>CCCC[C@H]1CCCC[C@H](C)CC2=CC(O)=C(C(O)=C2)[C@@H](CCCC)CCCC[C@H](C)CC3=CC(O)=C1C(O)=C3</code>`, imageUrl: "" },
+      { id: "S2", title: `S-2. <code>O=C(NCC(O)=O)[C@@H]1CSC(C2=CC=C(O)C(Cl)=C2O)=N1</code>`,                  imageUrl: "" },
+      { id: "S3", title: `S-3. Bipolarsterol A`,                                                           imageUrl: "" },
+      { id: "S4", title: `S-4. Fluoro AA (from Andrej)`,                                                     imageUrl: "" },
+      { id: "S5", title: `S-5. [Insert your structure or description here]`,                                 imageUrl: "" },
+      { id: "S6", title: `S-6. Iullia novelty score: <code>C1CN(C(=N1)N[N+](=O)[O-])CC2=CN=C(C=C2)Cl</code>`,imageUrl: "" },
+      { id: "S7", title: `S-7. Iullia novelty score: <code>CC(C1CCC2(C)C13C(O)C=C(C(OC)=O)C(OO3)C2)C</code>`,imageUrl: "" },
+      { id: "S8", title: `S-8. Iullia novelty score: <code>CC1=CC2=C(N(C[C@H](O)[C@H](O)[C@H](O)COP(O)(OP(O)(OC[C@@H]3[C@@H](O)[C@@H](O)[C@H](N4C=NC5=C(N)N=CN=C54)O3)=O)=O)C6=NC(NC(C6=N2)=O)=O)C=C1C</code>`, imageUrl: "" }
     ];
 
     const biosyntheticVignettes = [
-      {
-        id: "B1",
-        title: `B-1. <a href="https://www.nature.com/articles/s41589-022-01013-7" target="_blank">Nature Chem. Biol. s41589-022-01013-7</a>`,
-        imageUrl: ""
-      },
-      {
-        id: "B2",
-        title: `B-2. <a href="https://www.nature.com/articles/s41557-024-01646-2" target="_blank">Nature s41557-024-01646-2</a>`,
-        imageUrl: ""
-      },
-      {
-        id: "B3",
-        title: `B-3. <a href="https://www.nature.com/articles/s41557-024-01603-z" target="_blank">Nature s41557-024-01603-z</a>`,
-        imageUrl: ""
-      },
-      {
-        id: "B4",
-        title: `B-4. <a href="https://www.nature.com/articles/s41467-024-49650-x" target="_blank">Nat. Comm. s41467-024-49650-x</a>`,
-        imageUrl: ""
-      },
-      {
-        id: "B5",
-        title: `B-5. DOI: 10.1002/anie.202414941`,
-        imageUrl: ""
-      },
-      {
-        id: "B6",
-        title: `B-6. DOI: s41589-025-01898-0`,
-        imageUrl: ""
-      },
-      {
-        id: "B7",
-        title: `B-7. DOI: s41589-023-01445-9`,
-        imageUrl: ""
-      },
-      {
-        id: "B8",
-        title: `B-8. DOI: 10.1002/anie.202304646`,
-        imageUrl: ""
-      }
+      { id: "B1", title: `B-1. <a href="https://www.nature.com/articles/s41589-022-01013-7" target="_blank">Nature Chem. Biol. s41589-022-01013-7</a>`, imageUrl: "" },
+      { id: "B2", title: `B-2. <a href="https://www.nature.com/articles/s41557-024-01646-2" target="_blank">Nature s41557-024-01646-2</a>`, imageUrl: "" },
+      { id: "B3", title: `B-3. <a href="https://www.nature.com/articles/s41557-024-01603-z" target="_blank">Nature s41557-024-01603-z</a>`, imageUrl: "" },
+      { id: "B4", title: `B-4. <a href="https://www.nature.com/articles/s41467-024-49650-x" target="_blank">Nat. Comm. s41467-024-49650-x</a>`, imageUrl: "" },
+      { id: "B5", title: `B-5. DOI: 10.1002/anie.202414941`, imageUrl: "" },
+      { id: "B6", title: `B-6. DOI: s41589-025-01898-0`, imageUrl: "" },
+      { id: "B7", title: `B-7. DOI: s41589-023-01445-9`, imageUrl: "" },
+      { id: "B8", title: `B-8. DOI: 10.1002/anie.202304646`, imageUrl: "" }
     ];
 
     const functionalVignettes = [
-      {
-        id: "F1",
-        title: `F-1. Clovibactin (S0092-8674(23)00853-X): “Clovibactin, a depsipeptide from an uncultured soil bacterium, kills all tested Gram-positive superbugs with no detectable resistance after 30 passages.”`,
-        imageUrl: ""
-      },
-      {
-        id: "F2",
-        title: `F-2. Evybactin (s41589-022-01102-7): “Evybactin selectively wipes out Mycobacterium tuberculosis by stalling DNA gyrase; it is inactive vs. commensal flora.”`,
-        imageUrl: ""
-      },
-      {
-        id: "F3",
-        title: `F-3. Erucamide (10.1126/science.ads0377): “Erucamide, a ubiquitous plant fatty-amide, blocks bacterial T3SS needles.”`,
-        imageUrl: ""
-      },
-      {
-        id: "F4",
-        title: `F-4. Photoxenobactin C (s41557-022-00923-2): “Photoxenobactin C, with a dithioperoxoate terminus, is a non-siderophore insecticide.”`,
-        imageUrl: ""
-      }
+      { id: "F1", title: `F-1. Clovibactin (S0092-8674(23)00853-X): “Clovibactin, a depsipeptide from an uncultured soil bacterium, kills all tested Gram-positive superbugs with no detectable resistance after 30 passages.”`, imageUrl: "" },
+      { id: "F2", title: `F-2. Evybactin (s41589-022-01102-7): “Evybactin selectively wipes out Mycobacterium tuberculosis by stalling DNA gyrase; it is inactive vs. commensal flora.”`, imageUrl: "" },
+      { id: "F3", title: `F-3. Erucamide (10.1126/science.ads0377): “Erucamide, a ubiquitous plant fatty-amide, blocks bacterial T3SS needles.”`, imageUrl: "" },
+      { id: "F4", title: `F-4. Photoxenobactin C (s41557-022-00923-2): “Photoxenobactin C, with a dithioperoxoate terminus, is a non-siderophore insecticide.”`, imageUrl: "" }
     ];
 
     const evolutionaryVignettes = [
-      {
-        id: "E1",
-        title: `E-1. (s40168-023-01521-1) “First lanthipeptides in archaea.”`,
-        imageUrl: ""
-      },
-      {
-        id: "E2",
-        title: `E-2. DOI 10.1073/pnas.2311245121: “Psilocybin biosynthesis first arose in Psilocybe, with 4–5 possible horizontal transfers between 40 and 9 mya.”`,
-        imageUrl: ""
-      },
-      {
-        id: "E3",
-        title: `E-3. DOI 10.1073/pnas.2307981120: “Discovery of two benzoxazinoid pathways showing independent evolution in flowering plants at least three times.”`,
-        imageUrl: ""
-      },
-      {
-        id: "E4",
-        title: `E-4. DOI 10.1073/pnas.2303327120: “Entomopathogenic Beauveria fungi obtained a bacterial Fcs1 Pictet-Spenglerase, enabling β-carboline alkaloid biosynthesis.”`,
-        imageUrl: ""
-      }
+      { id: "E1", title: `E-1. (s40168-023-01521-1) “First lanthipeptides in archaea.”`, imageUrl: "" },
+      { id: "E2", title: `E-2. DOI 10.1073/pnas.2311245121: “Psilocybin biosynthesis first arose in Psilocybe, with 4–5 possible horizontal transfers between 40 and 9 mya.”`, imageUrl: "" },
+      { id: "E3", title: `E-3. DOI 10.1073/pnas.2307981120: “Discovery of two benzoxazinoid pathways showing independent evolution in flowering plants at least three times.”`, imageUrl: "" },
+      { id: "E4", title: `E-4. DOI 10.1073/pnas.2303327120: “Beauveria fungi obtained a bacterial Fcs1 Pictet-Spenglerase, enabling β-carboline alkaloid biosynthesis.”`, imageUrl: "" }
     ];
 
-    // Combine domain‐level arrays into an object for easy lookup:
     const domainVignettes = {
       structure:    structuralVignettes,
       biosynthetic: biosyntheticVignettes,
@@ -379,10 +284,10 @@
       evolutionary: evolutionaryVignettes
     };
 
-    // BLOCK 4 page is blank for now; we will fill it dynamically when the user arrives.
+    // Block 4 placeholder (we’ll fill it in on demand)
     const block4Page = {
       name: "block4",
-      elements: [] // → will be populated in onCurrentPageChanged
+      elements: []
     };
 
     //
@@ -392,12 +297,12 @@
       title: "Metabolite Novelty Survey",
       showQuestionNumbers: "off",
       pages: [
-        introPage,           // Block 0
-        openQuestionPage,    // Block 1
-        scalePage,           // Block 2
-        masterPage,          // Block 3.1
-        subPage,             // Block 3.2
-        block4Page           // Block 4 (filled dynamically)
+        introPage,        // Block 0
+        openQuestionPage, // Block 1
+        scalePage,        // Block 2
+        masterPage,       // Block 3.1
+        subPage,          // Block 3.2
+        block4Page        // Block 4 (populated dynamically)
       ],
       pagePrevText: "Back",
       pageNextText: "Next",
@@ -410,29 +315,29 @@
     const survey = new Survey.Model(surveyJSON);
 
     //
-    // ─── DYNAMIC SHOW/HIDE FOR BLOCK 3.2 ───────────────────────────────────────
+    // ─── BLOCK 3: onValueChanged (optional) ─────────────────────────────────────
     //
+    // We still track live changes if the user re‐orders before clicking “Next.”
     survey.onValueChanged.add(function (sender, options) {
       if (options.name === "master_ranking") {
         const ranks = sender.getValue("master_ranking");
         if (Array.isArray(ranks) && ranks.length >= 2) {
-          const topTwo = [ranks[0], ranks[1]];
-          const chosenDomain = topTwo[Math.floor(Math.random() * 2)]; // one of the top two
+          // Pick one of the top 2 immediately (so user sees it live if they drag now)
+          const topTwo       = [ranks[0], ranks[1]];
+          chosenSubDomain = topTwo[Math.floor(Math.random() * 2)];
 
-          // hide all sub_* first:
-          ["sub_structure","sub_biosynthetic","sub_functional","sub_evolutionary"].forEach(qn => {
+          // Hide everything first, then unhide only the chosen sub‐question:
+          ["sub_structure", "sub_biosynthetic", "sub_functional", "sub_evolutionary"].forEach((qn) => {
             const qObj = sender.getQuestionByName(qn);
             if (qObj) qObj.visible = false;
           });
-
-          // unhide the chosen domain’s subquestion:
-          const subName = "sub_" + chosenDomain;
+          const subName = "sub_" + chosenSubDomain;
           const chosenQ = sender.getQuestionByName(subName);
           if (chosenQ) chosenQ.visible = true;
 
-          // update the “#X” placeholder to the correct number of subcategories:
+          // Update the “#X” span so the instructions show the correct # of items:
           const countMap = {
-            "sub_structure":    structuralPool.length === 4 ? 5 : structuralPool.length, 
+            "sub_structure":    structuralPool.length === 4 ? 5 : structuralPool.length,
             "sub_biosynthetic": biosyntheticPool.length,
             "sub_functional":   functionalPool.length,
             "sub_evolutionary": ecologicalPool.length
@@ -450,61 +355,104 @@
     });
 
     //
-    // ─── DYNAMIC POPULATION OF BLOCK 4 (VIGNETTES) ──────────────────────────────
+    // ─── BLOCK 3: onCurrentPageChanged (fallback) ────────────────────────────────
     //
-    let block4Filled = false; 
     survey.onCurrentPageChanged.add(function (sender, options) {
-      const page = sender.currentPage;
-      if (page.name === "block4" && !block4Filled) {
-        block4Filled = true; // only populate once
+      const pageName = sender.currentPage.name;
 
+      // If the user has just navigated to the "block3_sub" page, and we haven't chosen yet,
+      // pick the sub-domain based on whatever "master_ranking" currently is (even if they didn't drag).
+      if (pageName === "block3_sub" && chosenSubDomain === null) {
+        const ranks = sender.data.master_ranking || [];
+        if (Array.isArray(ranks) && ranks.length >= 2) {
+          const topTwo       = [ranks[0], ranks[1]];
+          chosenSubDomain = topTwo[Math.floor(Math.random() * 2)];
+
+          // Hide all sub_* first
+          ["sub_structure", "sub_biosynthetic", "sub_functional", "sub_evolutionary"].forEach((qn) => {
+            const qObj = sender.getQuestionByName(qn);
+            if (qObj) qObj.visible = false;
+          });
+
+          // Unhide only selected sub‐question
+          const subName = "sub_" + chosenSubDomain;
+          const chosenQ = sender.getQuestionByName(subName);
+          if (chosenQ) chosenQ.visible = true;
+
+          // Update “#X” placeholder
+          const countMap = {
+            "sub_structure":    structuralPool.length === 4 ? 5 : structuralPool.length,
+            "sub_biosynthetic": biosyntheticPool.length,
+            "sub_functional":   functionalPool.length,
+            "sub_evolutionary": ecologicalPool.length
+          };
+          const totalItems = countMap[subName] || 0;
+          const subIntro = sender.getQuestionByName("sub_intro");
+          if (subIntro) {
+            subIntro.html = `
+              <p>Now, among your top two domains from the previous page, one category was randomly selected. 
+              Please rank its subcategories from #1 (most important) to #${totalItems} (least important).</p>
+            `;
+          }
+
+          // Force a rerender so the chosen subranking becomes visible immediately
+          sender.render();
+        }
+      }
+
+      //
+      // ─── BLOCK 4: onCurrentPageChanged ──────────────────────────────────────────
+      //
+      // Populate Block 4 vignettes only once, when the user first arrives.
+      const block4 = sender.currentPage;
+      if (pageName === "block4" && block4.elements.length === 0) {
         const data = sender.data;
-        const masterRanks = data.master_ranking || []; 
-        // masterRanks is an array of ['structure','biosynthetic','functional','evolutionary'] in some order.
+        const masterRanks = data.master_ranking || [];
 
-        // 1) Identify top domain and second domain from master ranking:
+        // If somehow they skipped Block 3 entirely, just return early
+        if (!Array.isArray(masterRanks) || masterRanks.length < 2) {
+          return;
+        }
+
+        // 1) Identify top domain, second domain, and low domains
         const topDomain    = masterRanks[0];
         const secondDomain = masterRanks[1];
-        const lowDomains   = [masterRanks[2], masterRanks[3]]; // domains ranked 3 & 4
+        const lowDomains   = [masterRanks[2], masterRanks[3]];
 
         // 2) From topDomain, pick 4 random vignettes
-        const topPool = domainVignettes[topDomain] || [];
-        const fourFromTop = getRandomItems(topPool, 4);
+        const topPool      = domainVignettes[topDomain] || [];
+        const fourFromTop  = getRandomItems(topPool, 4);
 
         // 3) From secondDomain, pick 1 random vignette
-        const secondPool = domainVignettes[secondDomain] || [];
+        const secondPool   = domainVignettes[secondDomain] || [];
         const oneFromSecond = getRandomItems(secondPool, 1);
 
-        // 4) From a randomly selected “low” domain, pick 1 vignette
+        // 4) From one random “low” domain, pick 1 vignette
         const randomLowDomain = lowDomains[Math.floor(Math.random() * lowDomains.length)];
-        const lowPool = domainVignettes[randomLowDomain] || [];
-        const oneFromLow = getRandomItems(lowPool, 1);
+        const lowPool         = domainVignettes[randomLowDomain] || [];
+        const oneFromLow      = getRandomItems(lowPool, 1);
 
-        // 5) Combine into an array of exactly 6 vignettes (objects with {id, title, imageUrl})
+        // 5) Combine them into exactly 6 vignettes
         const selectedVignettes = [
           ...fourFromTop,
           ...oneFromSecond,
           ...oneFromLow
         ];
 
-        // 6) For each selected vignette, add three questions to block4Page:
+        // 6) For each selected vignette, add three questions
         selectedVignettes.forEach((v, idx) => {
-          // a) Display title and optional image:
-          const htmlContent = [
-            `<div class="vignette-title">${v.title}</div>`
-          ];
-          if (v.imageUrl && v.imageUrl.length > 0) {
+          // a) Title + optional image
+          const htmlContent = [`<div class="vignette-title">${v.title}</div>`];
+          if (v.imageUrl && v.imageUrl.length) {
             htmlContent.push(`<img class="vignette-image" src="${v.imageUrl}" alt="${v.id}">`);
           }
-
-          // Add an HTML panel so the title (and image) appear
-          page.addNewPageElement({
+          block4.addNewPageElement({
             type: "html",
             html: htmlContent.join("\n")
           });
 
-          // b) “Would you consider this novel?” → binary choice
-          page.addNewPageElement({
+          // b) Binary “Would you consider this novel?”
+          block4.addNewPageElement({
             type: "radiogroup",
             name: `v_${v.id}_novel`,
             title: "Would you consider this novel?",
@@ -515,8 +463,8 @@
             ]
           });
 
-          // c) Confidence slider (0–10) using Rating (0 to 10)
-          page.addNewPageElement({
+          // c) Confidence slider (0–10)
+          block4.addNewPageElement({
             type: "rating",
             name: `v_${v.id}_confidence`,
             title: "Confidence (0–10)",
@@ -527,8 +475,8 @@
             maxRateDescription: "10"
           });
 
-          // d) “Wow” (excitement) slider (0–10) using Rating (0 to 10)
-          page.addNewPageElement({
+          // d) “Wow” (excitement) slider (0–10)
+          block4.addNewPageElement({
             type: "rating",
             name: `v_${v.id}_wow`,
             title: "Scientific excitement / “Wow” effect (0–10)",
@@ -540,8 +488,8 @@
           });
         });
 
-        // Finally, re-render the page so the new elements appear
-        sender.render(true);
+        // Re-render now that we’ve added elements
+        sender.render();
       }
     });
 
@@ -549,7 +497,7 @@
     // ─── ON COMPLETE: POST DATA TO YOUR APPS SCRIPT ───────────────────────────────
     //
     survey.onComplete.add(function (sender) {
-      const endpoint = "https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec"; // ← REPLACE WITH YOUR DEPLOYED URL
+      const endpoint = "https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec"; // ← REPLACE with your Apps Script Web App URL
       fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
