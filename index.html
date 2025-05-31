@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Novelty Survey</title>
+  <title>Metabolite Novelty Survey</title>
   <!-- SurveyJS styles & scripts -->
   <link href="https://unpkg.com/survey-core/defaultV2.min.css" rel="stylesheet"/>
   <script src="https://unpkg.com/jquery/dist/jquery.min.js"></script>
@@ -19,7 +19,9 @@
   <script>
     Survey.StylesManager.applyTheme("defaultV2");
 
-    // 1. Block 0: Intro & consent
+    //
+    // ─── BLOCK 0: INTRO & CONSENT ────────────────────────────────────────────────
+    //
     const introPage = {
       name: "intro",
       elements: [
@@ -36,7 +38,9 @@
       ]
     };
 
-    // 2. Block 1: Open question
+    //
+    // ─── BLOCK 1: OPEN QUESTION ─────────────────────────────────────────────────
+    //
     const openQuestionPage = {
       name: "open1",
       elements: [
@@ -48,7 +52,10 @@
       ]
     };
 
-    // 3. Block 2: Scaling assessment pools
+    //
+    // ─── BLOCK 2: SCALING ASSESSMENT ─────────────────────────────────────────────
+    //
+    // Utility to pick N random items from an array:
     function getRandomItems(arr, n) {
       const copy = arr.slice();
       for (let i = copy.length - 1; i > 0; i--) {
@@ -58,6 +65,7 @@
       return copy.slice(0, n);
     }
 
+    // Define each pool of 4 items (we will pick 2 at random per respondent):
     const structuralPool = [
       { value: "S1", text: "Incorporation of rare elements such as selenium or boron increases a metabolite’s novelty." },
       { value: "S2", text: "A new ring system is an indicator of novelty." },
@@ -83,24 +91,25 @@
       { value: "E4", text: "Chemical-diversity hotspots in unexplored biomes are important indicators of future novelty." }
     ];
 
-    const selectedStructural = getRandomItems(structuralPool, 2);
+    // Randomly pick 2 items from each pool:
+    const selectedStructural   = getRandomItems(structuralPool, 2);
     const selectedBiosynthetic = getRandomItems(biosyntheticPool, 2);
-    const selectedFunctional = getRandomItems(functionalPool, 2);
-    const selectedEcological = getRandomItems(ecologicalPool, 2);
+    const selectedFunctional   = getRandomItems(functionalPool, 2);
+    const selectedEcological   = getRandomItems(ecologicalPool, 2);
 
-    // common Likert columns + NA
+    // Define the shared Likert columns (+ “Not applicable / no opinion”):
     const likertCols = [
-      { value: 1, text: "1<br>Strongly disagree" },
-      { value: 2, text: "2<br>Disagree" },
-      { value: 3, text: "3<br>Slightly disagree" },
-      { value: 4, text: "4<br>Neutral" },
-      { value: 5, text: "5<br>Slightly agree" },
-      { value: 6, text: "6<br>Agree" },
-      { value: 7, text: "7<br>Strongly agree" },
+      { value: 1,   text: "1<br>Strongly disagree" },
+      { value: 2,   text: "2<br>Disagree" },
+      { value: 3,   text: "3<br>Slightly disagree" },
+      { value: 4,   text: "4<br>Neutral" },
+      { value: 5,   text: "5<br>Slightly agree" },
+      { value: 6,   text: "6<br>Agree" },
+      { value: 7,   text: "7<br>Strongly agree" },
       { value: "NA", text: "Not applicable / no opinion" }
     ];
 
-    // 4. Block 2 page
+    // Now build Block 2 page:
     const scalePage = {
       name: "scale2",
       elements: [
@@ -139,33 +148,189 @@
       ]
     };
 
-    // assemble survey
+    //
+    // ─── BLOCK 3: FORCED-CHOICE / RANKING ────────────────────────────────────────
+    //
+    // Page 3.1: Master‐category ranking
+    const masterPage = {
+      name: "block3_master",
+      elements: [
+        {
+          type: "html",
+          html: `
+            <h3>Block 3: Category Ranking</h3>
+            <p>“Drag the four cards so that #1 marks the domain you consider <strong>most important</strong> when deciding whether a metabolite is truly novel, and #4 the <strong>least important</strong>.”<br/>
+            Please break ties by gut feeling; there is no “right” answer.</p>
+          `
+        },
+        {
+          type: "ranking",
+          name: "master_ranking",
+          title: "Rank the domains",
+          choices: [
+            { value: "structure",    text: "Structural / Scaffold novelty" },
+            { value: "biosynthetic", text: "Biosynthetic / Catalytic novelty" },
+            { value: "functional",   text: "Functional / Phenotypic novelty" },
+            { value: "evolutionary", text: "Evolutionary / Ecological novelty" }
+          ]
+        }
+      ]
+    };
+
+    // Page 3.2: Subcategory ranking (all hidden by default; we’ll unhide one at random)
+    const subPage = {
+      name: "block3_sub",
+      elements: [
+        {
+          type: "html",
+          name: "sub_intro",
+          html: `
+            <p>Now, among your top two domains from the previous page, one category was randomly selected. Please rank its subcategories from #1 (most important) to #<span id="sub-count">X</span> (least important).</p>
+          `
+        },
+        // --- Structural / Scaffold novelty subcategories ---
+        {
+          type: "ranking",
+          name: "sub_structure",
+          title: "Structural / Scaffold novelty – Rank these subcategories",
+          choices: [
+            { value: "new_scaffold",    text: "New carbon/heteroatom scaffold" },
+            { value: "unusual_fg",      text: "Unusual functional group (e.g., N = N = N)" },
+            { value: "rare_stereo",     text: "Rare stereochemical pattern" },
+            { value: "exotic_atoms",    text: "Presence of “exotic” atoms (e.g., F or Br)" },
+            { value: "extreme_size",    text: "Extreme size/complexity related to carbons (ratio C/Hetero is high or low)" }
+          ],
+          visible: false
+        },
+        // --- Biosynthetic / Catalytic novelty subcategories ---
+        {
+          type: "ranking",
+          name: "sub_biosynthetic",
+          title: "Biosynthetic / Catalytic novelty – Rank these subcategories",
+          choices: [
+            { value: "new_enzyme",          text: "Entirely new enzyme class (e.g. new fold + AA homology low)" },
+            { value: "known_new_chem",      text: "Known folds, new catalytic chemistry" },
+            { value: "uncommon_cofactors",  text: "Use of uncommon cofactors" },
+            { value: "convergent_pathways", text: "Compounds produced by convergence of 2 pathways" }
+          ],
+          visible: false
+        },
+        // --- Functional / Phenotypic novelty subcategories ---
+        {
+          type: "ranking",
+          name: "sub_functional",
+          title: "Functional / Phenotypic novelty – Rank these subcategories",
+          choices: [
+            { value: "new_bioactivity",   text: "New bioactivity spectrum" },
+            { value: "new_mode_action",   text: "New mode of action for a known target" },
+            { value: "new_eco_role",      text: "New Ecological role for a taxonomic rank" }
+          ],
+          visible: false
+        },
+        // --- Evolutionary / Ecological novelty subcategories ---
+        {
+          type: "ranking",
+          name: "sub_evolutionary",
+          title: "Evolutionary / Ecological novelty – Rank these subcategories",
+          choices: [
+            { value: "new_taxon",         text: "Produced by a previously unsuspected taxon" },
+            { value: "signature_compound",text: "Unique to a taxon (signature compound)" },
+            { value: "horizontal_transfer",text: "Horizontal transfer" }
+          ],
+          visible: false
+        }
+      ]
+    };
+
+    //
+    // ─── ASSEMBLE ALL PAGES ─────────────────────────────────────────────────────
+    //
     const surveyJSON = {
       title: "Metabolite Novelty Survey",
       showQuestionNumbers: "off",
-      pages: [introPage, openQuestionPage, scalePage],
+      pages: [
+        introPage,             // Block 0
+        openQuestionPage,      // Block 1
+        scalePage,             // Block 2
+        masterPage,            // Block 3.1 (master categories)
+        subPage                // Block 3.2 (subcategory to be unhidden)
+      ],
       pagePrevText: "Back",
       pageNextText: "Next",
       completeText: "Submit"
     };
 
+    //
+    // ─── INITIALIZE SURVEY ───────────────────────────────────────────────────────
+    //
     const survey = new Survey.Model(surveyJSON);
 
+    //
+    // ─── DYNAMIC SHOW/HIDE FOR BLOCK 3.2 ───────────────────────────────────────
+    //
+    survey.onValueChanged.add(function (sender, options) {
+      if (options.name === "master_ranking") {
+        const ranks = sender.getValue("master_ranking");
+        if (Array.isArray(ranks) && ranks.length >= 2) {
+          // ranks[0] is the domain at #1, ranks[1] is domain at #2
+          const topTwo = [ranks[0], ranks[1]];
+          const chosen = topTwo[Math.floor(Math.random() * 2)]; // randomly pick one of the two
+
+          // Always hide all sub_* questions first:
+          ["sub_structure", "sub_biosynthetic", "sub_functional", "sub_evolutionary"].forEach((qn) => {
+            const qObj = sender.getQuestionByName(qn);
+            if (qObj) {
+              qObj.visible = false;
+            }
+          });
+
+          // Unhide the chosen sub‐question:
+          const subName = "sub_" + chosen; 
+          const chosenQ = sender.getQuestionByName(subName);
+          if (chosenQ) {
+            chosenQ.visible = true;
+          }
+
+          // Update the “#X” placeholder in the HTML instruction to match the # of items:
+          const countMap = {
+            "sub_structure":    5,  // number of structure subcategories
+            "sub_biosynthetic": 4,  // number of biosynthetic subcategories
+            "sub_functional":   3,  // number of functional subcategories
+            "sub_evolutionary": 3   // number of evolutionary subcategories
+          };
+          const totalItems = countMap[subName] || 0;
+          // Find the <span id="sub-count">X</span> in the HTML of sub_intro:
+          const subIntro = sender.getQuestionByName("sub_intro");
+          if (subIntro) {
+            subIntro.html = `
+              <p>Now, among your top two domains from the previous page, one category was randomly selected. 
+              Please rank its subcategories from #1 (most important) to #${totalItems} (least important).</p>
+            `;
+          }
+        }
+      }
+    });
+
+    //
+    // ─── ON COMPLETE: POST DATA TO YOUR APPS SCRIPT ───────────────────────────────
+    //
     survey.onComplete.add(function (sender) {
-      const endpoint = "https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec"; // ← REPLACE
+      const endpoint = "https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec"; // ← REPLACE WITH YOUR DEPLOYED URL
       fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(sender.data)
       })
-      .then(()=> {
+      .then(() => {
         document.querySelector("#surveyContainer")
           .innerHTML = "<h2>Thank you! Your responses have been recorded.</h2>";
       })
       .catch(err => console.error(err));
     });
 
-    // render
+    //
+    // ─── RENDER THE SURVEY ───────────────────────────────────────────────────────
+    //
     $("#surveyContainer").Survey({ model: survey });
   </script>
 </body>
