@@ -154,8 +154,8 @@ fieldset.likert-7 input[type="radio"]:checked + label::after {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-size: 2.4rem;               /* larger X */
-  font-weight: 1500;                /* thicker stroke */
+  font-size: 2.2rem;               /* larger X */
+  font-weight: 1800;                /* thicker stroke */
   line-height: 1;
   color: red;
   z-index: 2;                      /* topmost layer */
