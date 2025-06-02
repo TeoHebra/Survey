@@ -127,7 +127,7 @@ fieldset.likert-7 input[type="radio"]:checked + label::after {
   transform: translateX(-50%);
   color: red;
   font-size: 1.4rem;
-  line-height: 1;
+  line-height: 2;
   pointer-events: none;
 }
 
