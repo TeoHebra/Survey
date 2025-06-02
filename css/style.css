@@ -74,3 +74,59 @@ textarea {
   width: 0%;
   transition: width 0.3s ease;
 }
+
+
+/* === 7‑point Likert styling === */
+
+fieldset.likert-7 {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 2rem 0;
+  padding: 0 1rem;
+  border: none;
+}
+fieldset.likert-7::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #000;
+  z-index: 0;
+}
+fieldset.likert-7 input[type="radio"] {
+  display: none;
+}
+fieldset.likert-7 label {
+  position: relative;
+  text-align: center;
+  cursor: pointer;
+  font-size: 0.9rem;
+  line-height: 1.2;
+  z-index: 1;
+}
+fieldset.likert-7 label::before {
+  content: '';
+  display: block;
+  width: 18px;
+  height: 18px;
+  border: 2px solid #000;
+  border-radius: 50%;
+  margin: 0 auto 0.4rem;
+  background: #fff;
+}
+fieldset.likert-7 input[type="radio"]:checked + label::after {
+  content: '✕';
+  position: absolute;
+  top: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: red;
+  font-size: 1.4rem;
+  line-height: 1;
+  pointer-events: none;
+}
