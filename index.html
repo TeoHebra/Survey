@@ -1,123 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>Metabolite Novelty Survey</title>
-
-  <!-- Mobile and theming hints -->
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#ffffff">
-
-  <!-- SurveyJS look & feel -->
-  <link rel="stylesheet"
-        href="https://unpkg.com/survey-core@1.10.4/modern.min.css">
-
-  <!-- Lightweight, universal font stack -->
-  <style>
-    :root{--max-w:48rem;--g:1.5rem;font-size:16px}
-    body{margin:0 auto;max-width:var(--max-w);padding:var(--g);
-         font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
-         line-height:1.5;background:#fafafa;color:#222}
-    header,main{margin-bottom:var(--g)}
-    .sr-only{position:absolute;left:-9999px}
-    noscript p{background:#ffe8e8;padding:.75rem;border-radius:.25rem}
-  </style>
-
-  <!-- Core JS – pinned versions & defer so HTML paints first -->
-  <script defer src="https://code.jquery.com/jquery-3.7.1.min.js"
-          integrity="sha256-3gJwYp80bMaX2JdY9Qtv8K4EQKYtF6rPPh6vzLbYVCk="
-          crossorigin="anonymous"></script>
-  <script defer src="https://unpkg.com/survey-core@1.10.4/survey.core.min.js"></script>
-  <script defer src="https://unpkg.com/survey-jquery@1.10.4/survey.jquery.min.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Novelty Survey</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <script defer src="js/main.js"></script>
 </head>
-
 <body>
-  <a href="#survey" class="sr-only">Skip to survey</a>
-
-  <header>
-    <h1>Metabolite Novelty Survey</h1>
-    <p>Please allow approximately <strong>5 minutes</strong> to complete this anonymous questionnaire.</p>
-  </header>
-
-  <!-- Survey renders here -->
-  <main id="survey"></main>
-
-  <!-- Fallback if JS is blocked -->
-  <noscript>
-    <p>This survey needs JavaScript. If your company blocks it, email
-       <a href="mailto:study@example.org">study@example.org</a> for a PDF version.</p>
-  </noscript>
-
-  <script defer>
-  /* ---------- Survey definition (feel free to extend) ---------- */
-  const likert7 = [1,2,3,4,5,6,7].map(v=>({value:v,text:String(v)}));
-  const surveyJSON = {
-    showQuestionNumbers:"off",
-    firstPageIsStarted:true,
-    startSurveyText:"Begin",
-    pagePrevText:"Back",
-    pageNextText:"Next",
-    completeText:"Submit",
-    pages:[
-      {name:"intro",
-       elements:[{type:"html", html:
-        `<p><strong>Purpose:</strong> We are investigating how researchers define “novel” metabolites.</p>
-         <p><strong>Anonymity:</strong> No personal data are collected.</p>
-         <p><strong>Duration:</strong> Approximately 5 minutes.</p>
-         <p><strong>Voluntary:</strong> You may exit at any time.</p>
-         <p><em>Click “Begin” below if you consent to participate.</em></p>`}]},
-
-      {name:"open",
-       elements:[{type:"comment", name:"novelty_definition",
-                  title:"In your own words, what makes a metabolite “novel”?"}]},
-
-      {name:"scale",
-       elements:[
-         {type:"matrix", name:"structural_novelty", title:"Structural Novelty",
-          isAllRowRequired:true, randomizeRows:true,
-          columns:likert7.concat({value:"NA",text:"N/A"}),
-          rows:[
-            "Incorporation of rare elements such as selenium or boron increases a metabolite’s novelty.",
-            "A new ring system is an indicator of novelty.",
-            "N-acylation or similar motif-based decoration is unimportant when claiming novelty.",
-            "Changing the oxidation state of a functional group is of little novelty."
-          ]},
-         {type:"matrix", name:"biosynthetic_novelty", title:"Biosynthetic / Catalytic Novelty",
-          isAllRowRequired:true, randomizeRows:true,
-          columns:"inherit",
-          rows:[
-            "An enzyme that catalyses an unprecedented reaction is novel.",
-            "Use of uncommon cofactors increases the novelty of a pathway.",
-            "Including a tailoring enzyme from another pathway is of low novelty.",
-            "If the final product resembles a known compound, the catalysis is not novel."
-          ]}
-       ]}
-    ]
-  };
-
-  /* ---------- Render once DOM + all scripts are ready ---------- */
-  window.addEventListener("DOMContentLoaded", () => {
-    Survey.StylesManager.applyTheme("modern");
-
-    const survey = new Survey.Model(surveyJSON);
-
-    survey.onComplete.add(async ({data})=>{
-      try{
-        const res = await fetch("https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec",{
-          method:"POST",
-          headers:{ "Content-Type":"application/json" },
-          body: JSON.stringify(data)
-        });
-        if(!res.ok) throw new Error(`Server returned ${res.status}`);
-        $("#survey").html("<h2>Thank you! Your responses have been securely recorded.</h2>");
-      }catch(err){
-        alert("Sorry — we could not save your answers. Please try again later.");
-        console.error(err);
-      }
-    });
-
-    $("#survey").Survey({model: survey});
-  });
-  </script>
+  <main id="survey-container"></main>
 </body>
 </html>

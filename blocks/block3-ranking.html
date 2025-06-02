@@ -1,0 +1,29 @@
+<section id="block3" class="survey-block">
+  <h2>Rank The Abstracts</h2>
+  <p>Below are brief abstracts of hypothetical studies. Drag to rank them from <em>most</em> to <em>least</em> novel.</p>
+  <ol class="ranking-list" id="ranking-list" draggable="true">
+    <li>Study A: Introduces a brand‑new imaging technique…</li>
+    <li>Study B: Applies established methods to a new dataset…</li>
+    <li>Study C: Replicates previous work with minor tweaks…</li>
+  </ol>
+  <div>
+    <button class="prev-btn">Back</button>
+    <button class="next-btn">Next</button>
+  </div>
+  <script>
+    // Very lightweight drag–n–drop ordering
+    const list = document.getElementById('ranking-list');
+    list.addEventListener('dragstart', e => {
+      e.dataTransfer.setData('text/plain', e.target.id);
+    });
+    list.addEventListener('dragover', e => e.preventDefault());
+    list.addEventListener('drop', e => {
+      e.preventDefault();
+      const dragged = document.getElementById(e.dataTransfer.getData('text/plain'));
+      const target = e.target.closest('li');
+      if (dragged && target && dragged !== target) {
+        list.insertBefore(dragged, target);
+      }
+    });
+  </script>
+</section>
