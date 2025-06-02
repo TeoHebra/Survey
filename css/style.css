@@ -161,3 +161,8 @@ fieldset.likert-7 input[type="radio"]:checked + label::after {
   z-index: 2;                      /* topmost layer */
   pointer-events: none;
 }
+/* ---- centre the red X in the bullet ---- */
+fieldset.likert-7 input[type="radio"]:checked + label::after {
+  /* inner-radius (16 / 2)  + border (3)  = 11 px */
+  top: calc(var(--bullet-size) / 2 + 3px);
+}
