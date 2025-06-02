@@ -139,7 +139,7 @@ fieldset.likert-7 label::before {
   content: '';
   width:  var(--bullet-size);
   height: var(--bullet-size);
-  border: 3px solid #000;          /* thicker outline */
+  border: 3.5px solid #000;          /* thicker outline */
   border-radius: 50%;
   background: #fff;                /* masks guideline */
   margin: 0 auto 0.6rem;
@@ -154,8 +154,8 @@ fieldset.likert-7 input[type="radio"]:checked + label::after {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-size: 2.2rem;               /* larger X */
-  font-weight: 1800;                /* thicker stroke */
+  font-size: 2.0rem;               /* larger X */
+  font-weight: 2000;                /* thicker stroke */
   line-height: 1;
   color: red;
   z-index: 2;                      /* topmost layer */
