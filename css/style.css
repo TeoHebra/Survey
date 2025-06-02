@@ -186,3 +186,28 @@ fieldset.likert-7 label::before {
 fieldset.likert-7 input[type="radio"]:checked + label::after {
   z-index: 2;                    /* keep the ✕ above everything */
 }
+
+/* --- Likert: thicker ring + bolder X, slightly smaller circle --- */
+fieldset.likert-7 {
+  --bullet-size: 16px;      /* diameter  ↓ from 18 px */
+  --bullet-border: 3px;     /* ring      ↑ from 2 px */
+}
+
+/* circle (before pseudo-element) */
+fieldset.likert-7 label::before {
+  width:  var(--bullet-size);
+  height: var(--bullet-size);
+  border: var(--bullet-border) solid #000;
+  border-radius: 50%;
+  background: #fff;         /* keeps guideline masked */
+}
+
+/* red ✕ (after pseudo-element) */
+fieldset.likert-7 input[type="radio"]:checked + label::after {
+  font-size: 1.6rem;        /* a touch larger & heavier */
+  font-weight: 700;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
