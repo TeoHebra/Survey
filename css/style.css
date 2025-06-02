@@ -156,3 +156,33 @@ fieldset.likert-7 input[type="radio"]:checked + label::after {
   top: 9px; /* vertically centre the ✕ within the circle */
   transform: translate(-50%, -50%);
 }
+
+/* --- Likert line behind & centered --- */
+
+fieldset.likert-7 {
+  --bullet-size: 18px;           /* keep bullet size in one place */
+  align-items: flex-start;
+  position: relative;
+}
+
+fieldset.likert-7::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  /* place the line so it runs through the vertical centre of each circle */
+  top: calc(var(--bullet-size) / 2);
+  height: 2px;
+  background: #000;
+  z-index: 0;                    /* send the line behind circles */
+}
+
+fieldset.likert-7 label::before {
+  position: relative;
+  z-index: 1;                    /* ensure circle sits above the line */
+  background: #fff;              /* masks the line inside the circle */
+}
+
+fieldset.likert-7 input[type="radio"]:checked + label::after {
+  z-index: 2;                    /* keep the ✕ above everything */
+}
