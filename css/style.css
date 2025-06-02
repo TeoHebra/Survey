@@ -3,6 +3,7 @@
   --primary-color: #004d99;
   --secondary-color: #e6f0ff;
 }
+
 body {
   font-family: Arial, sans-serif;
   margin: 0;
@@ -10,6 +11,7 @@ body {
   display: flex;
   justify-content: center;
 }
+
 main#survey-container {
   width: 100%;
   max-width: var(--max-width);
@@ -20,6 +22,7 @@ main#survey-container {
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
+
 .survey-block {
   display: none;
   flex-direction: column;
@@ -28,6 +31,7 @@ main#survey-container {
 .survey-block.active {
   display: flex;
 }
+
 button {
   align-self: flex-end;
   padding: 0.6rem 1.2rem;
@@ -42,15 +46,18 @@ button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
+
 textarea {
   width: 100%;
   min-height: 120px;
 }
+
 .likert-scale label {
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
+
 .ranking-list li {
   list-style: none;
   padding: 0.4rem 0.6rem;
@@ -60,6 +67,7 @@ textarea {
   cursor: move;
   background: #fafafa;
 }
+
 .progress {
   width: 100%;
   background: #f1f1f1;
@@ -75,139 +83,81 @@ textarea {
   transition: width 0.3s ease;
 }
 
-
-/* === 7‑point Likert styling === */
+/* ===================================================== */
+/* === 7-point Likert Scale styling (consolidated) ===== */
+/* ===================================================== */
 
 fieldset.likert-7 {
+  /* —— layout —— */
+  --bullet-size: 16px;            /* visible dot diameter  */
   position: relative;
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;        /* keep labels aligned */
   gap: 0.5rem;
   margin: 2rem 0;
   padding: 0 1rem;
   border: none;
 }
+
+/* horizontal guideline */
 fieldset.likert-7::before {
   content: '';
   position: absolute;
-  top: 50%;
   left: 0;
   right: 0;
+  top: calc(var(--bullet-size) / 2 + 3px); /* centre of dot incl. 3-px border */
   height: 2px;
   background: #000;
-  z-index: 0;
+  z-index: 0;                      /* place behind circles */
 }
+
+/* hide native radios */
 fieldset.likert-7 input[type="radio"] {
   display: none;
 }
-fieldset.likert-7 label {
-  position: relative;
-  text-align: center;
-  cursor: pointer;
-  font-size: 0.9rem;
-  line-height: 1.2;
-  z-index: 1;
-}
-fieldset.likert-7 label::before {
-  content: '';
-  display: block;
-  width: 18px;
-  height: 18px;
-  border: 2px solid #000;
-  border-radius: 50%;
-  margin: 0 auto 0.4rem;
-  background: #fff;
-}
-fieldset.likert-7 input[type="radio"]:checked + label::after {
-  content: '✕';
-  position: absolute;
-  top: -2px;
-  left: 50%;
-  transform: translateX(-50%);
-  color: red;
-  font-size: 1.4rem;
-  line-height: 1;
-  pointer-events: none;
-}
 
-/* --- Likert alignment tweaks --- */
-
-fieldset.likert-7 {
-  align-items: flex-start; /* ensure baseline alignment for multi‑line labels */
-}
+/* —— label & bullet —— */
 fieldset.likert-7 label {
+  flex: 1 1 0;
+  min-width: 0;
+  margin: 0 .25rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  flex: 1 1 0;
-  min-width: 0;
-  margin: 0 .25rem;
   text-align: center;
-}
-fieldset.likert-7::before {
-  top: 22px; /* aligns the line with the centre of the circles (18px tall + 2px border) */
-}
-fieldset.likert-7 label::before {
-  margin-bottom: .6rem;
-}
-fieldset.likert-7 input[type="radio"]:checked + label::after {
-  top: 9px; /* vertically centre the ✕ within the circle */
-  transform: translate(-50%, -50%);
-}
-
-/* --- Likert line behind & centered --- */
-
-fieldset.likert-7 {
-  --bullet-size: 18px;           /* keep bullet size in one place */
-  align-items: flex-start;
+  cursor: pointer;
+  font-size: 0.9rem;
+  line-height: 1.2;
   position: relative;
+  z-index: 1;                      /* above guideline */
 }
 
-fieldset.likert-7::before {
+/* circle bullet */
+fieldset.likert-7 label::before {
   content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  /* place the line so it runs through the vertical centre of each circle */
-  top: calc(var(--bullet-size) / 2);
-  height: 2px;
-  background: #000;
-  z-index: 0;                    /* send the line behind circles */
-}
-
-fieldset.likert-7 label::before {
-  position: relative;
-  z-index: 1;                    /* ensure circle sits above the line */
-  background: #fff;              /* masks the line inside the circle */
-}
-
-fieldset.likert-7 input[type="radio"]:checked + label::after {
-  z-index: 2;                    /* keep the ✕ above everything */
-}
-
-/* --- Likert: thicker ring + bolder X, slightly smaller circle --- */
-fieldset.likert-7 {
-  --bullet-size: 16px;      /* diameter  ↓ from 18 px */
-  --bullet-border: 3px;     /* ring      ↑ from 2 px */
-}
-
-/* circle (before pseudo-element) */
-fieldset.likert-7 label::before {
   width:  var(--bullet-size);
   height: var(--bullet-size);
-  border: var(--bullet-border) solid #000;
+  border: 3px solid #000;          /* thicker outline */
   border-radius: 50%;
-  background: #fff;         /* keeps guideline masked */
+  background: #fff;                /* masks guideline */
+  margin: 0 auto 0.6rem;
+  position: relative;
+  z-index: 1;                      /* above guideline */
 }
 
-/* red ✕ (after pseudo-element) */
+/* red X on selected option */
 fieldset.likert-7 input[type="radio"]:checked + label::after {
-  font-size: 1.6rem;        /* a touch larger & heavier */
-  font-weight: 700;
+  content: '✕';
+  position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  font-size: 1.6rem;               /* larger X */
+  font-weight: 900;                /* thicker stroke */
+  line-height: 1;
+  color: red;
+  z-index: 2;                      /* topmost layer */
+  pointer-events: none;
 }
-
