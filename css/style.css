@@ -130,3 +130,29 @@ fieldset.likert-7 input[type="radio"]:checked + label::after {
   line-height: 1;
   pointer-events: none;
 }
+
+/* --- Likert alignment tweaks --- */
+
+fieldset.likert-7 {
+  align-items: flex-start; /* ensure baseline alignment for multi‑line labels */
+}
+fieldset.likert-7 label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  flex: 1 1 0;
+  min-width: 0;
+  margin: 0 .25rem;
+  text-align: center;
+}
+fieldset.likert-7::before {
+  top: 22px; /* aligns the line with the centre of the circles (18px tall + 2px border) */
+}
+fieldset.likert-7 label::before {
+  margin-bottom: .6rem;
+}
+fieldset.likert-7 input[type="radio"]:checked + label::after {
+  top: 9px; /* vertically centre the ✕ within the circle */
+  transform: translate(-50%, -50%);
+}
