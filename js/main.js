@@ -40,6 +40,14 @@ async function loadBlock(index) {
     }
     oldScript.replaceWith(newScript);
   });
+  // 4. If this is Block 3, append its JS:
+  if (index === 3) {
+    const s = document.createElement('script');
+    s.src = "js/block3-ranking.js";
+    s.defer = true;
+    document.body.appendChild(s);
+  }
+
 
   // 4. (Re-)bind your “Back” and “Next” buttons in the newly inserted block:
   const nextBtn = container.querySelector('.next-btn');
