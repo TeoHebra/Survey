@@ -1,102 +1,68 @@
-<!-- Block 3: Vignette Ranking (drag-and-drop) -->
+<!-- Block 3: Vignette Ranking via Text Inputs -->
 <section class="survey-block" id="block3" data-type="ranking">
   <h2>Block 3 &ndash; Vignette Ranking</h2>
   <p class="prompt">
-    Drag each vignette into the order you feel is most to least necessary. 
-    Once you’ve arranged them, the hidden field below will automatically update. 
-    Your first‐placed item becomes rank 1, the next rank 2, and so on.
+    Please assign a unique rank to each vignette (1 = most necessary, 2 = second most, etc.). 
+    Type a number (1–4) in the box next to each statement. Do not repeat ranks.
   </p>
 
-  <ul id="rankingList" class="ranking-list">
-    <li data-value="v1" draggable="true">
+  <div class="ranking-item">
+    <label for="rank_v1">
       <strong>Vignette 1:</strong> Lorem ipsum dolor sit amet, consectetur adipiscing elit…
-    </li>
-    <li data-value="v2" draggable="true">
+    </label>
+    <input 
+      type="number" 
+      name="rank_v1" 
+      id="rank_v1" 
+      class="rank-input" 
+      min="1" 
+      max="4" 
+      required 
+      placeholder="1–4" />
+  </div>
+
+  <div class="ranking-item">
+    <label for="rank_v2">
       <strong>Vignette 2:</strong> Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua…
-    </li>
-    <li data-value="v3" draggable="true">
+    </label>
+    <input 
+      type="number" 
+      name="rank_v2" 
+      id="rank_v2" 
+      class="rank-input" 
+      min="1" 
+      max="4" 
+      required 
+      placeholder="1–4" />
+  </div>
+
+  <div class="ranking-item">
+    <label for="rank_v3">
       <strong>Vignette 3:</strong> Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris…
-    </li>
-    <li data-value="v4" draggable="true">
+    </label>
+    <input 
+      type="number" 
+      name="rank_v3" 
+      id="rank_v3" 
+      class="rank-input" 
+      min="1" 
+      max="4" 
+      required 
+      placeholder="1–4" />
+  </div>
+
+  <div class="ranking-item">
+    <label for="rank_v4">
       <strong>Vignette 4:</strong> Duis aute irure dolor in reprehenderit in voluptate velit esse cillum…
-    </li>
-    <!-- Add or remove <li> items as needed. Just keep draggable="true" and data-value. -->
-  </ul>
-
-  <!-- This hidden input will contain the final order as “v2,v1,v4,v3”, etc. -->
-  <input type="hidden" name="vignetteRanking" id="vignetteRanking">
+    </label>
+    <input 
+      type="number" 
+      name="rank_v4" 
+      id="rank_v4" 
+      class="rank-input" 
+      min="1" 
+      max="4" 
+      required 
+      placeholder="1–4" />
+  </div>
 </section>
-
-<script>
-  (function() {
-    document.addEventListener('DOMContentLoaded', () => {
-      const list = document.getElementById('rankingList');
-      const hiddenInput = document.getElementById('vignetteRanking');
-      let dragSrcEl = null;
-
-      function handleDragStart(e) {
-        dragSrcEl = this;
-        this.style.opacity = '0.4';
-        e.dataTransfer.effectAllowed = 'move';
-        e.dataTransfer.setData('text/html', this.outerHTML);
-      }
-
-      function handleDragOver(e) {
-        if (e.preventDefault) e.preventDefault();
-        e.dataTransfer.dropEffect = 'move';
-        return false;
-      }
-
-      function handleDragEnter() {
-        this.classList.add('over');
-      }
-
-      function handleDragLeave() {
-        this.classList.remove('over');
-      }
-
-      function handleDrop(e) {
-        if (e.stopPropagation) e.stopPropagation();
-        if (dragSrcEl !== this) {
-          dragSrcEl.parentNode.removeChild(dragSrcEl);
-          const dropHTML = e.dataTransfer.getData('text/html');
-          this.insertAdjacentHTML('beforebegin', dropHTML);
-          const droppedElem = this.previousSibling;
-          addDnDHandlers(droppedElem);
-        }
-        this.classList.remove('over');
-        updateOrder();
-        return false;
-      }
-
-      function handleDragEnd() {
-        this.style.opacity = '1';
-        items().forEach(item => item.classList.remove('over'));
-      }
-
-      function addDnDHandlers(elem) {
-        elem.addEventListener('dragstart', handleDragStart, false);
-        elem.addEventListener('dragenter', handleDragEnter, false);
-        elem.addEventListener('dragover',  handleDragOver,  false);
-        elem.addEventListener('dragleave', handleDragLeave, false);
-        elem.addEventListener('drop',      handleDrop,      false);
-        elem.addEventListener('dragend',   handleDragEnd,   false);
-      }
-
-      function items() {
-        return list.querySelectorAll('li');
-      }
-
-      function updateOrder() {
-        const current = Array.from(items()).map(el => el.dataset.value);
-        hiddenInput.value = current.join(',');
-      }
-
-      // Initialize: attach handlers to each <li>
-      items().forEach(item => addDnDHandlers(item));
-
-      // On first load, write the initial order into the hidden field
-      updateOrder();
-    });
-  })();
-</script>
