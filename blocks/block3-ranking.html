@@ -8,11 +8,6 @@
   </p>
 
   <ul id="rankingList" class="ranking-list">
-    <!-- 
-      Each <li> must have a data-value (e.g. "v1", "v2", …). 
-      Make sure to set draggable="true" on each one. 
-      Replace “Vignette 1: …” with your real vignette text. 
-    -->
     <li data-value="v1" draggable="true">
       <strong>Vignette 1:</strong> Lorem ipsum dolor sit amet, consectetur adipiscing elit…
     </li>
@@ -25,12 +20,83 @@
     <li data-value="v4" draggable="true">
       <strong>Vignette 4:</strong> Duis aute irure dolor in reprehenderit in voluptate velit esse cillum…
     </li>
-    <!-- Add/remove <li> items as needed. Just keep draggable="true" and data-value. -->
+    <!-- Add or remove <li> items as needed. Just keep draggable="true" and data-value. -->
   </ul>
 
   <!-- This hidden input will contain the final order as “v2,v1,v4,v3”, etc. -->
   <input type="hidden" name="vignetteRanking" id="vignetteRanking">
 </section>
 
-<!-- Include the drag-and-drop logic (see js/block3-ranking.js) -->
-<script src="../js/block3-ranking.js"></script>
+<script>
+  (function() {
+    document.addEventListener('DOMContentLoaded', () => {
+      const list = document.getElementById('rankingList');
+      const hiddenInput = document.getElementById('vignetteRanking');
+      let dragSrcEl = null;
+
+      function handleDragStart(e) {
+        dragSrcEl = this;
+        this.style.opacity = '0.4';
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/html', this.outerHTML);
+      }
+
+      function handleDragOver(e) {
+        if (e.preventDefault) e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        return false;
+      }
+
+      function handleDragEnter() {
+        this.classList.add('over');
+      }
+
+      function handleDragLeave() {
+        this.classList.remove('over');
+      }
+
+      function handleDrop(e) {
+        if (e.stopPropagation) e.stopPropagation();
+        if (dragSrcEl !== this) {
+          dragSrcEl.parentNode.removeChild(dragSrcEl);
+          const dropHTML = e.dataTransfer.getData('text/html');
+          this.insertAdjacentHTML('beforebegin', dropHTML);
+          const droppedElem = this.previousSibling;
+          addDnDHandlers(droppedElem);
+        }
+        this.classList.remove('over');
+        updateOrder();
+        return false;
+      }
+
+      function handleDragEnd() {
+        this.style.opacity = '1';
+        items().forEach(item => item.classList.remove('over'));
+      }
+
+      function addDnDHandlers(elem) {
+        elem.addEventListener('dragstart', handleDragStart, false);
+        elem.addEventListener('dragenter', handleDragEnter, false);
+        elem.addEventListener('dragover',  handleDragOver,  false);
+        elem.addEventListener('dragleave', handleDragLeave, false);
+        elem.addEventListener('drop',      handleDrop,      false);
+        elem.addEventListener('dragend',   handleDragEnd,   false);
+      }
+
+      function items() {
+        return list.querySelectorAll('li');
+      }
+
+      function updateOrder() {
+        const current = Array.from(items()).map(el => el.dataset.value);
+        hiddenInput.value = current.join(',');
+      }
+
+      // Initialize: attach handlers to each <li>
+      items().forEach(item => addDnDHandlers(item));
+
+      // On first load, write the initial order into the hidden field
+      updateOrder();
+    });
+  })();
+</script>
