@@ -1,68 +1,118 @@
-<!-- Block 3: Vignette Ranking via Text Inputs -->
+<!-- blocks/block3‐ranking.html -->
 <section class="survey-block active" id="block3" data-type="ranking">
-  <h2>Block 3 &ndash; Vignette Ranking</h2>
+  <h2>Block 3 – Vignette Ranking</h2>
   <p class="prompt">
     Please assign a unique rank to each vignette (1 = most necessary, 2 = second most, etc.). 
     Type a number (1–4) in the box next to each statement. Do not repeat ranks.
   </p>
 
+  <!-- Inline CSS just for Block 3 to flag duplicates -->
+  <style>
+    /* If an input has duplicate value, give it a red border + background */
+    #block3 .rank-input.duplicate {
+      border-color: #e74c3c !important;
+      background-color: #fdecea !important;
+    }
+  </style>
+
   <div class="ranking-item">
     <label for="rank_v1">
       <strong>Vignette 1:</strong> Lorem ipsum dolor sit amet, consectetur adipiscing elit…
     </label>
-    <input 
-      type="number" 
-      name="rank_v1" 
-      id="rank_v1" 
-      class="rank-input" 
-      min="1" 
-      max="4" 
-      required 
-      placeholder="1–4" />
+    <input
+      type="number"
+      name="rank_v1"
+      id="rank_v1"
+      class="rank-input"
+      min="1" max="4"
+      required
+      placeholder="1–4"
+    />
   </div>
 
   <div class="ranking-item">
     <label for="rank_v2">
       <strong>Vignette 2:</strong> Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua…
     </label>
-    <input 
-      type="number" 
-      name="rank_v2" 
-      id="rank_v2" 
-      class="rank-input" 
-      min="1" 
-      max="4" 
-      required 
-      placeholder="1–4" />
+    <input
+      type="number"
+      name="rank_v2"
+      id="rank_v2"
+      class="rank-input"
+      min="1" max="4"
+      required
+      placeholder="1–4"
+    />
   </div>
 
   <div class="ranking-item">
     <label for="rank_v3">
       <strong>Vignette 3:</strong> Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris…
     </label>
-    <input 
-      type="number" 
-      name="rank_v3" 
-      id="rank_v3" 
-      class="rank-input" 
-      min="1" 
-      max="4" 
-      required 
-      placeholder="1–4" />
+    <input
+      type="number"
+      name="rank_v3"
+      id="rank_v3"
+      class="rank-input"
+      min="1" max="4"
+      required
+      placeholder="1–4"
+    />
   </div>
 
   <div class="ranking-item">
     <label for="rank_v4">
       <strong>Vignette 4:</strong> Duis aute irure dolor in reprehenderit in voluptate velit esse cillum…
     </label>
-    <input 
-      type="number" 
-      name="rank_v4" 
-      id="rank_v4" 
-      class="rank-input" 
-      min="1" 
-      max="4" 
-      required 
-      placeholder="1–4" />
+    <input
+      type="number"
+      name="rank_v4"
+      id="rank_v4"
+      class="rank-input"
+      min="1" max="4"
+      required
+      placeholder="1–4"
+    />
   </div>
+
+  <!-- Inline script to watch for duplicates and add/remove the “.duplicate” class -->
+  <script>
+    (function() {
+      document.addEventListener('DOMContentLoaded', () => {
+        // Grab all four inputs
+        const inputs = Array.from(
+          document.querySelectorAll('#block3 .rank-input')
+        );
+
+        function markDuplicates() {
+          // Build a map from value→array of inputs having that value
+          const valueMap = {};
+          inputs.forEach(input => {
+            const val = input.value.trim();
+            if (val === '') return; // skip empty
+            if (!valueMap[val]) valueMap[val] = [];
+            valueMap[val].push(input);
+          });
+
+          // First, clear any existing “duplicate” class
+          inputs.forEach(i => i.classList.remove('duplicate'));
+
+          // Now, for each value that appears ≥2 times, add .duplicate to those inputs
+          Object.values(valueMap).forEach(arr => {
+            if (arr.length > 1) {
+              arr.forEach(i => i.classList.add('duplicate'));
+            }
+          });
+        }
+
+        // Attach an “input” event listener to each of the four rank boxes
+        inputs.forEach(i => {
+          i.addEventListener('input', markDuplicates);
+        });
+
+        // (Optional) run once on load to catch pre‐filled duplicates
+        markDuplicates();
+      });
+    })();
+  </script>
 </section>
