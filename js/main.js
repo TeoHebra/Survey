@@ -1,3 +1,5 @@
+// File: js/main.js
+
 const blockFiles = [
   'blocks/block0-intro.html',
   'blocks/block1-open.html',
@@ -17,24 +19,32 @@ container.prepend(progressBar);
 let currentIndex = 0;
 
 async function loadBlock(index) {
-  const res = await fetch(blockFiles[index]);
-  const html = await res.text();
-  container.querySelectorAll('.survey-block').forEach(b => b.remove());
-  container.insertAdjacentHTML('beforeend', html);
-  const block = container.querySelector('.survey-block');
-  block.classList.add('active');
-  bindNavigation(block);
-  updateProgress();
-}
+  // 1. fetch the HTML for this block
+  const resp = await fetch(blockFiles[index]);
+  const html = await resp.text();
 
-function updateProgress() {
-  const percent = ((currentIndex) / (blockFiles.length)) * 100;
-  progressBar.firstElementChild.style.width = percent + '%';
-}
+  // 2. inject it into the DOM
+  container.innerHTML = html;
 
-function bindNavigation(block) {
-  const nextBtn = block.querySelector('.next-btn');
-  const prevBtn = block.querySelector('.prev-btn');
+  // 3. Any <script> tags in that HTML were inert—re-create them so they execute:
+  const inertScripts = container.querySelectorAll('script');
+  inertScripts.forEach(oldScript => {
+    const newScript = document.createElement('script');
+    if (oldScript.src) {
+      newScript.src = oldScript.src;
+      if (oldScript.defer)  newScript.defer = true;
+      if (oldScript.type)   newScript.type  = oldScript.type;
+      if (oldScript.async)  newScript.async = true;
+    } else {
+      newScript.textContent = oldScript.textContent;
+    }
+    oldScript.replaceWith(newScript);
+  });
+
+  // 4. (Re-)bind your “Back” and “Next” buttons in the newly inserted block:
+  const nextBtn = container.querySelector('.next-btn');
+  const prevBtn = container.querySelector('.prev-btn');
+
   if (nextBtn) {
     nextBtn.addEventListener('click', () => {
       if (currentIndex < blockFiles.length - 1) {
@@ -51,8 +61,11 @@ function bindNavigation(block) {
       }
     });
   }
+
+  // 5. Update progress bar width (for example)
+  const progressInner = progressBar.querySelector('div');
+  progressInner.style.width = ((index + 1) / blockFiles.length) * 100 + '%';
 }
 
-// Start survey
+// Kick things off:
 loadBlock(currentIndex);
-
