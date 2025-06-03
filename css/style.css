@@ -168,34 +168,53 @@ fieldset.likert-7 input[type="radio"]:checked + label::after {
 }
 
 /* --------------------------------------------- */
-/* Block 3: Clickable‐to‐Rank (Vignette Ranking) */
+/* Block 3: Click‐to‐Rank (Vignette Ranking)      */
 /* --------------------------------------------- */
 
-/* Base styling for each list item */
-#block3 .ranking-list li {
-  list-style: none;
-  padding: 0.6rem;
+/* Outer container holding both lists */
+#block3 .ranking-container {
   border: 1px solid #ccc;
   border-radius: 4px;
-  margin-bottom: 0.4rem;
-  cursor: pointer;
-  background: #fafafa;
-  transition: background-color 0.2s ease, transform 0.2s ease;
-  position: relative;
+  overflow: hidden; /* so the two ULs appear as one box */
+}
+
+/* Style both ULs exactly the same, remove default margin/padding */
+#block3 .ranking-container .ranking-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Each <li> in either rankedList or unrankedList */
+#block3 .ranking-container .ranking-list li {
   display: flex;
   align-items: center;
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid #ccc;
+  background: #fafafa;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  position: relative;
 }
-/* Hover effect to show it’s clickable */
-#block3 .ranking-list li:hover {
+
+/* Remove the final bottom border on the very last item (in unrankedList or rankedList) */
+#block3 .ranking-container .ranking-list li:last-child {
+  border-bottom: none;
+}
+
+/* Hover effect for any item that is NOT yet ranked */
+#block3 .ranking-container .ranking-list li:not(.ranked):hover {
   background: #f0f8ff;
 }
-/* Once clicked, mark as .ranked to disable hover & slightly fade */
-#block3 .ranking-list li.ranked {
+
+/* Once an item has been clicked (ranked), give it a different bg & disable hover */
+#block3 .ranking-container .ranking-list li.ranked {
   background: #e0f7fa;
   cursor: default;
   opacity: 0.9;
 }
-/* Badge to show the rank number (1,2,…) */
+
+/* The little circle that shows “1,” “2,” etc. */
 #block3 .rank-badge {
   display: inline-block;
   width: 24px;
@@ -206,7 +225,7 @@ fieldset.likert-7 input[type="radio"]:checked + label::after {
   color: #fff;
   font-weight: bold;
   text-align: center;
-  margin-right: 0.5rem;
+  margin-right: 0.75rem;
   flex-shrink: 0;
   font-size: 0.9rem;
   user-select: none;
