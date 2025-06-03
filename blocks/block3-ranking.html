@@ -1,119 +1,75 @@
-<!-- blocks/block3-ranking.html -->
+<!-- Block 3 – Numeric-Input Ranking -->
 <section class="survey-block" id="block3" data-type="ranking">
   <h2>Block 3 – Vignette Ranking</h2>
   <p class="prompt">
-    Drag and drop to rank the following vignettes from most to least novel:
+    Type a unique rank (1 – 4) next to each vignette (1 = most novel, 4 = least novel):
   </p>
 
-  <ul id="rankingList" class="ranking-list">
-    <!-- Make sure each <li> has draggable="true" and a unique data-value -->
-    <li class="ranking-item" data-value="v1" draggable="true">
-      <span class="handle">≡</span>
-      Vignette 1: Lorem ipsum dolor sit amet…
-    </li>
-    <li class="ranking-item" data-value="v2" draggable="true">
-      <span class="handle">≡</span>
-      Vignette 2: Consectetur adipiscing elit…
-    </li>
-    <li class="ranking-item" data-value="v3" draggable="true">
-      <span class="handle">≡</span>
-      Vignette 3: Sed do eiusmod tempor incididunt…
-    </li>
-    <li class="ranking-item" data-value="v4" draggable="true">
-      <span class="handle">≡</span>
-      Vignette 4: Ut labore et dolore magna aliqua…
-    </li>
-  </ul>
+  <div class="ranking-grid-num">
+    <!-- Vignette 1 -->
+    <div class="ranking-row-num">
+      <div class="item-text-num">
+        <strong>Vignette 1:</strong> Lorem ipsum dolor sit amet…
+      </div>
+      <div class="item-control-num">
+        <input type="number"
+               name="rank_v1"
+               class="ranking-input"
+               min="1" max="4"
+               placeholder="1–4"
+               required>
+      </div>
+    </div>
 
-  <!-- Hidden field gets filled with “v3,v1,v4,v2” (for example) on each reorder -->
-  <input type="hidden" id="rankingOrder" name="rankingOrder" value="">
+    <!-- Vignette 2 -->
+    <div class="ranking-row-num">
+      <div class="item-text-num">
+        <strong>Vignette 2:</strong> Consectetur adipiscing elit…
+      </div>
+      <div class="item-control-num">
+        <input type="number"
+               name="rank_v2"
+               class="ranking-input"
+               min="1" max="4"
+               placeholder="1–4"
+               required>
+      </div>
+    </div>
+
+    <!-- Vignette 3 -->
+    <div class="ranking-row-num">
+      <div class="item-text-num">
+        <strong>Vignette 3:</strong> Sed do eiusmod tempor incididunt…
+      </div>
+      <div class="item-control-num">
+        <input type="number"
+               name="rank_v3"
+               class="ranking-input"
+               min="1" max="4"
+               placeholder="1–4"
+               required>
+      </div>
+    </div>
+
+    <!-- Vignette 4 -->
+    <div class="ranking-row-num">
+      <div class="item-text-num">
+        <strong>Vignette 4:</strong> Ut labore et dolore magna aliqua…
+      </div>
+      <div class="item-control-num">
+        <input type="number"
+               name="rank_v4"
+               class="ranking-input"
+               min="1" max="4"
+               placeholder="1–4"
+               required>
+      </div>
+    </div>
+  </div>
+
+  <div class="error-msg" id="rankError" style="display: none; color: #b00; margin-top: 0.5rem;">
+    Please enter every rank (1–4) once; no duplicates allowed.
+  </div>
 
   <button id="nextBtn" class="btn" disabled>Next</button>
 </section>
-
-<!-- Add the following <script> block at the bottom of the same HTML file (or in your own .js file) -->
-<script>
-  (() => {
-    const list = document.getElementById('rankingList');
-    const nextBtn = document.getElementById('nextBtn');
-    const hiddenInput = document.getElementById('rankingOrder');
-
-    let draggedItem = null;
-
-    // Utility: after every reorder, read the new order of data-values and
-    // write them into the hidden input; enable “Next” only if we have exactly 4 items
-    function updateOrder() {
-      const allItems = Array.from(list.querySelectorAll('.ranking-item'));
-      const order = allItems.map(li => li.dataset.value);
-      hiddenInput.value = order.join(',');
-      // Only enable “Next” when all four are present
-      nextBtn.disabled = (order.length !== 4);
-    }
-
-    // When dragging starts, mark the element
-    list.addEventListener('dragstart', e => {
-      const target = e.target;
-      if (target && target.classList.contains('ranking-item')) {
-        draggedItem = target;
-        target.classList.add('dragging');
-        // Required for some browsers to show “move” cursor
-        e.dataTransfer.effectAllowed = 'move';
-      }
-    });
-
-    // When dragging ends, remove the highlight and update order
-    list.addEventListener('dragend', e => {
-      const target = e.target;
-      if (target && target.classList.contains('ranking-item')) {
-        target.classList.remove('dragging');
-        draggedItem = null;
-        updateOrder();
-      }
-    });
-
-    // While dragging over the list, figure out which element is just below the cursor
-    list.addEventListener('dragover', e => {
-      e.preventDefault(); // allow drop
-      const afterElement = getDragAfterElement(list, e.clientY);
-      if (!draggedItem) return;
-
-      if (afterElement == null) {
-        // If there is no “next” element, append draggedItem to the end
-        list.appendChild(draggedItem);
-      } else {
-        // Otherwise insert before the element that is “below” the cursor
-        list.insertBefore(draggedItem, afterElement);
-      }
-    });
-
-    // This helper finds the closest .ranking-item (not being dragged) just below y-coordinate
-    function getDragAfterElement(container, y) {
-      // All items except the one being dragged
-      const draggableElements = [...container.querySelectorAll('.ranking-item:not(.dragging)')];
-
-      // We look for the item whose midpoint is just below the cursor
-      return draggableElements.reduce((closest, child) => {
-        const box = child.getBoundingClientRect();
-        const offset = y - box.top - box.height / 2;
-        // offset < 0 means cursor is “above” the midpoint of this child
-        // We want the one with the smallest negative offset (i.e. closest above)
-        if (offset < 0 && offset > closest.offset) {
-          return { offset: offset, element: child };
-        } else {
-          return closest;
-        }
-      }, { offset: Number.NEGATIVE_INFINITY }).element;
-    }
-
-    // Initial call in case you want to pre-populate or check defaults
-    updateOrder();
-
-    // Optional: Listen for “Next” click and do something with the value
-    nextBtn.addEventListener('click', () => {
-      // At this point hiddenInput.value is something like “v2,v1,v4,v3”
-      // You can grab hiddenInput.value or read each select if you prefer.
-      console.log('Final ranking =', hiddenInput.value);
-      // …then navigate to the next block or post the form, etc.
-    });
-  })();
-</script>
