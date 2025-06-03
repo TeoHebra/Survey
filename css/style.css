@@ -167,195 +167,59 @@ fieldset.likert-7 input[type="radio"]:checked + label::after {
   top: calc(var(--bullet-size) / 2 + 3px);
 }
 
-/* === Ranking‐list Drag-and-Drop Aesthetic === */
+/* ========================================= */
+/* === BLOCK 3: Vignette Ranking Styles  === */
+/* ========================================= */
 
-#rankingList {
-  padding: 0;                 /* remove default UL padding */
-  margin: 0;                  /* remove default UL margin */
-}
-
-.ranking-list li {
-  position: relative;
-  user-select: none;          /* disable text selection while dragging */
-  cursor: grab;               /* “hand” icon */
-  transition: background 0.2s ease;
-}
-
-/* When the user is dragging an item, fade it out slightly */
-.ranking-list li.dragging {
-  opacity: 0.5;
-}
-
-/* Add a subtle hover state */
-.ranking-list li:hover {
-  background: #f0f8ff;       /* very light blue */
-}
-
-/* Add a small “handle” icon on the left of each item (optional) */
-/* If you prefer no icon, just skip this block. */
-.ranking-list li::before {
-  content: '≡';               /* “hamburger” lines as a drag handle */
-  font-size: 1rem;
-  position: absolute;
-  left: 0.6rem;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #999;
-  cursor: grab;
-}
-
-/* Add padding so text doesn’t overlap the handle icon */
-.ranking-list li {
-  padding: 0.6rem 1rem 0.6rem 2rem; 
-}
-
-/* Prevent the horizontal line from showing under the item’s text */
-.ranking-list li::after {
-  content: '';
-  display: block;
-  clear: both;
-}
-
-/* ================== Ranking List Enhancements ================== */
-
-/* 1) Wrapper for scrollable list */
+/* 1) Container for a scrollable list of items */
 .ranking-wrapper {
-  max-height: 300px;       /* adjust as needed */
-  overflow-y: auto;        /* scroll if too tall */
-  padding-right: 0.5rem;   /* space for scrollbar */
-  margin-bottom: 1rem;
+  max-height: 300px;         /* Adjust if you have more/fewer vignettes */
+  overflow-y: auto;          /* Enable vertical scrolling when needed */
   border: 1px solid #ddd;
   border-radius: 6px;
+  margin-bottom: 1rem;
+  padding-right: 0.5rem;     /* Leave room for the scrollbar */
 }
 
-/* 2) Each <li> becomes a flex row: [rank-badge] [text] [drag handle] */
+/* 2) Reset and remove default UL styling */
 .ranking-list {
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
+/* 3) Each <li> is a flex‐row: [select] [text] [drag handle] */
 .ranking-list li {
   display: flex;
   align-items: center;
   padding: 0.5rem 0.75rem;
   border-bottom: 1px solid #eee;
   background: #fff;
-  cursor: pointer;                 /* for click-to-rank */
-  user-select: none;               /* avoid text selection during drag */
   position: relative;
-  transition: background 0.15s ease;
+  user-select: none;          /* Prevent text selection during drag */
+  transition: background 0.15s ease, opacity 0.15s ease;
 }
 
+/* 4) Remove the bottom border on the very last item */
 .ranking-list li:last-child {
   border-bottom: none;
 }
 
-/* 3) Hover state */
+/* 5) Hover state for better affordance */
 .ranking-list li:hover {
-  background: #f8faff;             /* very light blue */
+  background: #f8faff;        /* Very pale blue */
 }
 
-/* 4) “Dragging” state (lower opacity) */
+/* 6) “Dragging” state (sits at 40% opacity) */
 .ranking-list li.dragging {
   opacity: 0.4;
 }
 
-/* 5) Rank badge on the left */
-.ranking-list .rank-number {
-  display: inline-block;
-  flex: 0 0 1.5rem;               /* fixed width for numbers */
-  text-align: center;
-  font-weight: bold;
-  color: var(--primary-color);
-  margin-right: 0.75rem;
-  min-width: 1.5rem;
-}
-
-/* 6) Vignette text stretches to fill remaining space */
-.ranking-list .item-text {
-  flex: 1 1 auto;
-  word-break: break-word;
-}
-
-/* 7) Drag-handle on the right (six dots) */
-.ranking-list .drag-handle {
-  flex: 0 0 auto;
-  font-size: 1.2rem;
-  color: #999;
-  margin-left: 0.75rem;
-  cursor: grab;                    /* user sees “grab” cursor */
-}
-
-/* 8) While dragging, change cursor into “grabbing” */
-.ranking-list li:active .drag-handle {
-  cursor: grabbing;
-}
-
-/* 9) Hide default list padding/spacing */
-.ranking-list {
-  padding-left: 0;
-}
-
-/* 10) Prevent the horizontal rule from splitting the text on scroll (if any) */
-.ranking-list li::after {
-  content: "";
-  display: block;
-  clear: both;
-}
-
-/* ============================ */
-/* === Block 3 Ranking CSS === */
-/* ============================ */
-
-/* 1) The wrapping container for scrolling */
-.ranking-wrapper {
-  max-height: 300px;       /* adjust if you have more/less items */
-  overflow-y: auto;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  margin-bottom: 1rem;
-  padding-right: 0.5rem;   /* space for native scrollbar */
-}
-
-/* 2) Reset list‐styling on the UL */
-.ranking-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-/* 3) Each <li> is a flex row: [select] [text] [handle] */
-.ranking-list li {
-  display: flex;
-  align-items: center;
-  padding: 0.5rem 0.75rem;
-  border-bottom: 1px solid #eee;
-  background: #fff;
-  position: relative;
-  user-select: none;
-}
-
-/* Remove border under last item */
-.ranking-list li:last-child {
-  border-bottom: none;
-}
-
-/* 4) Hover & dragging states */
-.ranking-list li:hover {
-  background: #f8faff;           /* very pale blue on hover */
-}
-
-.ranking-list li.dragging {
-  opacity: 0.4;                  /* fade while dragging */
-}
-
-/* 5) Style the <select> dropdown for rank */
+/* 7) Dropdown for selecting rank (fixed 3rem wide) */
 .ranking-list .order-select {
-  flex: 0 0 3rem;                /* fixed width for dropdown */
+  flex: 0 0 3rem;             /* Sticks at exactly 3 rem wide */
   margin-right: 0.75rem;
 }
-
 .ranking-list .order-select select {
   width: 100%;
   padding: 0.2rem 0.3rem;
@@ -366,34 +230,38 @@ fieldset.likert-7 input[type="radio"]:checked + label::after {
   cursor: pointer;
 }
 
-/* 6) The actual vignette text (wraps if long) */
+/* 8) Vignette text takes up all remaining space */
 .ranking-list .item-text {
   flex: 1 1 auto;
-  word-break: break-word;
+  word-break: break-word;     /* Wrap long text onto multiple lines */
 }
 
-/* 7) Drag handle “⋮⋮” on the right */
+/* 9) Drag‐handle “⋮⋮” on the right side */
 .ranking-list .drag-handle {
   flex: 0 0 auto;
   font-size: 1.4rem;
   color: #888;
   margin-left: 0.75rem;
-  cursor: grab;                  /* “hand” icon */
+  cursor: grab;               /* Indicates draggable area */
   user-select: none;
 }
 
-/* While the user is holding the handle, change to grabbing */
+/* 10) While you hold the handle, switch to “grabbing” cursor */
 .ranking-list li:active .drag-handle {
   cursor: grabbing;
 }
 
-/* 8) Prevent the horizontal rule from splitting text on scroll */
+/* 11) Make sure there’s no stray list markers/padding */
+.ranking-list {
+  padding-left: 0;
+}
+
+/* 12) Prevent any odd horizontal lines from splitting text */
 .ranking-list li::after {
   content: "";
   display: block;
   clear: both;
 }
 
-/* 9) Disable the “Next” button until user has interacted */
-/*    (that’s already handled in the inline JS—no CSS needed here) */
-
+/* 13) Disable Next button styling (JS handles the disabled state) */
+/*     (No extra CSS required here) */
