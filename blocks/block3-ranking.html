@@ -1,86 +1,32 @@
+<!-- Block 3 – Drag-and-Drop Ranking -->
 <section class="survey-block" id="block3" data-type="ranking">
   <h2>Block 3 – Vignette Ranking</h2>
   <p class="prompt">
-    Click on each vignette in the order you feel is most to least novel. The first click becomes rank 1 (it moves to the top), the second click becomes rank 2 (just below rank 1), etc. When you’ve clicked all items, the “Next” button will enable and your final ranking string will be stored in a hidden field.
+    Drag and drop to rank the following vignettes from most to least novel:
   </p>
 
-  <!-- This container “glues” the two ULs together visually -->
-  <div class="ranking-container">
-    <!-- 1) Ranked List (initially empty) -->
-    <ul id="rankedList" class="ranking-list">
-      <!-- clicked items land here -->
-    </ul>
+  <ul id="rankingList" class="ranking-list">
+    <!-- Replace the “Vignette X” text with your actual vignette content. -->
+    <li class="ranking-item" data-value="v1" draggable="true">
+      <span class="handle">≡</span>
+      Vignette 1: Lorem ipsum dolor sit amet…
+    </li>
+    <li class="ranking-item" data-value="v2" draggable="true">
+      <span class="handle">≡</span>
+      Vignette 2: Consectetur adipiscing elit…
+    </li>
+    <li class="ranking-item" data-value="v3" draggable="true">
+      <span class="handle">≡</span>
+      Vignette 3: Sed do eiusmod tempor incididunt…
+    </li>
+    <li class="ranking-item" data-value="v4" draggable="true">
+      <span class="handle">≡</span>
+      Vignette 4: Ut labore et dolore magna aliqua…
+    </li>
+  </ul>
 
-    <!-- 2) Unranked List (starts with all 5 vignettes) -->
-    <ul id="unrankedList" class="ranking-list">
-      <li data-value="v1">
-        <strong>Vignette 1:</strong> Lorem ipsum dolor sit amet, consectetur adipiscing elit…
-      </li>
-      <li data-value="v2">
-        <strong>Vignette 2:</strong> Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris…
-      </li>
-      <li data-value="v3">
-        <strong>Vignette 3:</strong> Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua…
-      </li>
-      <li data-value="v4">
-        <strong>Vignette 4:</strong> Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi…
-      </li>
-      <li data-value="v5">
-        <strong>Vignette 5:</strong> Duis aute irure dolor in reprehenderit in voluptate velit esse cillum…
-      </li>
-    </ul>
-  </div>
+  <!-- Hidden field that your JS can populate with the final order (e.g., "v3,v1,v4,v2") -->
+  <input type="hidden" id="rankingOrder" name="rankingOrder" value="">
 
-  <!-- Hidden input that will be filled in once all items are ranked -->
-  <input type="hidden" name="vignetteRanking" id="vignetteRanking" value="">
-
-  <div class="navigation">
-    <button class="prev-btn">Back</button>
-    <button class="next-btn" id="submitRanking" disabled>Next</button>
-  </div>
+  <button id="nextBtn" class="btn" disabled>Next</button>
 </section>
-
-<script>
-  (function() {
-    const rankedList = document.getElementById('rankedList');
-    const unrankedList = document.getElementById('unrankedList');
-    const hiddenInput = document.getElementById('vignetteRanking');
-    const nextBtn = document.getElementById('submitRanking');
-
-    // Grab all <li> nodes from unrankedList
-    const allItems = Array.from(unrankedList.children);
-    const total = allItems.length;
-    let nextRank = 1;
-
-    allItems.forEach(item => {
-      item.addEventListener('click', function() {
-        // If already clicked (has data-rank), do nothing
-        if (this.dataset.rank) return;
-
-        // 1) Assign a rank number
-        this.dataset.rank = nextRank;
-
-        // 2) Create and prepend a “badge” showing the rank
-        const badge = document.createElement('span');
-        badge.className = 'rank-badge';
-        badge.textContent = nextRank;
-        this.prepend(badge);
-
-        // 3) Move this <li> from unrankedList to rankedList
-        unrankedList.removeChild(this);
-        rankedList.appendChild(this);
-        this.classList.add('ranked'); // mark it so hover no longer applies
-
-        nextRank++;
-
-        // 4) If all items have been clicked, build the final comma-string
-        if (nextRank > total) {
-          // The rankedList is already in rank order (1→N), so just read data-value in that order:
-          const values = Array.from(rankedList.children).map(li => li.dataset.value);
-          hiddenInput.value = values.join(',');
-          nextBtn.disabled = false;
-        }
-      });
-    });
-  })();
-</script>
