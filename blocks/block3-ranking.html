@@ -1,14 +1,14 @@
-<!-- Block 3: Vignette Ranking (click‐to‐rank) -->
+<!-- blocks/block3‐ranking.html -->
 <section class="survey-block" id="block3" data-type="ranking">
   <h2>Block 3 – Vignette Ranking</h2>
   <p class="prompt">
-    Click each vignette in the order you feel is most to least novel. The first click marks rank 1, the next click marks rank 2, and so on.
+    Click on each vignette in the order you feel is most to least novel. The first click becomes rank 1 (moved to the top), the second click becomes rank 2 (just below rank 1), etc.
   </p>
 
   <ul id="rankingList" class="ranking-list">
-    <!--
-      Each <li> needs a data-value attribute (e.g. "v1", "v2", …).
-      Replace the placeholder text below (“Vignette 1: …”) with your actual vignette content.
+    <!-- 
+      Give each <li> a unique data-value (e.g. “v1”, “v2”, …). 
+      Replace the placeholder text below with your actual vignette copy. 
     -->
     <li data-value="v1">
       <strong>Vignette 1:</strong> Lorem ipsum dolor sit amet, consectetur adipiscing elit…
@@ -27,7 +27,7 @@
     </li>
   </ul>
 
-  <!-- Hidden input that will store the final ranking as a comma‐separated string -->
+  <!-- Hidden input to capture final ranking order as “v1,v3,v2,…”. -->
   <input type="hidden" name="vignetteRanking" id="vignetteRanking">
 
   <div class="navigation">
@@ -47,32 +47,44 @@
 
     items.forEach(item => {
       item.addEventListener('click', function() {
-        // If this <li> is already assigned a rank, do nothing
+        // If already ranked, do nothing
         if (this.dataset.rank) return;
 
-        // Assign the next available rank
+        // 1) Assign data-rank:
         this.dataset.rank = nextRank;
-        // Create a badge <span> showing the rank number
+
+        // 2) Create badge <span> with the rank number:
         const badge = document.createElement('span');
         badge.className = 'rank-badge';
         badge.textContent = nextRank;
-        // Prepend the badge to the <li> (so it appears before the text)
+        // Prepend the badge so it appears before the text
         this.prepend(badge);
-        // Mark as “ranked” (for CSS styling)
+
+        // 3) Move this <li> into its “ranked” position:
+        //    Find the first unranked <li> (if any) to insert before.
+        //    If none, just append to the end of the <ul>.
+        const firstUnranked = listEl.querySelector('li:not([data-rank])');
+        if (firstUnranked) {
+          listEl.insertBefore(this, firstUnranked);
+        } else {
+          listEl.appendChild(this);
+        }
+        // Add a class so ranked items look different
         this.classList.add('ranked');
 
         nextRank++;
 
-        // Once every item has been clicked (i.e. nextRank > totalItems),
-        // build the final order and enable the “Next” button.
+        // 4) If all items have been clicked, build the final string and enable “Next”:
         if (nextRank > totalItems) {
-          // Sort the items array by data-rank (1,2,3, …)
+          // Sort by data-rank ascending
           const ordered = items
-            .slice() // clone
+            .slice()
             .sort((a, b) => parseInt(a.dataset.rank, 10) - parseInt(b.dataset.rank, 10));
-          // Extract the data-value attributes in sorted order
+
+          // Extract the data-value from each in rank order
           const values = ordered.map(el => el.dataset.value);
           hiddenInput.value = values.join(',');
+
           nextBtn.disabled = false;
         }
       });
