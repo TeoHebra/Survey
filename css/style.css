@@ -171,7 +171,7 @@ fieldset.likert-7 input[type="radio"]:checked + label::after {
 /* Block 3: Clickable‐to‐Rank (Vignette Ranking) */
 /* --------------------------------------------- */
 
-/* Remove any drag cursor—make each <li> clearly clickable */
+/* Base styling for each list item */
 #block3 .ranking-list li {
   list-style: none;
   padding: 0.6rem;
@@ -180,19 +180,22 @@ fieldset.likert-7 input[type="radio"]:checked + label::after {
   margin-bottom: 0.4rem;
   cursor: pointer;
   background: #fafafa;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.2s ease, transform 0.2s ease;
   position: relative;
+  display: flex;
+  align-items: center;
 }
-/* Hover state to indicate “clickable” */
+/* Hover effect to show it’s clickable */
 #block3 .ranking-list li:hover {
   background: #f0f8ff;
 }
-/* Once clicked (ranked), change background and disable hover */
+/* Once clicked, mark as .ranked to disable hover & slightly fade */
 #block3 .ranking-list li.ranked {
   background: #e0f7fa;
   cursor: default;
+  opacity: 0.9;
 }
-/* “Badge” for showing the rank number (1, 2, …) */
+/* Badge to show the rank number (1,2,…) */
 #block3 .rank-badge {
   display: inline-block;
   width: 24px;
@@ -205,5 +208,6 @@ fieldset.likert-7 input[type="radio"]:checked + label::after {
   text-align: center;
   margin-right: 0.5rem;
   flex-shrink: 0;
+  font-size: 0.9rem;
+  user-select: none;
 }
-
