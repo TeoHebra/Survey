@@ -1,97 +1,81 @@
-<!-- Block 3: Vignette Ranking -->
+<!-- Block 3: Vignette Ranking (click‐to‐rank) -->
 <section class="survey-block" id="block3" data-type="ranking">
   <h2>Block 3 – Vignette Ranking</h2>
   <p class="prompt">
-    Drag and drop to rank the following vignettes from most to least novel:
+    Click each vignette in the order you feel is most to least novel. The first click marks rank 1, the next click marks rank 2, and so on.
   </p>
 
-  <!-- 
-    Populate each <li> with your actual vignette text. 
-    data-value="v1" etc. will be used to capture the final order.
-  -->
   <ul id="rankingList" class="ranking-list">
-    <li data-value="v1" draggable="true">
-      Vignette 1: Lorem ipsum dolor sit amet…
+    <!--
+      Each <li> needs a data-value attribute (e.g. "v1", "v2", …).
+      Replace the placeholder text below (“Vignette 1: …”) with your actual vignette content.
+    -->
+    <li data-value="v1">
+      <strong>Vignette 1:</strong> Lorem ipsum dolor sit amet, consectetur adipiscing elit…
     </li>
-    <li data-value="v2" draggable="true">
-      Vignette 2: Consectetur adipiscing elit…
+    <li data-value="v2">
+      <strong>Vignette 2:</strong> Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris…
     </li>
-    <li data-value="v3" draggable="true">
-      Vignette 3: Sed do eiusmod tempor…
+    <li data-value="v3">
+      <strong>Vignette 3:</strong> Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua…
     </li>
-    <li data-value="v4" draggable="true">
-      Vignette 4: Incididunt ut labore et dolore…
+    <li data-value="v4">
+      <strong>Vignette 4:</strong> Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi…
     </li>
-    <li data-value="v5" draggable="true">
-      Vignette 5: Magna aliqua…
+    <li data-value="v5">
+      <strong>Vignette 5:</strong> Duis aute irure dolor in reprehenderit in voluptate velit esse cillum…
     </li>
   </ul>
 
-  <!-- Hidden input to store the final ranking (e.g. "v3,v1,v5,...") -->
+  <!-- Hidden input that will store the final ranking as a comma‐separated string -->
   <input type="hidden" name="vignetteRanking" id="vignetteRanking">
 
   <div class="navigation">
     <button class="prev-btn">Back</button>
-    <!-- Disabled until the user drags/reorders at least once -->
     <button class="next-btn" id="submitRanking" disabled>Next</button>
   </div>
 </section>
 
-<!-- Inline script to wire up the drag‐and‐drop -->
 <script>
   (function() {
-    const list = document.getElementById('rankingList');
+    const listEl = document.getElementById('rankingList');
     const hiddenInput = document.getElementById('vignetteRanking');
-    const nextBtn     = document.getElementById('submitRanking');
-    let dragSrcEl   = null;
+    const nextBtn = document.getElementById('submitRanking');
+    const items = Array.from(listEl.children);
+    let nextRank = 1;
+    const totalItems = items.length;
 
-    function handleDragStart(e) {
-      dragSrcEl = this;
-      this.classList.add('dragging');
-      e.dataTransfer.effectAllowed = 'move';
-      // For Firefox compatibility (it requires setData)
-      e.dataTransfer.setData('text/plain', '');
-    }
+    items.forEach(item => {
+      item.addEventListener('click', function() {
+        // If this <li> is already assigned a rank, do nothing
+        if (this.dataset.rank) return;
 
-    function handleDragOver(e) {
-      e.preventDefault();
-      e.dataTransfer.dropEffect = 'move';
+        // Assign the next available rank
+        this.dataset.rank = nextRank;
+        // Create a badge <span> showing the rank number
+        const badge = document.createElement('span');
+        badge.className = 'rank-badge';
+        badge.textContent = nextRank;
+        // Prepend the badge to the <li> (so it appears before the text)
+        this.prepend(badge);
+        // Mark as “ranked” (for CSS styling)
+        this.classList.add('ranked');
 
-      // Only proceed if we’re over an <li> and it’s not the same as the one being dragged
-      const target = e.target.closest('li');
-      if (!target || target === dragSrcEl) return;
+        nextRank++;
 
-      // Calculate whether we should insert before or after “target”
-      const rect = target.getBoundingClientRect();
-      const halfway = (rect.bottom - rect.top) / 2;
-      const insertionPoint = (e.clientY - rect.top) > halfway
-        ? target.nextElementSibling
-        : target;
-
-      list.insertBefore(dragSrcEl, insertionPoint);
-    }
-
-    function handleDragEnd() {
-      this.classList.remove('dragging');
-      updateHiddenInput();
-    }
-
-    function updateHiddenInput() {
-      // Grab data-values in the new order
-      const values = Array.from(list.children)
-        .map(li => li.getAttribute('data-value'));
-      hiddenInput.value = values.join(',');
-      nextBtn.disabled = false;  // Enable “Next” as soon as there’s a valid order
-    }
-
-    // Attach listeners to each <li>
-    document.querySelectorAll('#rankingList li').forEach(item => {
-      item.addEventListener('dragstart', handleDragStart, false);
-      item.addEventListener('dragover',  handleDragOver,  false);
-      item.addEventListener('dragend',   handleDragEnd,   false);
+        // Once every item has been clicked (i.e. nextRank > totalItems),
+        // build the final order and enable the “Next” button.
+        if (nextRank > totalItems) {
+          // Sort the items array by data-rank (1,2,3, …)
+          const ordered = items
+            .slice() // clone
+            .sort((a, b) => parseInt(a.dataset.rank, 10) - parseInt(b.dataset.rank, 10));
+          // Extract the data-value attributes in sorted order
+          const values = ordered.map(el => el.dataset.value);
+          hiddenInput.value = values.join(',');
+          nextBtn.disabled = false;
+        }
+      });
     });
-
-    // Initialize hidden input on load
-    updateHiddenInput();
   })();
 </script>
