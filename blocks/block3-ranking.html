@@ -2,96 +2,167 @@
 <section class="survey-block" id="block3" data-type="ranking">
   <h2>Block 3 – Vignette Ranking</h2>
   <p class="prompt">
-    Drag and drop to rank the following vignettes from most to least novel:
+    Click on a vignette to assign it the next available rank (1 → 2 → 3 → …).  
+    Once all have a number, you can still drag the little “handle” (⋮⋮) to re‐order and adjust.
   </p>
 
-  <!-- 
-    Populate each <li> with your actual vignette text. 
-    data-value="v1" etc. will be used to capture the final order.
-  -->
-  <ul id="rankingList" class="ranking-list">
-    <li data-value="v1" draggable="true">
-      Vignette 1: Lorem ipsum dolor sit amet…
-    </li>
-    <li data-value="v2" draggable="true">
-      Vignette 2: Consectetur adipiscing elit…
-    </li>
-    <li data-value="v3" draggable="true">
-      Vignette 3: Sed do eiusmod tempor…
-    </li>
-    <li data-value="v4" draggable="true">
-      Vignette 4: Incididunt ut labore et dolore…
-    </li>
-    <li data-value="v5" draggable="true">
-      Vignette 5: Magna aliqua…
-    </li>
-  </ul>
+  <!-- scrollable container for long lists -->
+  <div class="ranking-wrapper">
+    <ul id="rankingList" class="ranking-list">
+      <!--
+        Each <li> must have:
+        • data-value="v#"   (any unique ID you use later for submission)
+        • draggable="true"   (for the drag‐handle to work)
+      -->
+      <li data-value="v1" draggable="true">
+        <span class="rank-number"></span>
+        <span class="item-text">
+          Vignette 1: Lorem ipsum dolor sit amet…
+        </span>
+        <span class="drag-handle" title="Drag to reorder">⋮⋮</span>
+      </li>
+      <li data-value="v2" draggable="true">
+        <span class="rank-number"></span>
+        <span class="item-text">
+          Vignette 2: Consectetur adipiscing elit…
+        </span>
+        <span class="drag-handle" title="Drag to reorder">⋮⋮</span>
+      </li>
+      <li data-value="v3" draggable="true">
+        <span class="rank-number"></span>
+        <span class="item-text">
+          Vignette 3: Sed do eiusmod tempor…
+        </span>
+        <span class="drag-handle" title="Drag to reorder">⋮⋮</span>
+      </li>
+      <li data-value="v4" draggable="true">
+        <span class="rank-number"></span>
+        <span class="item-text">
+          Vignette 4: Incididunt ut labore et dolore…
+        </span>
+        <span class="drag-handle" title="Drag to reorder">⋮⋮</span>
+      </li>
+      <li data-value="v5" draggable="true">
+        <span class="rank-number"></span>
+        <span class="item-text">
+          Vignette 5: Magna aliqua…
+        </span>
+        <span class="drag-handle" title="Drag to reorder">⋮⋮</span>
+      </li>
+    </ul>
+  </div>
 
-  <!-- Hidden input to store the final ranking (e.g. "v3,v1,v5,...") -->
-  <input type="hidden" name="vignetteRanking" id="vignetteRanking">
+  <!-- Hidden input to capture final order as CSV: v3,v1,v5,… -->
+  <input type="hidden" name="vignetteRanking" id="vignetteRanking" value="">
 
   <div class="navigation">
     <button class="prev-btn">Back</button>
-    <!-- Disabled until the user drags/reorders at least once -->
+    <!-- Disabled until every item has a rank assigned -->
     <button class="next-btn" id="submitRanking" disabled>Next</button>
   </div>
 </section>
 
-<!-- Inline script to wire up the drag‐and‐drop -->
+<!-- Inline script for “click to rank” + drag/drop → updates #vignetteRanking -->
 <script>
   (function() {
     const list = document.getElementById('rankingList');
     const hiddenInput = document.getElementById('vignetteRanking');
     const nextBtn     = document.getElementById('submitRanking');
-    let dragSrcEl   = null;
+    let nextRank = 1;
+
+    // 1) CLICK‐TO‐ASSIGN logic
+    list.addEventListener('click', (e) => {
+      const li = e.target.closest('li');
+      if (!li) return;
+      // If this <li> already has a rank, ignore
+      if (li.getAttribute('data-rank')) return;
+
+      // Assign nextRank, then increment
+      li.setAttribute('data-rank', nextRank);
+      nextRank++;
+
+      // After assigning, reorganize list:
+      //   • First come all items with a data-rank (in ascending order of that number)
+      //   • Then come all items without a data-rank (in original order)
+      const rankedItems   = Array.from(list.children)
+        .filter(item => item.hasAttribute('data-rank'))
+        .sort((a, b) => +a.getAttribute('data-rank') - +b.getAttribute('data-rank'));
+
+      const unrankedItems = Array.from(list.children)
+        .filter(item => !item.hasAttribute('data-rank'));
+
+      // Clear and re‐append
+      list.innerHTML = '';
+      rankedItems.forEach(item => list.appendChild(item));
+      unrankedItems.forEach(item => list.appendChild(item));
+
+      // Update the visible “rank‐number” badges
+      updateVisualRanks();
+
+      // If all items are now ranked, enable “Next”
+      if (unrankedItems.length === 0) {
+        nextBtn.disabled = false;
+      }
+
+      // Sync hidden input
+      updateHiddenInput();
+    });
+
+    // 2) DRAG‐AND‐DROP logic (reassign data-rank after drop)
+    let dragSrcEl = null;
 
     function handleDragStart(e) {
       dragSrcEl = this;
       this.classList.add('dragging');
       e.dataTransfer.effectAllowed = 'move';
-      // For Firefox compatibility (it requires setData)
       e.dataTransfer.setData('text/plain', '');
     }
 
     function handleDragOver(e) {
       e.preventDefault();
-      e.dataTransfer.dropEffect = 'move';
-
-      // Only proceed if we’re over an <li> and it’s not the same as the one being dragged
       const target = e.target.closest('li');
       if (!target || target === dragSrcEl) return;
 
-      // Calculate whether we should insert before or after “target”
       const rect = target.getBoundingClientRect();
       const halfway = (rect.bottom - rect.top) / 2;
-      const insertionPoint = (e.clientY - rect.top) > halfway
-        ? target.nextElementSibling
-        : target;
-
-      list.insertBefore(dragSrcEl, insertionPoint);
+      const afterTarget = (e.clientY - rect.top) > halfway;
+      // Insert the dragged element before or after target
+      list.insertBefore(dragSrcEl, afterTarget ? target.nextSibling : target);
     }
 
     function handleDragEnd() {
       this.classList.remove('dragging');
+      reassignRanksAfterDrag();
       updateHiddenInput();
     }
 
+    // After a drag‐drop, we want to recalculate “data-rank” to match the new visual order
+    function reassignRanksAfterDrag() {
+      // Items that already had a rank keep their relative positions,
+      // but we will renumber everything from top to bottom to be contiguous 1→N.
+      const allItems = Array.from(list.children);
+      allItems.forEach((li, idx) => {
+        li.setAttribute('data-rank', idx + 1);
+      });
+      nextRank = allItems.length + 1; // so no “unranked” remain
+      updateVisualRanks();
+    }
+
+    // Utility: update the <span class="rank-number"> inside each <li>
+    function updateVisualRanks() {
+      Array.from(list.children).forEach((li, idx) => {
+        const badge = li.querySelector('.rank-number');
+        const rank = li.getAttribute('data-rank') || '';
+        badge.textContent = rank;
+      });
+    }
+
+    // Utility: write out the hidden CSV of data-value in the current order
     function updateHiddenInput() {
-      // Grab data-values in the new order
       const values = Array.from(list.children)
         .map(li => li.getAttribute('data-value'));
       hiddenInput.value = values.join(',');
-      nextBtn.disabled = false;  // Enable “Next” as soon as there’s a valid order
     }
 
-    // Attach listeners to each <li>
-    document.querySelectorAll('#rankingList li').forEach(item => {
-      item.addEventListener('dragstart', handleDragStart, false);
-      item.addEventListener('dragover',  handleDragOver,  false);
-      item.addEventListener('dragend',   handleDragEnd,   false);
-    });
-
-    // Initialize hidden input on load
-    updateHiddenInput();
-  })();
-</script>
+    // Attach drag listeners to each <li>
+    document.querySelectorAll('#rankingList
