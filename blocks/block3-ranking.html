@@ -1,112 +1,168 @@
-<!-- File: blocks/block3‐ranking.html -->
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Vignette Ranking</title>
+<!-- Block 3: Vignette Ranking -->
+<section class="survey-block" id="block3" data-type="ranking">
+  <h2>Block 3 – Vignette Ranking</h2>
+  <p class="prompt">
+    Use the dropdown on the left to assign each vignette a rank (1 → 2 → 3 …).  
+    You can also drag any row (by clicking and holding anywhere on it) to reorder.
+  </p>
 
-  <!-- LINK TO YOUR CSS (go up one folder, then into css/) -->
-  <link rel="stylesheet" href="../css/style.css" />
-</head>
-<body>
+  <!-- Scrollable wrapper -->
+  <div class="ranking-wrapper">
+    <ul id="rankingList" class="ranking-list">
+      <!-- Copy/paste or edit these <li> blocks to match your vignette text. -->
+      <!-- Each <li> must have data-value="..." and draggable="true". -->
+      <li data-value="v1" draggable="true">
+        <span class="order-select"><select></select></span>
+        <span class="item-text">Vignette 1: Lorem ipsum dolor sit amet…</span>
+        <span class="drag-handle" title="Drag to reorder">⋮⋮</span>
+      </li>
+      <li data-value="v2" draggable="true">
+        <span class="order-select"><select></select></span>
+        <span class="item-text">Vignette 2: Consectetur adipiscing elit…</span>
+        <span class="drag-handle" title="Drag to reorder">⋮⋮</span>
+      </li>
+      <li data-value="v3" draggable="true">
+        <span class="order-select"><select></select></span>
+        <span class="item-text">Vignette 3: Sed do eiusmod tempor…</span>
+        <span class="drag-handle" title="Drag to reorder">⋮⋮</span>
+      </li>
+      <li data-value="v4" draggable="true">
+        <span class="order-select"><select></select></span>
+        <span class="item-text">Vignette 4: Incididunt ut labore et dolore…</span>
+        <span class="drag-handle" title="Drag to reorder">⋮⋮</span>
+      </li>
+      <li data-value="v5" draggable="true">
+        <span class="order-select"><select></select></span>
+        <span class="item-text">Vignette 5: Magna aliqua…</span>
+        <span class="drag-handle" title="Drag to reorder">⋮⋮</span>
+      </li>
+    </ul>
+  </div>
 
-  <section class="survey-block" id="block3" data-type="ranking">
-    <h2>Block 3 – Vignette Ranking</h2>
-    <p class="prompt">
-      Select a rank for each vignette from the dropdown on the right.
-    </p>
+  <!-- Hidden input to capture final order as CSV (e.g. "v3,v1,v5,...") -->
+  <input type="hidden" name="vignetteRanking" id="vignetteRanking" value="">
 
-    <div class="ranking-container">
-      <!-- ====== VIGNETTE #1 ====== -->
-      <div class="ranking-item" data-value="v1">
-        <div class="vignette-text">
-          <strong>Vignette&nbsp;1:</strong> Lorem ipsum dolor sit amet, consectetur adipiscing elit…
-        </div>
-        <select name="rank_v1" class="rank-select">
-          <option value="" disabled selected>Rank …</option>
-          <option value="1">1 (most novel)</option>
-          <option value="2">2</option>
-          <option value="3">3</option>
-          <option value="4">4</option>
-          <option value="5">5 (least novel)</option>
-        </select>
-      </div>
+  <div class="navigation">
+    <button class="prev-btn">Back</button>
+    <button class="next-btn" id="submitRanking" disabled>Next</button>
+  </div>
+</section>
 
-      <!-- ====== VIGNETTE #2 ====== -->
-      <div class="ranking-item" data-value="v2">
-        <div class="vignette-text">
-          <strong>Vignette&nbsp;2:</strong> Consectetur adipiscing elit, sed do eiusmod tempor incididunt…
-        </div>
-        <select name="rank_v2" class="rank-select">
-          <option value="" disabled selected>Rank …</option>
-          <option value="1">1 (most novel)</option>
-          <option value="2">2</option>
-          <option value="3">3</option>
-          <option value="4">4</option>
-          <option value="5">5 (least novel)</option>
-        </select>
-      </div>
+<script>
+  (function() {
+    const list = document.getElementById('rankingList');
+    const hiddenInput = document.getElementById('vignetteRanking');
+    const nextBtn = document.getElementById('submitRanking');
 
-      <!-- ====== VIGNETTE #3 ====== -->
-      <div class="ranking-item" data-value="v3">
-        <div class="vignette-text">
-          <strong>Vignette&nbsp;3:</strong> Sed do eiusmod tempor incididunt ut labore et dolore magna…
-        </div>
-        <select name="rank_v3" class="rank-select">
-          <option value="" disabled selected>Rank …</option>
-          <option value="1">1 (most novel)</option>
-          <option value="2">2</option>
-          <option value="3">3</option>
-          <option value="4">4</option>
-          <option value="5">5 (least novel)</option>
-        </select>
-      </div>
+    // 1) INITIALIZE DROPDOWNS (1…N) ON PAGE LOAD
+    function initSelects() {
+      const items = Array.from(list.children);
+      const N = items.length;
+      items.forEach((li, idx) => {
+        const select = li.querySelector('select');
+        select.innerHTML = ''; 
+        for (let i = 1; i <= N; i++) {
+          const opt = document.createElement('option');
+          opt.value = i;
+          opt.textContent = i;
+          select.appendChild(opt);
+        }
+        select.value = idx + 1; // default: current index + 1
+      });
+      // Once dropdowns are filled, Next can be enabled
+      nextBtn.disabled = false;
+      updateHiddenInput();
+    }
 
-      <!-- ====== VIGNETTE #4 ====== -->
-      <div class="ranking-item" data-value="v4">
-        <div class="vignette-text">
-          <strong>Vignette&nbsp;4:</strong> Incididunt ut labore et dolore magna aliqua…
-        </div>
-        <select name="rank_v4" class="rank-select">
-          <option value="" disabled selected>Rank …</option>
-          <option value="1">1 (most novel)</option>
-          <option value="2">2</option>
-          <option value="3">3</option>
-          <option value="4">4</option>
-          <option value="5">5 (least novel)</option>
-        </select>
-      </div>
+    // 2) WHEN A DROPDOWN CHANGES: MOVE THE <li> TO ITS NEW INDEX
+    function handleSelectChange(e) {
+      const select = e.target;
+      const newRank = parseInt(select.value, 10);
+      const li = select.closest('li');
 
-      <!-- ====== VIGNETTE #5 ====== -->
-      <div class="ranking-item" data-value="v5">
-        <div class="vignette-text">
-          <strong>Vignette&nbsp;5:</strong> Magna aliqua ut enim ad minim veniam…
-        </div>
-        <select name="rank_v5" class="rank-select">
-          <option value="" disabled selected>Rank …</option>
-          <option value="1">1 (most novel)</option>
-          <option value="2">2</option>
-          <option value="3">3</option>
-          <option value="4">4</option>
-          <option value="5">5 (least novel)</option>
-        </select>
-      </div>
-    </div>
+      // Remove and re-insert <li> at position newRank - 1
+      list.removeChild(li);
+      const allLis = Array.from(list.children);
+      if (newRank > allLis.length) {
+        list.appendChild(li);
+      } else {
+        list.insertBefore(li, allLis[newRank - 1]);
+      }
+      reassignSelects();
+      updateHiddenInput();
+    }
 
-    <!-- Hidden input to collect final ranking (e.g. "v3,v1,v5,v2,v4") -->
-    <input type="hidden" name="vignetteRanking" id="vignetteRanking">
+    // 3) AFTER A DRAG-DROP, RENUMBERR ALL SELECTS IN VISUAL ORDER
+    function reassignSelects() {
+      Array.from(list.children).forEach((li, idx) => {
+        li.querySelector('select').value = idx + 1;
+      });
+    }
 
-    <div class="navigation">
-      <button class="prev-btn">Back</button>
-      <button class="next-btn" id="submitRanking" disabled>Next</button>
-    </div>
-  </section>
+    // 4) UPDATE HIDDEN CSV INPUT
+    function updateHiddenInput() {
+      const values = Array.from(list.children)
+        .map(li => li.getAttribute('data-value'));
+      hiddenInput.value = values.join(',');
+    }
 
-  <!--
-    SCRIPT TAG: go up one folder (..) then into js/ to find block3‐ranking.js.
-    The `defer` ensures the DOM is fully parsed before the script runs.
-  -->
-  <script src="../js/block3‐ranking.js" defer></script>
-</body>
-</html>
+    // 5) DRAG & DROP SETUP (ANYWHERE ON <li>)
+    let dragSrcEl = null;
+
+    function handleDragStart(e) {
+      dragSrcEl = this;
+      this.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', ''); // Firefox needs this
+    }
+
+    function handleDragOver(e) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      const targetLi = e.target.closest('li');
+      if (!targetLi || targetLi === dragSrcEl) return;
+
+      const rect = targetLi.getBoundingClientRect();
+      const halfway = (rect.bottom - rect.top) / 2;
+      const afterTarget = (e.clientY - rect.top) > halfway;
+      if (afterTarget) {
+        list.insertBefore(dragSrcEl, targetLi.nextSibling);
+      } else {
+        list.insertBefore(dragSrcEl, targetLi);
+      }
+    }
+
+    function handleDragEnd() {
+      this.classList.remove('dragging');
+      reassignSelects();
+      updateHiddenInput();
+    }
+
+    function attachDragListeners() {
+      document.querySelectorAll('#rankingList li').forEach(li => {
+        // Ensure draggable is true (redundant if already in HTML)
+        li.setAttribute('draggable', 'true');
+        li.addEventListener('dragstart', handleDragStart, false);
+        li.addEventListener('dragover',  handleDragOver,  false);
+        li.addEventListener('dragend',   handleDragEnd,   false);
+      });
+    }
+
+    // 6) ATTACH SELECT CHANGE LISTENERS
+    function attachSelectListeners() {
+      document.querySelectorAll('#rankingList select').forEach(sel => {
+        sel.addEventListener('change', handleSelectChange);
+      });
+    }
+
+    // 7) TIE IT ALL TOGETHER ON LOAD
+    function bootstrap() {
+      initSelects();
+      attachSelectListeners();
+      attachDragListeners();
+    }
+
+    // Run after DOM is ready (script is at bottom of HTML, so it's safe)
+    bootstrap();
+  })();
+</script>

@@ -167,38 +167,101 @@ fieldset.likert-7 input[type="radio"]:checked + label::after {
   top: calc(var(--bullet-size) / 2 + 3px);
 }
 
-/* --------------------------------------------- */
-/* Block 3: Click‐to‐Rank (Vignette Ranking)      */
-/* --------------------------------------------- */
+/* ========================================= */
+/* === BLOCK 3: Vignette Ranking Styles  === */
+/* ========================================= */
 
-/* =========================== */
-/* Block 3 – Ranking (Option 1) */
-/* =========================== */
-.ranking-container {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+
+/* 1) Container for scrollable list of items */
+.ranking-wrapper {
+  max-height: 300px;         /* Adjust if you have more/fewer vignettes */
+  overflow-y: auto;          /* Enable vertical scrolling when needed */
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  padding-right: 0.5rem;     /* Leave room for scrollbar */
 }
 
-.ranking-item {
+/* 2) Reset and remove default UL styling */
+.ranking-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* 3) Each <li> is a flex‐row: [select] [text] [drag handle] */
+.ranking-list li {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 0.75rem;
-  border: 1px solid #ccc;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid #eee;
+  background: #fff;
+  position: relative;
+  user-select: none;          /* Prevent text selection during drag */
+  transition: background 0.15s ease, opacity 0.15s ease;
+}
+
+/* 4) Remove the bottom border on the very last item */
+.ranking-list li:last-child {
+  border-bottom: none;
+}
+
+/* 5) Hover state for better affordance */
+.ranking-list li:hover {
+  background: #f8faff;        /* Very pale blue */
+}
+
+/* 6) “Dragging” state (sits at 40% opacity) */
+.ranking-list li.dragging {
+  opacity: 0.4;
+}
+
+/* 7) Dropdown for selecting rank (fixed 3rem wide) */
+.ranking-list .order-select {
+  flex: 0 0 3rem;             /* Sticks at exactly 3 rem wide */
+  margin-right: 0.75rem;
+}
+.ranking-list .order-select select {
+  width: 100%;
+  padding: 0.2rem 0.3rem;
+  font-size: 1rem;
+  border: 1px solid #bbb;
   border-radius: 4px;
-  background: #f9f9f9;
+  background: #fff;
+  cursor: pointer;
 }
 
-.vignette-text {
-  flex: 1;
-  margin-right: 1rem;
-  font-size: 1rem;
-  line-height: 1.4;
+/* 8) Vignette text takes up remaining space */
+.ranking-list .item-text {
+  flex: 1 1 auto;
+  word-break: break-word;     /* Wrap long text onto multiple lines */
 }
 
-.rank-select {
-  width: 80px;
-  padding: 0.4rem;
-  font-size: 1rem;
+/* 9) Drag‐handle “⋮⋮” on the right side */
+.ranking-list .drag-handle {
+  flex: 0 0 auto;
+  font-size: 1.4rem;
+  color: #888;
+  margin-left: 0.75rem;
+  cursor: grab;               /* Indicates draggable area */
+  user-select: none;
 }
+
+/* 10) While you hold the handle, switch to “grabbing” cursor */
+.ranking-list li:active .drag-handle {
+  cursor: grabbing;
+}
+
+/* 11) Make sure there’s no stray list markers/padding */
+.ranking-list {
+  padding-left: 0;
+}
+
+/* 12) Prevent any odd horizontal lines from splitting text */
+.ranking-list li::after {
+  content: "";
+  display: block;
+  clear: both;
+}
+
+/* 13) The “Next” button’s disabled‐state is handled in JS (no extra CSS needed) */
