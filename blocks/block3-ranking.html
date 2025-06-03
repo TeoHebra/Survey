@@ -1,10 +1,13 @@
+<!-- File: blocks/block3‐ranking.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Vignette Ranking</title>
-  <link rel="stylesheet" href="style.css" />
+
+  <!-- LINK TO YOUR CSS (go up one folder, then into css/) -->
+  <link rel="stylesheet" href="../css/style.css" />
 </head>
 <body>
 
@@ -18,7 +21,7 @@
       <!-- ====== VIGNETTE #1 ====== -->
       <div class="ranking-item" data-value="v1">
         <div class="vignette-text">
-          <strong>Vignette 1:</strong> Lorem ipsum dolor sit amet, consectetur adipiscing elit…
+          <strong>Vignette&nbsp;1:</strong> Lorem ipsum dolor sit amet, consectetur adipiscing elit…
         </div>
         <select name="rank_v1" class="rank-select">
           <option value="" disabled selected>Rank …</option>
@@ -33,7 +36,7 @@
       <!-- ====== VIGNETTE #2 ====== -->
       <div class="ranking-item" data-value="v2">
         <div class="vignette-text">
-          <strong>Vignette 2:</strong> Consectetur adipiscing elit, sed do eiusmod tempor incididunt…
+          <strong>Vignette&nbsp;2:</strong> Consectetur adipiscing elit, sed do eiusmod tempor incididunt…
         </div>
         <select name="rank_v2" class="rank-select">
           <option value="" disabled selected>Rank …</option>
@@ -48,7 +51,7 @@
       <!-- ====== VIGNETTE #3 ====== -->
       <div class="ranking-item" data-value="v3">
         <div class="vignette-text">
-          <strong>Vignette 3:</strong> Sed do eiusmod tempor incididunt ut labore et dolore magna…
+          <strong>Vignette&nbsp;3:</strong> Sed do eiusmod tempor incididunt ut labore et dolore magna…
         </div>
         <select name="rank_v3" class="rank-select">
           <option value="" disabled selected>Rank …</option>
@@ -63,7 +66,7 @@
       <!-- ====== VIGNETTE #4 ====== -->
       <div class="ranking-item" data-value="v4">
         <div class="vignette-text">
-          <strong>Vignette 4:</strong> Incididunt ut labore et dolore magna aliqua…
+          <strong>Vignette&nbsp;4:</strong> Incididunt ut labore et dolore magna aliqua…
         </div>
         <select name="rank_v4" class="rank-select">
           <option value="" disabled selected>Rank …</option>
@@ -78,7 +81,7 @@
       <!-- ====== VIGNETTE #5 ====== -->
       <div class="ranking-item" data-value="v5">
         <div class="vignette-text">
-          <strong>Vignette 5:</strong> Magna aliqua ut enim ad minim veniam…
+          <strong>Vignette&nbsp;5:</strong> Magna aliqua ut enim ad minim veniam…
         </div>
         <select name="rank_v5" class="rank-select">
           <option value="" disabled selected>Rank …</option>
@@ -100,10 +103,10 @@
     </div>
   </section>
 
-  <!-- 
-    Instead of inline JS, we now load block3-ranking.js 
-    with defer so it runs after the DOM is parsed.
+  <!--
+    SCRIPT TAG: go up one folder (..) then into js/ to find block3‐ranking.js.
+    The `defer` ensures the DOM is fully parsed before the script runs.
   -->
-  <script src="block3‐ranking.js" defer></script>
+  <script src="../js/block3‐ranking.js" defer></script>
 </body>
 </html>
