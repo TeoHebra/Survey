@@ -9,7 +9,7 @@
     <!-- ====== VIGNETTE #1 ====== -->
     <div class="ranking-item" data-value="v1">
       <div class="vignette-text">
-        <strong>Vignette 1:</strong> Lorem ipsum dolor sit amet, consectetur adipiscing elit…
+        <strong>Vignette&nbsp;1:</strong> Lorem ipsum dolor sit amet, consectetur adipiscing elit…
       </div>
       <select name="rank_v1" class="rank-select">
         <option value="" disabled selected>Rank …</option>
@@ -24,7 +24,7 @@
     <!-- ====== VIGNETTE #2 ====== -->
     <div class="ranking-item" data-value="v2">
       <div class="vignette-text">
-        <strong>Vignette 2:</strong> Consectetur adipiscing elit, sed do eiusmod tempor incididunt…
+        <strong>Vignette&nbsp;2:</strong> Consectetur adipiscing elit, sed do eiusmod tempor incididunt…
       </div>
       <select name="rank_v2" class="rank-select">
         <option value="" disabled selected>Rank …</option>
@@ -39,7 +39,7 @@
     <!-- ====== VIGNETTE #3 ====== -->
     <div class="ranking-item" data-value="v3">
       <div class="vignette-text">
-        <strong>Vignette 3:</strong> Sed do eiusmod tempor incididunt ut labore et dolore magna…
+        <strong>Vignette&nbsp;3:</strong> Sed do eiusmod tempor incididunt ut labore et dolore magna…
       </div>
       <select name="rank_v3" class="rank-select">
         <option value="" disabled selected>Rank …</option>
@@ -54,7 +54,7 @@
     <!-- ====== VIGNETTE #4 ====== -->
     <div class="ranking-item" data-value="v4">
       <div class="vignette-text">
-        <strong>Vignette 4:</strong> Incididunt ut labore et dolore magna aliqua…
+        <strong>Vignette&nbsp;4:</strong> Incididunt ut labore et dolore magna aliqua…
       </div>
       <select name="rank_v4" class="rank-select">
         <option value="" disabled selected>Rank …</option>
@@ -69,7 +69,7 @@
     <!-- ====== VIGNETTE #5 ====== -->
     <div class="ranking-item" data-value="v5">
       <div class="vignette-text">
-        <strong>Vignette 5:</strong> Magna aliqua ut enim ad minim veniam…
+        <strong>Vignette&nbsp;5:</strong> Magna aliqua ut enim ad minim veniam…
       </div>
       <select name="rank_v5" class="rank-select">
         <option value="" disabled selected>Rank …</option>
@@ -91,61 +91,58 @@
   </div>
 </section>
 
-<!-- ====== JavaScript: Disabling Already‐Chosen Ranks ====== -->
+<!-- ============== JavaScript: unique-rank dropdowns ============== -->
 <script>
-  (function() {
-    // Grab all dropdowns and relevant elements
-    const selects    = document.querySelectorAll('.rank-select');
-    const nextBtn    = document.getElementById('submitRanking');
-    const hiddenIn   = document.getElementById('vignetteRanking');
-    const items      = document.querySelectorAll('.ranking-item');
+/*  Everything runs only after the DOM is ready, so
+    document.querySelectorAll('.rank-select') now finds the five <select>s. */
+document.addEventListener('DOMContentLoaded', () => {
 
-    function updateAll() {
-      // 1) Build a list of currently chosen rank‐values (exclude empty)
-      const chosenRanks = Array.from(selects)
-        .map(s => s.value)
-        .filter(v => v !== '');
+  // ── 0. grab the elements we’ll need ───────────────────────────────
+  const selects  = document.querySelectorAll('.rank-select');
+  const nextBtn  = document.getElementById('submitRanking');
+  const hiddenIn = document.getElementById('vignetteRanking');
+  const items    = document.querySelectorAll('.ranking-item');
 
-      // 2) For each <select>, loop its <option> elements → disable if chosen elsewhere
-      selects.forEach(curSel => {
-        const myValue = curSel.value;
-        Array.from(curSel.options).forEach(opt => {
-          const val = opt.value;
-          if (val === '') return; 
-          // If this value is chosen in ANY other select (not this one), disable it
-          const isTakenElsewhere = chosenRanks.includes(val) && val !== myValue;
-          opt.disabled = isTakenElsewhere;
-        });
+  // ── 1. function to rebuild disabled options & hidden field ───────
+  function updateAll() {
+
+    // collect currently chosen ranks (ignore empty)
+    const chosen = [...selects].map(s => s.value).filter(Boolean);
+
+    // disable options already chosen elsewhere
+    selects.forEach(sel => {
+      const myVal = sel.value;
+      [...sel.options].forEach(opt => {
+        if (!opt.value) return;                     // skip placeholder
+        opt.disabled = chosen.includes(opt.value) && opt.value !== myVal;
       });
+    });
 
-      // 3) Check if all dropdowns are filled (non‐empty) AND unique
-      const allFilled = chosenRanks.length === selects.length;
-      const allUnique = new Set(chosenRanks).size === selects.length;
+    // allow “Next” only if every dropdown is filled and unique
+    const allFilled = chosen.length === selects.length;
+    const allUnique = new Set(chosen).size === selects.length;
 
-      if (allFilled && allUnique) {
-        nextBtn.disabled = false;
+    if (allFilled && allUnique) {
+      nextBtn.disabled = false;
 
-        // 4) Build the hidden input in rank‐order: [rank=1→vignetteID, rank=2→…]
-        const ordered = [];
-        for (let r = 1; r <= selects.length; r++) {
-          items.forEach(item => {
-            const sel = item.querySelector('select');
-            if (parseInt(sel.value, 10) === r) {
-              ordered.push(item.getAttribute('data-value'));
-            }
-          });
-        }
-        hiddenIn.value = ordered.join(',');
-      } else {
-        nextBtn.disabled = true;
-        hiddenIn.value = '';
+      /* build hidden input in rank order:
+         rank 1 → vignette id, rank 2 → …                                   */
+      const ordered = [];
+      for (let r = 1; r <= selects.length; r++) {
+        items.forEach(it => {
+          const sel = it.querySelector('select');
+          if (+sel.value === r) ordered.push(it.dataset.value);
+        });
       }
+      hiddenIn.value = ordered.join(',');
+    } else {
+      nextBtn.disabled = true;
+      hiddenIn.value  = '';
     }
+  }
 
-    // Attach 'change' listener to every dropdown
-    selects.forEach(s => s.addEventListener('change', updateAll));
-
-    // If you have any prefilled values (e.g. when navigating back), run once on load:
-    document.addEventListener('DOMContentLoaded', updateAll);
-  })();
+  // ── 2. wire up the listeners & run once on load ───────────────────
+  selects.forEach(s => s.addEventListener('change', updateAll));
+  updateAll();            // handles any pre-filled answers, too
+});
 </script>
