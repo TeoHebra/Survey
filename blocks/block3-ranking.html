@@ -1,93 +1,63 @@
-<!-- blocks/block3‐ranking.html -->
-<section class="survey-block" id="block3" data-type="ranking">
-  <h2>Block 3 – Vignette Ranking</h2>
-  <p class="prompt">
-    Click on each vignette in the order you feel is most to least novel. The first click becomes rank 1 (moved to the top), the second click becomes rank 2 (just below rank 1), etc.
-  </p>
+/* --------------------------------------------- */
+/* Block 3: Click‐to‐Rank (Vignette Ranking)      */
+/* --------------------------------------------- */
 
-  <ul id="rankingList" class="ranking-list">
-    <!-- 
-      Give each <li> a unique data-value (e.g. “v1”, “v2”, …). 
-      Replace the placeholder text below with your actual vignette copy. 
-    -->
-    <li data-value="v1">
-      <strong>Vignette 1:</strong> Lorem ipsum dolor sit amet, consectetur adipiscing elit…
-    </li>
-    <li data-value="v2">
-      <strong>Vignette 2:</strong> Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris…
-    </li>
-    <li data-value="v3">
-      <strong>Vignette 3:</strong> Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua…
-    </li>
-    <li data-value="v4">
-      <strong>Vignette 4:</strong> Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi…
-    </li>
-    <li data-value="v5">
-      <strong>Vignette 5:</strong> Duis aute irure dolor in reprehenderit in voluptate velit esse cillum…
-    </li>
-  </ul>
+/* Outer container holding both lists */
+#block3 .ranking-container {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  overflow: hidden; /* so the two ULs appear as one box */
+}
 
-  <!-- Hidden input to capture final ranking order as “v1,v3,v2,…”. -->
-  <input type="hidden" name="vignetteRanking" id="vignetteRanking">
+/* Style both ULs exactly the same, remove default margin/padding */
+#block3 .ranking-container .ranking-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
 
-  <div class="navigation">
-    <button class="prev-btn">Back</button>
-    <button class="next-btn" id="submitRanking" disabled>Next</button>
-  </div>
-</section>
+/* Each <li> in either rankedList or unrankedList */
+#block3 .ranking-container .ranking-list li {
+  display: flex;
+  align-items: center;
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid #ccc;
+  background: #fafafa;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  position: relative;
+}
 
-<script>
-  (function() {
-    const listEl = document.getElementById('rankingList');
-    const hiddenInput = document.getElementById('vignetteRanking');
-    const nextBtn = document.getElementById('submitRanking');
-    const items = Array.from(listEl.children);
-    let nextRank = 1;
-    const totalItems = items.length;
+/* Remove the final bottom border on the very last item (in unrankedList or rankedList) */
+#block3 .ranking-container .ranking-list li:last-child {
+  border-bottom: none;
+}
 
-    items.forEach(item => {
-      item.addEventListener('click', function() {
-        // If already ranked, do nothing
-        if (this.dataset.rank) return;
+/* Hover effect for any item that is NOT yet ranked */
+#block3 .ranking-container .ranking-list li:not(.ranked):hover {
+  background: #f0f8ff;
+}
 
-        // 1) Assign data-rank:
-        this.dataset.rank = nextRank;
+/* Once an item has been clicked (ranked), give it a different bg & disable hover */
+#block3 .ranking-container .ranking-list li.ranked {
+  background: #e0f7fa;
+  cursor: default;
+  opacity: 0.9;
+}
 
-        // 2) Create badge <span> with the rank number:
-        const badge = document.createElement('span');
-        badge.className = 'rank-badge';
-        badge.textContent = nextRank;
-        // Prepend the badge so it appears before the text
-        this.prepend(badge);
-
-        // 3) Move this <li> into its “ranked” position:
-        //    Find the first unranked <li> (if any) to insert before.
-        //    If none, just append to the end of the <ul>.
-        const firstUnranked = listEl.querySelector('li:not([data-rank])');
-        if (firstUnranked) {
-          listEl.insertBefore(this, firstUnranked);
-        } else {
-          listEl.appendChild(this);
-        }
-        // Add a class so ranked items look different
-        this.classList.add('ranked');
-
-        nextRank++;
-
-        // 4) If all items have been clicked, build the final string and enable “Next”:
-        if (nextRank > totalItems) {
-          // Sort by data-rank ascending
-          const ordered = items
-            .slice()
-            .sort((a, b) => parseInt(a.dataset.rank, 10) - parseInt(b.dataset.rank, 10));
-
-          // Extract the data-value from each in rank order
-          const values = ordered.map(el => el.dataset.value);
-          hiddenInput.value = values.join(',');
-
-          nextBtn.disabled = false;
-        }
-      });
-    });
-  })();
-</script>
+/* The little circle that shows “1,” “2,” etc. */
+#block3 .rank-badge {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  line-height: 24px;
+  border-radius: 50%;
+  background: var(--primary-color);
+  color: #fff;
+  font-weight: bold;
+  text-align: center;
+  margin-right: 0.75rem;
+  flex-shrink: 0;
+  font-size: 0.9rem;
+  user-select: none;
+}
