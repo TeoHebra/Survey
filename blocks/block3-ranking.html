@@ -6,11 +6,7 @@
   </p>
 
   <div class="ranking-container">
-    <!--
-      For each vignette, put its textual content here,
-      with data-value="vX" matching whatever ID you want to submit.
-      Adjust the number of items and their IDs/text as needed.
-    -->
+    <!-- ====== VIGNETTE #1 ====== -->
     <div class="ranking-item" data-value="v1">
       <div class="vignette-text">
         <strong>Vignette 1:</strong> Lorem ipsum dolor sit amet, consectetur adipiscing elit…
@@ -25,6 +21,7 @@
       </select>
     </div>
 
+    <!-- ====== VIGNETTE #2 ====== -->
     <div class="ranking-item" data-value="v2">
       <div class="vignette-text">
         <strong>Vignette 2:</strong> Consectetur adipiscing elit, sed do eiusmod tempor incididunt…
@@ -39,6 +36,7 @@
       </select>
     </div>
 
+    <!-- ====== VIGNETTE #3 ====== -->
     <div class="ranking-item" data-value="v3">
       <div class="vignette-text">
         <strong>Vignette 3:</strong> Sed do eiusmod tempor incididunt ut labore et dolore magna…
@@ -53,6 +51,7 @@
       </select>
     </div>
 
+    <!-- ====== VIGNETTE #4 ====== -->
     <div class="ranking-item" data-value="v4">
       <div class="vignette-text">
         <strong>Vignette 4:</strong> Incididunt ut labore et dolore magna aliqua…
@@ -67,6 +66,7 @@
       </select>
     </div>
 
+    <!-- ====== VIGNETTE #5 ====== -->
     <div class="ranking-item" data-value="v5">
       <div class="vignette-text">
         <strong>Vignette 5:</strong> Magna aliqua ut enim ad minim veniam…
@@ -82,67 +82,70 @@
     </div>
   </div>
 
-  <!-- Hidden input to collect final ranking order as “v3,v1,v5,…” -->
+  <!-- Hidden input to collect final ranking (e.g. "v3,v1,v5,v2,v4") -->
   <input type="hidden" name="vignetteRanking" id="vignetteRanking">
 
   <div class="navigation">
     <button class="prev-btn">Back</button>
-    <!-- Disabled until all dropdowns are filled with no duplicates -->
     <button class="next-btn" id="submitRanking" disabled>Next</button>
   </div>
 </section>
 
-<!-- Updated script: disables any rank option once it’s been chosen in another select -->
+<!-- ====== JavaScript: Disabling Already‐Chosen Ranks ====== -->
 <script>
   (function() {
-    const items     = document.querySelectorAll('.ranking-item');
-    const selects   = document.querySelectorAll('.rank-select');
-    const nextBtn   = document.getElementById('submitRanking');
-    const hiddenInput = document.getElementById('vignetteRanking');
+    // Grab all dropdowns and relevant elements
+    const selects    = document.querySelectorAll('.rank-select');
+    const nextBtn    = document.getElementById('submitRanking');
+    const hiddenIn   = document.getElementById('vignetteRanking');
+    const items      = document.querySelectorAll('.ranking-item');
 
-    function updateOptionsAndState() {
-      // 1) Collect all currently chosen ranks (excluding empty)
+    function updateAll() {
+      // 1) Build a list of currently chosen rank‐values (exclude empty)
       const chosenRanks = Array.from(selects)
         .map(s => s.value)
         .filter(v => v !== '');
 
-      // 2) Disable in-place any <option> that matches a chosen rank in a different <select>
+      // 2) For each <select>, loop its <option> elements → disable if chosen elsewhere
       selects.forEach(curSel => {
-        const curValue = curSel.value;
+        const myValue = curSel.value;
         Array.from(curSel.options).forEach(opt => {
           const val = opt.value;
-          if (val === '') return; // skip the placeholder
-          // If this value is selected somewhere else (and not in THIS select), disable it
-          const isTakenElsewhere = chosenRanks.includes(val) && val !== curValue;
+          if (val === '') return; 
+          // If this value is chosen in ANY other select (not this one), disable it
+          const isTakenElsewhere = chosenRanks.includes(val) && val !== myValue;
           opt.disabled = isTakenElsewhere;
         });
       });
 
-      // 3) Check if all dropdowns have a non-empty, unique selection
-      const allFilled = Array.from(selects).every(s => s.value !== '');
-      const unique    = new Set(chosenRanks).size === selects.length;
+      // 3) Check if all dropdowns are filled (non‐empty) AND unique
+      const allFilled = chosenRanks.length === selects.length;
+      const allUnique = new Set(chosenRanks).size === selects.length;
 
-      if (allFilled && unique) {
+      if (allFilled && allUnique) {
         nextBtn.disabled = false;
-        // Build hiddenInput value in ranked order
+
+        // 4) Build the hidden input in rank‐order: [rank=1→vignetteID, rank=2→…]
         const ordered = [];
-        for (let rank = 1; rank <= selects.length; rank++) {
-          for (let item of items) {
+        for (let r = 1; r <= selects.length; r++) {
+          items.forEach(item => {
             const sel = item.querySelector('select');
-            if (parseInt(sel.value, 10) === rank) {
-              ordered.push(item.dataset.value);
-              break;
+            if (parseInt(sel.value, 10) === r) {
+              ordered.push(item.getAttribute('data-value'));
             }
-          }
+          });
         }
-        hiddenInput.value = ordered.join(',');
+        hiddenIn.value = ordered.join(',');
       } else {
         nextBtn.disabled = true;
-        hiddenInput.value = '';
+        hiddenIn.value = '';
       }
     }
 
-    // Attach listener to each dropdown
-    selects.forEach(s => s.addEventListener('change', updateOptionsAndState));
+    // Attach 'change' listener to every dropdown
+    selects.forEach(s => s.addEventListener('change', updateAll));
+
+    // If you have any prefilled values (e.g. when navigating back), run once on load:
+    document.addEventListener('DOMContentLoaded', updateAll);
   })();
 </script>
