@@ -265,3 +265,22 @@ fieldset.likert-7 input[type="radio"]:checked + label::after {
 }
 
 /* 13) The “Next” button’s disabled‐state is handled in JS (no extra CSS needed) */
+
+
+.ranking-list {
+  list-style: none;
+  padding: 0;
+}
+
+.ranking-list li {
+  padding: 10px;
+  margin-bottom: 6px;
+  border: 1px solid #ccc;
+  background-color: #fafafa;
+  cursor: move;            /* indicates draggable */
+}
+
+.ranking-list li.over {
+  border: 2px dashed #666; /* highlight drop target */
+}
+
