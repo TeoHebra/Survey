@@ -1,148 +1,109 @@
-<!-- blocks/block3-ranking.html -->
-<section class="survey-block" id="block3" data-type="ranking">
-  <h2>Block 3 – Vignette Ranking</h2>
-  <p class="prompt">
-    Select a rank for each vignette from the dropdown on the right.
-  </p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vignette Ranking</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
 
-  <div class="ranking-container">
-    <!-- ====== VIGNETTE #1 ====== -->
-    <div class="ranking-item" data-value="v1">
-      <div class="vignette-text">
-        <strong>Vignette&nbsp;1:</strong> Lorem ipsum dolor sit amet, consectetur adipiscing elit…
+  <section class="survey-block" id="block3" data-type="ranking">
+    <h2>Block 3 – Vignette Ranking</h2>
+    <p class="prompt">
+      Select a rank for each vignette from the dropdown on the right.
+    </p>
+
+    <div class="ranking-container">
+      <!-- ====== VIGNETTE #1 ====== -->
+      <div class="ranking-item" data-value="v1">
+        <div class="vignette-text">
+          <strong>Vignette 1:</strong> Lorem ipsum dolor sit amet, consectetur adipiscing elit…
+        </div>
+        <select name="rank_v1" class="rank-select">
+          <option value="" disabled selected>Rank …</option>
+          <option value="1">1 (most novel)</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5 (least novel)</option>
+        </select>
       </div>
-      <select name="rank_v1" class="rank-select">
-        <option value="" disabled selected>Rank …</option>
-        <option value="1">1 (most novel)</option>
-        <option value="2">2</option>
-        <option value="3">3</option>
-        <option value="4">4</option>
-        <option value="5">5 (least novel)</option>
-      </select>
+
+      <!-- ====== VIGNETTE #2 ====== -->
+      <div class="ranking-item" data-value="v2">
+        <div class="vignette-text">
+          <strong>Vignette 2:</strong> Consectetur adipiscing elit, sed do eiusmod tempor incididunt…
+        </div>
+        <select name="rank_v2" class="rank-select">
+          <option value="" disabled selected>Rank …</option>
+          <option value="1">1 (most novel)</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5 (least novel)</option>
+        </select>
+      </div>
+
+      <!-- ====== VIGNETTE #3 ====== -->
+      <div class="ranking-item" data-value="v3">
+        <div class="vignette-text">
+          <strong>Vignette 3:</strong> Sed do eiusmod tempor incididunt ut labore et dolore magna…
+        </div>
+        <select name="rank_v3" class="rank-select">
+          <option value="" disabled selected>Rank …</option>
+          <option value="1">1 (most novel)</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5 (least novel)</option>
+        </select>
+      </div>
+
+      <!-- ====== VIGNETTE #4 ====== -->
+      <div class="ranking-item" data-value="v4">
+        <div class="vignette-text">
+          <strong>Vignette 4:</strong> Incididunt ut labore et dolore magna aliqua…
+        </div>
+        <select name="rank_v4" class="rank-select">
+          <option value="" disabled selected>Rank …</option>
+          <option value="1">1 (most novel)</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5 (least novel)</option>
+        </select>
+      </div>
+
+      <!-- ====== VIGNETTE #5 ====== -->
+      <div class="ranking-item" data-value="v5">
+        <div class="vignette-text">
+          <strong>Vignette 5:</strong> Magna aliqua ut enim ad minim veniam…
+        </div>
+        <select name="rank_v5" class="rank-select">
+          <option value="" disabled selected>Rank …</option>
+          <option value="1">1 (most novel)</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5 (least novel)</option>
+        </select>
+      </div>
     </div>
 
-    <!-- ====== VIGNETTE #2 ====== -->
-    <div class="ranking-item" data-value="v2">
-      <div class="vignette-text">
-        <strong>Vignette&nbsp;2:</strong> Consectetur adipiscing elit, sed do eiusmod tempor incididunt…
-      </div>
-      <select name="rank_v2" class="rank-select">
-        <option value="" disabled selected>Rank …</option>
-        <option value="1">1 (most novel)</option>
-        <option value="2">2</option>
-        <option value="3">3</option>
-        <option value="4">4</option>
-        <option value="5">5 (least novel)</option>
-      </select>
+    <!-- Hidden input to collect final ranking (e.g. "v3,v1,v5,v2,v4") -->
+    <input type="hidden" name="vignetteRanking" id="vignetteRanking">
+
+    <div class="navigation">
+      <button class="prev-btn">Back</button>
+      <button class="next-btn" id="submitRanking" disabled>Next</button>
     </div>
+  </section>
 
-    <!-- ====== VIGNETTE #3 ====== -->
-    <div class="ranking-item" data-value="v3">
-      <div class="vignette-text">
-        <strong>Vignette&nbsp;3:</strong> Sed do eiusmod tempor incididunt ut labore et dolore magna…
-      </div>
-      <select name="rank_v3" class="rank-select">
-        <option value="" disabled selected>Rank …</option>
-        <option value="1">1 (most novel)</option>
-        <option value="2">2</option>
-        <option value="3">3</option>
-        <option value="4">4</option>
-        <option value="5">5 (least novel)</option>
-      </select>
-    </div>
-
-    <!-- ====== VIGNETTE #4 ====== -->
-    <div class="ranking-item" data-value="v4">
-      <div class="vignette-text">
-        <strong>Vignette&nbsp;4:</strong> Incididunt ut labore et dolore magna aliqua…
-      </div>
-      <select name="rank_v4" class="rank-select">
-        <option value="" disabled selected>Rank …</option>
-        <option value="1">1 (most novel)</option>
-        <option value="2">2</option>
-        <option value="3">3</option>
-        <option value="4">4</option>
-        <option value="5">5 (least novel)</option>
-      </select>
-    </div>
-
-    <!-- ====== VIGNETTE #5 ====== -->
-    <div class="ranking-item" data-value="v5">
-      <div class="vignette-text">
-        <strong>Vignette&nbsp;5:</strong> Magna aliqua ut enim ad minim veniam…
-      </div>
-      <select name="rank_v5" class="rank-select">
-        <option value="" disabled selected>Rank …</option>
-        <option value="1">1 (most novel)</option>
-        <option value="2">2</option>
-        <option value="3">3</option>
-        <option value="4">4</option>
-        <option value="5">5 (least novel)</option>
-      </select>
-    </div>
-  </div>
-
-  <!-- Hidden input to collect final ranking (e.g. "v3,v1,v5,v2,v4") -->
-  <input type="hidden" name="vignetteRanking" id="vignetteRanking">
-
-  <div class="navigation">
-    <button class="prev-btn">Back</button>
-    <button class="next-btn" id="submitRanking" disabled>Next</button>
-  </div>
-</section>
-
-<!-- ============== JavaScript: unique-rank dropdowns ============== -->
-<script>
-/*  Everything runs only after the DOM is ready, so
-    document.querySelectorAll('.rank-select') now finds the five <select>s. */
-document.addEventListener('DOMContentLoaded', () => {
-
-  // ── 0. grab the elements we’ll need ───────────────────────────────
-  const selects  = document.querySelectorAll('.rank-select');
-  const nextBtn  = document.getElementById('submitRanking');
-  const hiddenIn = document.getElementById('vignetteRanking');
-  const items    = document.querySelectorAll('.ranking-item');
-
-  // ── 1. function to rebuild disabled options & hidden field ───────
-  function updateAll() {
-
-    // collect currently chosen ranks (ignore empty)
-    const chosen = [...selects].map(s => s.value).filter(Boolean);
-
-    // disable options already chosen elsewhere
-    selects.forEach(sel => {
-      const myVal = sel.value;
-      [...sel.options].forEach(opt => {
-        if (!opt.value) return;                     // skip placeholder
-        opt.disabled = chosen.includes(opt.value) && opt.value !== myVal;
-      });
-    });
-
-    // allow “Next” only if every dropdown is filled and unique
-    const allFilled = chosen.length === selects.length;
-    const allUnique = new Set(chosen).size === selects.length;
-
-    if (allFilled && allUnique) {
-      nextBtn.disabled = false;
-
-      /* build hidden input in rank order:
-         rank 1 → vignette id, rank 2 → …                                   */
-      const ordered = [];
-      for (let r = 1; r <= selects.length; r++) {
-        items.forEach(it => {
-          const sel = it.querySelector('select');
-          if (+sel.value === r) ordered.push(it.dataset.value);
-        });
-      }
-      hiddenIn.value = ordered.join(',');
-    } else {
-      nextBtn.disabled = true;
-      hiddenIn.value  = '';
-    }
-  }
-
-  // ── 2. wire up the listeners & run once on load ───────────────────
-  selects.forEach(s => s.addEventListener('change', updateAll));
-  updateAll();            // handles any pre-filled answers, too
-});
-</script>
+  <!-- 
+    Instead of inline JS, we now load block3-ranking.js 
+    with defer so it runs after the DOM is parsed.
+  -->
+  <script src="block3‐ranking.js" defer></script>
+</body>
+</html>
