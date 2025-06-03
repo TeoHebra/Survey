@@ -171,62 +171,57 @@ fieldset.likert-7 input[type="radio"]:checked + label::after {
 /* Block 3: Click‐to‐Rank (Vignette Ranking)      */
 /* --------------------------------------------- */
 
-/* === Option 1: Drag-and-Drop Ranking Styles === */
-#rankingList {
-  list-style: none;
-  margin: 0;
-  padding: 0;
+/* === Option 3: Numeric-Input Ranking Styles === */
+.ranking-grid-num {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.8rem 1rem;
+  align-items: center;
 }
 
-.ranking-list .ranking-item {
-  position: relative;
-  user-select: none;             /* Prevent text selection while dragging */
-  padding: 0.6rem 1rem 0.6rem 2rem;
-  margin-bottom: 0.5rem;
+.ranking-row-num {
+  display: contents; /* Each row spans two columns */
+}
+
+.item-text-num {
+  padding: 0.6rem;
   border: 1px solid #ccc;
   border-radius: 4px;
   background: #fafafa;
-  cursor: grab;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.item-control-num {
   display: flex;
   align-items: center;
-  transition: background 0.2s ease;
 }
 
-/* When user picks up an item to drag, make it semi-transparent */
-.ranking-list .ranking-item.dragging {
-  opacity: 0.5;
-}
-
-/* Hover state for better affordance */
-.ranking-list .ranking-item:hover {
-  background: #f0f8ff;
-}
-
-/* The little “≡” handle icon on the left */
-.ranking-list .ranking-item .handle {
-  font-size: 1rem;
-  color: #666;
-  margin-right: 0.6rem;
-  cursor: grab;
-  user-select: none;
-}
-
-/* Drop-target placeholder styling */
-.ranking-list .placeholder {
-  height: 3rem;                  /* Approximate height of one item */
-  background: #e0eaff;
-  border: 2px dashed #99c;
-  margin-bottom: 0.5rem;
+.ranking-input {
+  width: 3.5rem;
+  padding: 0.4rem;
+  border: 1px solid #ccc;
   border-radius: 4px;
+  font-size: 0.95rem;
 }
 
-/* Ensure hidden input and button line up */
-#rankingOrder {
-  display: none;
+/* Focus state */
+.ranking-input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
 }
 
+/* Error message styling */
+#error-msg {
+  color: #b00;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+}
+
+/* “Next” button styling */
 #nextBtn {
-  margin-top: 1rem;
+  margin-top: 1.2rem;
   padding: 0.6rem 1.2rem;
   background: var(--primary-color);
   color: #fff;
