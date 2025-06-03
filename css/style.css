@@ -1,4 +1,204 @@
-/* style.css */
+:root {
+  --max-width: 800px;
+  --primary-color: #004d99;
+  --secondary-color: #e6f0ff;
+}
+
 body {
   font-family: Arial, sans-serif;
+  margin: 0;
+  background: var(--secondary-color);
+  display: flex;
+  justify-content: center;
+}
+
+main#survey-container {
+  width: 100%;
+  max-width: var(--max-width);
+  background: white;
+  padding: 2rem;
+  box-sizing: border-box;
+  margin: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.survey-block {
+  display: none;
+  flex-direction: column;
+  gap: 1rem;
+}
+.survey-block.active {
+  display: flex;
+}
+
+button {
+  align-self: flex-end;
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 4px;
+  background: var(--primary-color);
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+}
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+textarea {
+  width: 100%;
+  min-height: 120px;
+}
+
+.likert-scale label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.ranking-list li {
+  list-style: none;
+  padding: 0.4rem 0.6rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-bottom: 0.4rem;
+  cursor: move;
+  background: #fafafa;
+}
+
+.progress {
+  width: 100%;
+  background: #f1f1f1;
+  height: 8px;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  overflow: hidden;
+}
+.progress div {
+  height: 100%;
+  background: var(--primary-color);
+  width: 0%;
+  transition: width 0.3s ease;
+}
+
+/* ===================================================== */
+/* === 7-point Likert Scale styling (consolidated) ===== */
+/* ===================================================== */
+
+fieldset.likert-7 {
+  /* —— layout —— */
+  --bullet-size: 16px;            /* visible dot diameter  */
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;        /* keep labels aligned */
+  gap: 0.5rem;
+  margin: 2rem 0;
+  padding: 0 1rem;
+  border: none;
+}
+
+/* horizontal guideline */
+fieldset.likert-7::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(var(--bullet-size) / 2 + 3px); /* centre of dot incl. 3-px border */
+  height: 2px;
+  background: #000;
+  z-index: 0;                      /* place behind circles */
+}
+
+/* hide native radios */
+fieldset.likert-7 input[type="radio"] {
+  display: none;
+}
+
+/* —— label & bullet —— */
+fieldset.likert-7 label {
+  flex: 1 1 0;
+  min-width: 0;
+  margin: 0 .25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  text-align: center;
+  cursor: pointer;
+  font-size: 0.9rem;
+  line-height: 1.2;
+  position: relative;
+  z-index: 1;                      /* above guideline */
+}
+
+/* circle bullet */
+fieldset.likert-7 label::before {
+  content: '';
+  width:  var(--bullet-size);
+  height: var(--bullet-size);
+  border: 3.5px solid #000;          /* thicker outline */
+  border-radius: 50%;
+  background: #fff;                /* masks guideline */
+  margin: 0 auto 0.6rem;
+  position: relative;
+  z-index: 1;                      /* above guideline */
+}
+
+/* red X on selected option */
+fieldset.likert-7 input[type="radio"]:checked + label::after {
+  content: '✖';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 2.0rem;               /* larger X */
+  font-weight: 2000;                /* thicker stroke */
+  line-height: 1;
+  color: red;
+  z-index: 2;                      /* topmost layer */
+  pointer-events: none;
+}
+/* ---- centre the red X in the bullet ---- */
+fieldset.likert-7 input[type="radio"]:checked + label::after {
+  /* inner-radius (16 / 2)  + border (3)  = 11 px */
+  top: calc(var(--bullet-size) / 2 + 3px);
+}
+
+/* --------------------------------------------- */
+/* Block 3: Click‐to‐Rank (Vignette Ranking)      */
+/* --------------------------------------------- */
+
+/* =========================== */
+/* Block 3 – Ranking (Option 1) */
+/* =========================== */
+.ranking-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.ranking-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #f9f9f9;
+}
+
+.vignette-text {
+  flex: 1;
+  margin-right: 1rem;
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+.rank-select {
+  width: 80px;
+  padding: 0.4rem;
+  font-size: 1rem;
 }

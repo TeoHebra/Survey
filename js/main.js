@@ -9,24 +9,32 @@ const blockFiles = [
 ];
 
 const container = document.getElementById('survey-container');
+const progressBar = document.createElement('div');
+progressBar.className = 'progress';
+progressBar.innerHTML = '<div></div>';
+container.prepend(progressBar);
+
 let currentIndex = 0;
 
 async function loadBlock(index) {
-  const resp = await fetch(blockFiles[index]);
-  const html = await resp.text();
-  container.innerHTML = html;
+  const res = await fetch(blockFiles[index]);
+  const html = await res.text();
+  container.querySelectorAll('.survey-block').forEach(b => b.remove());
+  container.insertAdjacentHTML('beforeend', html);
+  const block = container.querySelector('.survey-block');
+  block.classList.add('active');
+  bindNavigation(block);
+  updateProgress();
+}
 
-  // If block 3, load its script
-  if (index === 3) {
-    const s = document.createElement('script');
-    s.src = "js/block3-ranking.js";
-    s.defer = true;
-    document.body.appendChild(s);
-  }
+function updateProgress() {
+  const percent = ((currentIndex) / (blockFiles.length)) * 100;
+  progressBar.firstElementChild.style.width = percent + '%';
+}
 
-  const nextBtn = container.querySelector('.next-btn');
-  const prevBtn = container.querySelector('.prev-btn');
-
+function bindNavigation(block) {
+  const nextBtn = block.querySelector('.next-btn');
+  const prevBtn = block.querySelector('.prev-btn');
   if (nextBtn) {
     nextBtn.addEventListener('click', () => {
       if (currentIndex < blockFiles.length - 1) {
@@ -45,4 +53,5 @@ async function loadBlock(index) {
   }
 }
 
+// Start survey
 loadBlock(currentIndex);

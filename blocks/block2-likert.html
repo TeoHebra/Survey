@@ -1,6 +1,37 @@
+<!-- Block 2: 7‑point Likert Scale -->
 <section class="survey-block" id="block2" data-type="likert">
-  <h2>Block 2 – Likert</h2>
-  <p>Sample content for block 2.</p>
+  <h2>Block 2 – Likert Scale</h2>
+  <p class="prompt">For each statement, please choose the option that best reflects your opinion.</p>
+
+  <!-- Statement 1 -->
+  <p class="statement">The definition of a “novel” metabolite is clear in my field.</p>
+  <fieldset class="likert-7">
+    <legend class="visually-hidden">Definition clarity</legend>
+
+    <input type="radio" id="clarity1" name="clarity" value="1" required>
+    <label for="clarity1">Strongly<br>disagree</label>
+
+    <input type="radio" id="clarity2" name="clarity" value="2">
+    <label for="clarity2">Disagree</label>
+
+    <input type="radio" id="clarity3" name="clarity" value="3">
+    <label for="clarity3">Somewhat<br>disagree</label>
+
+    <input type="radio" id="clarity4" name="clarity" value="4">
+    <label for="clarity4">Neutral</label>
+
+    <input type="radio" id="clarity5" name="clarity" value="5">
+    <label for="clarity5">Somewhat<br>agree</label>
+
+    <input type="radio" id="clarity6" name="clarity" value="6">
+    <label for="clarity6">Agree</label>
+
+    <input type="radio" id="clarity7" name="clarity" value="7">
+    <label for="clarity7">Strongly<br>agree</label>
+  </fieldset>
+
+  <!-- Add more statements by duplicating the block above -->
+
   <div class="navigation">
     <button class="prev-btn">Back</button>
     <button class="next-btn">Next</button>
