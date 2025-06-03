@@ -1,29 +1,111 @@
-<section id="block3" class="survey-block">
-  <h2>Rank The Abstracts</h2>
-  <p>Below are brief abstracts of hypothetical studies. Drag to rank them from <em>most</em> to <em>least</em> novel.</p>
-  <ol class="ranking-list" id="ranking-list" draggable="true">
-    <li>Study A: Introduces a brand‑new imaging technique…</li>
-    <li>Study B: Applies established methods to a new dataset…</li>
-    <li>Study C: Replicates previous work with minor tweaks…</li>
-  </ol>
-  <div>
+<!-- Block 3: Vignette Ranking (write-in ranks) -->
+<section class="survey-block" id="block3" data-type="ranking">
+  <h2>Block 3 – Vignette Ranking</h2>
+  <p class="prompt">
+    Please rank the following vignettes from <strong>1 (most novel)</strong> to 
+    <strong>5 (least novel)</strong>. Enter each number exactly once.
+  </p>
+
+  <div class="ranking-items">
+    <!-- Item 1 -->
+    <div class="ranking-item">
+      <label for="vignette1">
+        <!-- Replace the lorem ipsum below with your first vignette text -->
+        <span class="vignette-text">
+          “Vignette 1: Lorem ipsum dolor sit amet, consectetur adipiscing elit…”
+        </span>
+      </label>
+      <input
+        type="number"
+        id="vignette1"
+        name="vignette1"
+        class="rank-input"
+        min="1"
+        max="5"
+        required
+        placeholder="Rank"
+      >
+    </div>
+
+    <!-- Item 2 -->
+    <div class="ranking-item">
+      <label for="vignette2">
+        <span class="vignette-text">
+          “Vignette 2: Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua…”
+        </span>
+      </label>
+      <input
+        type="number"
+        id="vignette2"
+        name="vignette2"
+        class="rank-input"
+        min="1"
+        max="5"
+        required
+        placeholder="Rank"
+      >
+    </div>
+
+    <!-- Item 3 -->
+    <div class="ranking-item">
+      <label for="vignette3">
+        <span class="vignette-text">
+          “Vignette 3: Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris…”
+        </span>
+      </label>
+      <input
+        type="number"
+        id="vignette3"
+        name="vignette3"
+        class="rank-input"
+        min="1"
+        max="5"
+        required
+        placeholder="Rank"
+      >
+    </div>
+
+    <!-- Item 4 -->
+    <div class="ranking-item">
+      <label for="vignette4">
+        <span class="vignette-text">
+          “Vignette 4: Duis aute irure dolor in reprehenderit in voluptate velit esse…”
+        </span>
+      </label>
+      <input
+        type="number"
+        id="vignette4"
+        name="vignette4"
+        class="rank-input"
+        min="1"
+        max="5"
+        required
+        placeholder="Rank"
+      >
+    </div>
+
+    <!-- Item 5 -->
+    <div class="ranking-item">
+      <label for="vignette5">
+        <span class="vignette-text">
+          “Vignette 5: Excepteur sint occaecat cupidatat non proident, sunt in culpa…”
+        </span>
+      </label>
+      <input
+        type="number"
+        id="vignette5"
+        name="vignette5"
+        class="rank-input"
+        min="1"
+        max="5"
+        required
+        placeholder="Rank"
+      >
+    </div>
+  </div>
+
+  <div class="navigation">
     <button class="prev-btn">Back</button>
     <button class="next-btn">Next</button>
   </div>
-  <script>
-    // Very lightweight drag–n–drop ordering
-    const list = document.getElementById('ranking-list');
-    list.addEventListener('dragstart', e => {
-      e.dataTransfer.setData('text/plain', e.target.id);
-    });
-    list.addEventListener('dragover', e => e.preventDefault());
-    list.addEventListener('drop', e => {
-      e.preventDefault();
-      const dragged = document.getElementById(e.dataTransfer.getData('text/plain'));
-      const target = e.target.closest('li');
-      if (dragged && target && dragged !== target) {
-        list.insertBefore(dragged, target);
-      }
-    });
-  </script>
 </section>
