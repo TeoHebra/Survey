@@ -215,3 +215,91 @@ fieldset.likert-7 input[type="radio"]:checked + label::after {
   display: block;
   clear: both;
 }
+
+/* ================== Ranking List Enhancements ================== */
+
+/* 1) Wrapper for scrollable list */
+.ranking-wrapper {
+  max-height: 300px;       /* adjust as needed */
+  overflow-y: auto;        /* scroll if too tall */
+  padding-right: 0.5rem;   /* space for scrollbar */
+  margin-bottom: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+}
+
+/* 2) Each <li> becomes a flex row: [rank-badge] [text] [drag handle] */
+.ranking-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.ranking-list li {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid #eee;
+  background: #fff;
+  cursor: pointer;                 /* for click-to-rank */
+  user-select: none;               /* avoid text selection during drag */
+  position: relative;
+  transition: background 0.15s ease;
+}
+
+.ranking-list li:last-child {
+  border-bottom: none;
+}
+
+/* 3) Hover state */
+.ranking-list li:hover {
+  background: #f8faff;             /* very light blue */
+}
+
+/* 4) “Dragging” state (lower opacity) */
+.ranking-list li.dragging {
+  opacity: 0.4;
+}
+
+/* 5) Rank badge on the left */
+.ranking-list .rank-number {
+  display: inline-block;
+  flex: 0 0 1.5rem;               /* fixed width for numbers */
+  text-align: center;
+  font-weight: bold;
+  color: var(--primary-color);
+  margin-right: 0.75rem;
+  min-width: 1.5rem;
+}
+
+/* 6) Vignette text stretches to fill remaining space */
+.ranking-list .item-text {
+  flex: 1 1 auto;
+  word-break: break-word;
+}
+
+/* 7) Drag-handle on the right (six dots) */
+.ranking-list .drag-handle {
+  flex: 0 0 auto;
+  font-size: 1.2rem;
+  color: #999;
+  margin-left: 0.75rem;
+  cursor: grab;                    /* user sees “grab” cursor */
+}
+
+/* 8) While dragging, change cursor into “grabbing” */
+.ranking-list li:active .drag-handle {
+  cursor: grabbing;
+}
+
+/* 9) Hide default list padding/spacing */
+.ranking-list {
+  padding-left: 0;
+}
+
+/* 10) Prevent the horizontal rule from splitting the text on scroll (if any) */
+.ranking-list li::after {
+  content: "";
+  display: block;
+  clear: both;
+}
