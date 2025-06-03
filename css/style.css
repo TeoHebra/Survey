@@ -175,10 +175,10 @@ fieldset.likert-7 input[type="radio"]:checked + label::after {
 #block3 .ranking-container {
   border: 1px solid #ccc;
   border-radius: 4px;
-  overflow: hidden; /* so the two ULs appear as one box */
+  overflow: hidden; /* so the two ULs appear as a single box */
 }
 
-/* Style both ULs exactly the same, remove default margin/padding */
+/* Style both ULs exactly the same, remove default spacing */
 #block3 .ranking-container .ranking-list {
   list-style: none;
   margin: 0;
@@ -197,17 +197,17 @@ fieldset.likert-7 input[type="radio"]:checked + label::after {
   position: relative;
 }
 
-/* Remove the final bottom border on the very last item (in unrankedList or rankedList) */
+/* Remove bottom border on the very last <li> (so the box looks neat) */
 #block3 .ranking-container .ranking-list li:last-child {
   border-bottom: none;
 }
 
-/* Hover effect for any item that is NOT yet ranked */
+/* Hover effect on any item that isn’t yet ranked */
 #block3 .ranking-container .ranking-list li:not(.ranked):hover {
   background: #f0f8ff;
 }
 
-/* Once an item has been clicked (ranked), give it a different bg & disable hover */
+/* Once clicked (ranked), change background & disable hover */
 #block3 .ranking-container .ranking-list li.ranked {
   background: #e0f7fa;
   cursor: default;
