@@ -9,6 +9,7 @@
     <!--
       For each vignette, put its textual content here,
       with data-value="vX" matching whatever ID you want to submit.
+      Adjust the number of items and their IDs/text as needed.
     -->
     <div class="ranking-item" data-value="v1">
       <div class="vignette-text">
@@ -91,24 +92,39 @@
   </div>
 </section>
 
-<!-- Inline script to enable “Next” once all ranks are chosen (no duplicates),
-     and to populate the hidden input in the correct order. -->
+<!-- Updated script: disables any rank option once it’s been chosen in another select -->
 <script>
   (function() {
-    const items   = document.querySelectorAll('.ranking-item');
-    const selects = document.querySelectorAll('.rank-select');
-    const nextBtn = document.getElementById('submitRanking');
+    const items     = document.querySelectorAll('.ranking-item');
+    const selects   = document.querySelectorAll('.rank-select');
+    const nextBtn   = document.getElementById('submitRanking');
     const hiddenInput = document.getElementById('vignetteRanking');
 
-    function updateState() {
-      const chosenRanks = Array.from(selects).map(s => s.value);
-      const allSelected = chosenRanks.every(v => v !== '');
-      const unique      = new Set(chosenRanks).size === selects.length;
+    function updateOptionsAndState() {
+      // 1) Collect all currently chosen ranks (excluding empty)
+      const chosenRanks = Array.from(selects)
+        .map(s => s.value)
+        .filter(v => v !== '');
 
-      if (allSelected && unique) {
+      // 2) Disable in-place any <option> that matches a chosen rank in a different <select>
+      selects.forEach(curSel => {
+        const curValue = curSel.value;
+        Array.from(curSel.options).forEach(opt => {
+          const val = opt.value;
+          if (val === '') return; // skip the placeholder
+          // If this value is selected somewhere else (and not in THIS select), disable it
+          const isTakenElsewhere = chosenRanks.includes(val) && val !== curValue;
+          opt.disabled = isTakenElsewhere;
+        });
+      });
+
+      // 3) Check if all dropdowns have a non-empty, unique selection
+      const allFilled = Array.from(selects).every(s => s.value !== '');
+      const unique    = new Set(chosenRanks).size === selects.length;
+
+      if (allFilled && unique) {
         nextBtn.disabled = false;
-
-        // Build an array [rank 1 → vignetteID, rank 2 → …, …]
+        // Build hiddenInput value in ranked order
         const ordered = [];
         for (let rank = 1; rank <= selects.length; rank++) {
           for (let item of items) {
@@ -122,9 +138,11 @@
         hiddenInput.value = ordered.join(',');
       } else {
         nextBtn.disabled = true;
+        hiddenInput.value = '';
       }
     }
 
-    selects.forEach(s => s.addEventListener('change', updateState));
+    // Attach listener to each dropdown
+    selects.forEach(s => s.addEventListener('change', updateOptionsAndState));
   })();
 </script>
