@@ -1,20 +1,122 @@
 <!-- blocks/block3‐ranking.html -->
 <section class="survey-block active" id="block3" data-type="ranking">
-  <h2>Block 3 – Vignette Ranking</h2>
+  <h2>Block 3 &ndash; Vignette Ranking</h2>
   <p class="prompt">
     Please assign a unique rank to each vignette (1 = most necessary, 2 = second most, etc.). 
     Type a number (1–4) in the box next to each statement. Do not repeat ranks.
   </p>
 
-  <!-- Inline CSS just for Block 3 to flag duplicates -->
+  <!-- INLINE CSS for Block 3 -->
   <style>
-    /* If an input has duplicate value, give it a red border + background */
+    /* ------------------------------------
+       Base container styling for Block 3
+       ------------------------------------ */
+    #block3 {
+      display: flex;                    /* already “active” so we show it */
+      flex-direction: column;
+      padding: 20px;
+      background-color: #ffffff;
+      border-radius: 6px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      max-width: 800px;
+      margin: 0 auto;                   /* center on page if desired */
+    }
+
+    /* Section heading */
+    #block3 h2 {
+      font-size: 1.6rem;
+      margin-bottom: 12px;
+      color: #333333;
+    }
+
+    /* Instruction text */
+    #block3 .prompt {
+      font-size: 1rem;
+      margin-bottom: 18px;
+      color: #555555;
+      line-height: 1.4;
+    }
+
+    /* Each “item” (vignette + input) */
+    #block3 .ranking-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 16px;
+      padding: 12px;
+      background-color: #f9f9f9;
+      border: 1px solid #dddddd;
+      border-radius: 4px;
+      transition: background-color 0.2s ease;
+    }
+
+    /* Hover state to slightly darken background */
+    #block3 .ranking-item:hover {
+      background-color: #f1f1f1;
+    }
+
+    /* The label (vignette text) takes up most of the width */
+    #block3 .ranking-item label {
+      flex: 1;
+      font-size: 1rem;
+      color: #333333;
+      margin-right: 12px;
+    }
+
+    /* The number‐only input for rank */
+    #block3 .ranking-item .rank-input {
+      width: 60px;
+      padding: 8px;
+      font-size: 1rem;
+      text-align: center;
+      border: 1px solid #cccccc;
+      border-radius: 4px;
+      background-color: #ffffff;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    /* Focus state for a clean blue outline */
+    #block3 .ranking-item .rank-input:focus {
+      outline: none;
+      border-color: #66afe9;
+      box-shadow: 0 0 4px rgba(102, 175, 233, 0.6);
+    }
+
+    /* If the user leaves it empty or out of range, native “:invalid” styling */
+    #block3 .ranking-item .rank-input:invalid {
+      border-color: #e74c3c;
+      background-color: #fdecea;
+    }
+
+    /* HIGHLIGHT DUPLICATES:
+       When the same number appears in more than one box, we will add 
+       a “duplicate” class to each offending input. This rule makes it red. */
     #block3 .rank-input.duplicate {
       border-color: #e74c3c !important;
       background-color: #fdecea !important;
     }
+
+    /* Placeholder color for guidance */
+    #block3 .ranking-item .rank-input::placeholder {
+      color: #999999;
+    }
+
+    /* Responsive: stack items vertically on very small screens */
+    @media (max-width: 480px) {
+      #block3 .ranking-item {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      #block3 .ranking-item label {
+        margin-right: 0;
+        margin-bottom: 8px;
+      }
+      #block3 .ranking-item .rank-input {
+        width: 100%;
+      }
+    }
   </style>
 
+  <!-- Four Vignette‐plus‐input items -->
   <div class="ranking-item">
     <label for="rank_v1">
       <strong>Vignette 1:</strong> Lorem ipsum dolor sit amet, consectetur adipiscing elit…
@@ -75,42 +177,49 @@
     />
   </div>
 
-  <!-- Inline script to watch for duplicates and add/remove the “.duplicate” class -->
+  <!-- INLINE SCRIPT to detect & mark duplicates -->
   <script>
     (function() {
       document.addEventListener('DOMContentLoaded', () => {
-        // Grab all four inputs
+        // 1) Collect all four rank inputs into an array
         const inputs = Array.from(
           document.querySelectorAll('#block3 .rank-input')
         );
 
+        // 2) Function that checks for any duplicate values and toggles the “duplicate” class
         function markDuplicates() {
-          // Build a map from value→array of inputs having that value
+          // Build a map: value → [list of inputs with that value]
           const valueMap = {};
           inputs.forEach(input => {
             const val = input.value.trim();
-            if (val === '') return; // skip empty
-            if (!valueMap[val]) valueMap[val] = [];
+            if (!val) return;            // skip empty inputs
+            if (!valueMap[val]) {
+              valueMap[val] = [];
+            }
             valueMap[val].push(input);
           });
 
-          // First, clear any existing “duplicate” class
-          inputs.forEach(i => i.classList.remove('duplicate'));
+          // 3) First, remove “duplicate” class from all
+          inputs.forEach(i => {
+            i.classList.remove('duplicate');
+          });
 
-          // Now, for each value that appears ≥2 times, add .duplicate to those inputs
+          // 4) Any value that appears ≥ 2 times is a “duplicate”
           Object.values(valueMap).forEach(arr => {
             if (arr.length > 1) {
-              arr.forEach(i => i.classList.add('duplicate'));
+              arr.forEach(i => {
+                i.classList.add('duplicate');
+              });
             }
           });
         }
 
-        // Attach an “input” event listener to each of the four rank boxes
+        // 5) Attach “input” listener to each field so it runs on every keystroke
         inputs.forEach(i => {
           i.addEventListener('input', markDuplicates);
         });
 
-        // (Optional) run once on load to catch pre‐filled duplicates
+        // 6) Run once on load in case you have pre‐filled data
         markDuplicates();
       });
     })();
