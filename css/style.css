@@ -171,9 +171,9 @@ fieldset.likert-7 input[type="radio"]:checked + label::after {
 /* Block 3: Click‐to‐Rank (Vignette Ranking)      */
 /* --------------------------------------------- */
 
-/* ====================== */
-/* Block 3: Ranking Style */
-/* ====================== */
+/* =========================== */
+/* Block 3 – Ranking (Option 1) */
+/* =========================== */
 .ranking-container {
   display: flex;
   flex-direction: column;
