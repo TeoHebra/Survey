@@ -1,75 +1,130 @@
-<!-- Block 3 – Numeric-Input Ranking -->
+<!-- blocks/block3-ranking.html -->
 <section class="survey-block" id="block3" data-type="ranking">
   <h2>Block 3 – Vignette Ranking</h2>
   <p class="prompt">
-    Type a unique rank (1 – 4) next to each vignette (1 = most novel, 4 = least novel):
+    Select a rank for each vignette from the dropdown on the right.
   </p>
 
-  <div class="ranking-grid-num">
-    <!-- Vignette 1 -->
-    <div class="ranking-row-num">
-      <div class="item-text-num">
-        <strong>Vignette 1:</strong> Lorem ipsum dolor sit amet…
+  <div class="ranking-container">
+    <!--
+      For each vignette, put its textual content here,
+      with data-value="vX" matching whatever ID you want to submit.
+    -->
+    <div class="ranking-item" data-value="v1">
+      <div class="vignette-text">
+        <strong>Vignette 1:</strong> Lorem ipsum dolor sit amet, consectetur adipiscing elit…
       </div>
-      <div class="item-control-num">
-        <input type="number"
-               name="rank_v1"
-               class="ranking-input"
-               min="1" max="4"
-               placeholder="1–4"
-               required>
-      </div>
+      <select name="rank_v1" class="rank-select">
+        <option value="" disabled selected>Rank …</option>
+        <option value="1">1 (most novel)</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5 (least novel)</option>
+      </select>
     </div>
 
-    <!-- Vignette 2 -->
-    <div class="ranking-row-num">
-      <div class="item-text-num">
-        <strong>Vignette 2:</strong> Consectetur adipiscing elit…
+    <div class="ranking-item" data-value="v2">
+      <div class="vignette-text">
+        <strong>Vignette 2:</strong> Consectetur adipiscing elit, sed do eiusmod tempor incididunt…
       </div>
-      <div class="item-control-num">
-        <input type="number"
-               name="rank_v2"
-               class="ranking-input"
-               min="1" max="4"
-               placeholder="1–4"
-               required>
-      </div>
+      <select name="rank_v2" class="rank-select">
+        <option value="" disabled selected>Rank …</option>
+        <option value="1">1 (most novel)</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5 (least novel)</option>
+      </select>
     </div>
 
-    <!-- Vignette 3 -->
-    <div class="ranking-row-num">
-      <div class="item-text-num">
-        <strong>Vignette 3:</strong> Sed do eiusmod tempor incididunt…
+    <div class="ranking-item" data-value="v3">
+      <div class="vignette-text">
+        <strong>Vignette 3:</strong> Sed do eiusmod tempor incididunt ut labore et dolore magna…
       </div>
-      <div class="item-control-num">
-        <input type="number"
-               name="rank_v3"
-               class="ranking-input"
-               min="1" max="4"
-               placeholder="1–4"
-               required>
-      </div>
+      <select name="rank_v3" class="rank-select">
+        <option value="" disabled selected>Rank …</option>
+        <option value="1">1 (most novel)</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5 (least novel)</option>
+      </select>
     </div>
 
-    <!-- Vignette 4 -->
-    <div class="ranking-row-num">
-      <div class="item-text-num">
-        <strong>Vignette 4:</strong> Ut labore et dolore magna aliqua…
+    <div class="ranking-item" data-value="v4">
+      <div class="vignette-text">
+        <strong>Vignette 4:</strong> Incididunt ut labore et dolore magna aliqua…
       </div>
-      <div class="item-control-num">
-        <input type="number"
-               name="rank_v4"
-               class="ranking-input"
-               min="1" max="4"
-               placeholder="1–4"
-               required>
+      <select name="rank_v4" class="rank-select">
+        <option value="" disabled selected>Rank …</option>
+        <option value="1">1 (most novel)</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5 (least novel)</option>
+      </select>
+    </div>
+
+    <div class="ranking-item" data-value="v5">
+      <div class="vignette-text">
+        <strong>Vignette 5:</strong> Magna aliqua ut enim ad minim veniam…
       </div>
+      <select name="rank_v5" class="rank-select">
+        <option value="" disabled selected>Rank …</option>
+        <option value="1">1 (most novel)</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5 (least novel)</option>
+      </select>
     </div>
   </div>
 
-  <div class="error-msg" id="rankError" style="display: none; color: #b00; margin-top: 0.5rem;">
-    Please enter every rank (1–4) once; no duplicates allowed.
-  </div>
+  <!-- Hidden input to collect final ranking order as “v3,v1,v5,…” -->
+  <input type="hidden" name="vignetteRanking" id="vignetteRanking">
 
-  <button id="nextBtn" class="btn" disabled>Next</button>
+  <div class="navigation">
+    <button class="prev-btn">Back</button>
+    <!-- Disabled until all dropdowns are filled with no duplicates -->
+    <button class="next-btn" id="submitRanking" disabled>Next</button>
+  </div>
 </section>
+
+<!-- Inline script to enable “Next” once all ranks are chosen (no duplicates),
+     and to populate the hidden input in the correct order. -->
+<script>
+  (function() {
+    const items   = document.querySelectorAll('.ranking-item');
+    const selects = document.querySelectorAll('.rank-select');
+    const nextBtn = document.getElementById('submitRanking');
+    const hiddenInput = document.getElementById('vignetteRanking');
+
+    function updateState() {
+      const chosenRanks = Array.from(selects).map(s => s.value);
+      const allSelected = chosenRanks.every(v => v !== '');
+      const unique      = new Set(chosenRanks).size === selects.length;
+
+      if (allSelected && unique) {
+        nextBtn.disabled = false;
+
+        // Build an array [rank 1 → vignetteID, rank 2 → …, …]
+        const ordered = [];
+        for (let rank = 1; rank <= selects.length; rank++) {
+          for (let item of items) {
+            const sel = item.querySelector('select');
+            if (parseInt(sel.value, 10) === rank) {
+              ordered.push(item.dataset.value);
+              break;
+            }
+          }
+        }
+        hiddenInput.value = ordered.join(',');
+      } else {
+        nextBtn.disabled = true;
+      }
+    }
+
+    selects.forEach(s => s.addEventListener('change', updateState));
+  })();
+</script>
