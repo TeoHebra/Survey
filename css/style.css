@@ -171,67 +171,34 @@ fieldset.likert-7 input[type="radio"]:checked + label::after {
 /* Block 3: Click‐to‐Rank (Vignette Ranking)      */
 /* --------------------------------------------- */
 
-/* === Option 3: Numeric-Input Ranking Styles === */
-.ranking-grid-num {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 0.8rem 1rem;
+/* ====================== */
+/* Block 3: Ranking Style */
+/* ====================== */
+.ranking-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.ranking-item {
+  display: flex;
   align-items: center;
-}
-
-.ranking-row-num {
-  display: contents; /* Each row spans two columns */
-}
-
-.item-text-num {
-  padding: 0.6rem;
+  justify-content: space-between;
+  padding: 0.75rem;
   border: 1px solid #ccc;
   border-radius: 4px;
-  background: #fafafa;
-  font-size: 0.95rem;
+  background: #f9f9f9;
+}
+
+.vignette-text {
+  flex: 1;
+  margin-right: 1rem;
+  font-size: 1rem;
   line-height: 1.4;
 }
 
-.item-control-num {
-  display: flex;
-  align-items: center;
-}
-
-.ranking-input {
-  width: 3.5rem;
+.rank-select {
+  width: 80px;
   padding: 0.4rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 0.95rem;
-}
-
-/* Focus state */
-.ranking-input:focus {
-  outline: none;
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
-}
-
-/* Error message styling */
-#error-msg {
-  color: #b00;
-  font-size: 0.9rem;
-  margin-top: 0.5rem;
-}
-
-/* “Next” button styling */
-#nextBtn {
-  margin-top: 1.2rem;
-  padding: 0.6rem 1.2rem;
-  background: var(--primary-color);
-  color: #fff;
-  border: none;
-  border-radius: 4px;
   font-size: 1rem;
-  cursor: pointer;
-}
-
-#nextBtn:disabled {
-  background: #ccc;
-  cursor: not-allowed;
 }
