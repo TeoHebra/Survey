@@ -1,81 +1,36 @@
-<!-- Block 3: Vignette Ranking (click‐to‐rank) -->
+<!-- Block 3: Vignette Ranking (drag-and-drop) -->
 <section class="survey-block" id="block3" data-type="ranking">
-  <h2>Block 3 – Vignette Ranking</h2>
+  <h2>Block 3 &ndash; Vignette Ranking</h2>
   <p class="prompt">
-    Click each vignette in the order you feel is most to least novel. The first click marks rank 1, the next click marks rank 2, and so on.
+    Drag each vignette into the order you feel is most to least necessary. 
+    Once you’ve arranged them, the hidden field below will automatically update. 
+    Your first‐placed item becomes rank 1, the next rank 2, and so on.
   </p>
 
   <ul id="rankingList" class="ranking-list">
-    <!--
-      Each <li> needs a data-value attribute (e.g. "v1", "v2", …).
-      Replace the placeholder text below (“Vignette 1: …”) with your actual vignette content.
+    <!-- 
+      Each <li> must have a data-value (e.g. "v1", "v2", …). 
+      Make sure to set draggable="true" on each one. 
+      Replace “Vignette 1: …” with your real vignette text. 
     -->
-    <li data-value="v1">
+    <li data-value="v1" draggable="true">
       <strong>Vignette 1:</strong> Lorem ipsum dolor sit amet, consectetur adipiscing elit…
     </li>
-    <li data-value="v2">
-      <strong>Vignette 2:</strong> Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris…
+    <li data-value="v2" draggable="true">
+      <strong>Vignette 2:</strong> Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua…
     </li>
-    <li data-value="v3">
-      <strong>Vignette 3:</strong> Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua…
+    <li data-value="v3" draggable="true">
+      <strong>Vignette 3:</strong> Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris…
     </li>
-    <li data-value="v4">
-      <strong>Vignette 4:</strong> Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi…
+    <li data-value="v4" draggable="true">
+      <strong>Vignette 4:</strong> Duis aute irure dolor in reprehenderit in voluptate velit esse cillum…
     </li>
-    <li data-value="v5">
-      <strong>Vignette 5:</strong> Duis aute irure dolor in reprehenderit in voluptate velit esse cillum…
-    </li>
+    <!-- Add/remove <li> items as needed. Just keep draggable="true" and data-value. -->
   </ul>
 
-  <!-- Hidden input that will store the final ranking as a comma‐separated string -->
+  <!-- This hidden input will contain the final order as “v2,v1,v4,v3”, etc. -->
   <input type="hidden" name="vignetteRanking" id="vignetteRanking">
-
-  <div class="navigation">
-    <button class="prev-btn">Back</button>
-    <button class="next-btn" id="submitRanking" disabled>Next</button>
-  </div>
 </section>
 
-<script>
-  (function() {
-    const listEl = document.getElementById('rankingList');
-    const hiddenInput = document.getElementById('vignetteRanking');
-    const nextBtn = document.getElementById('submitRanking');
-    const items = Array.from(listEl.children);
-    let nextRank = 1;
-    const totalItems = items.length;
-
-    items.forEach(item => {
-      item.addEventListener('click', function() {
-        // If this <li> is already assigned a rank, do nothing
-        if (this.dataset.rank) return;
-
-        // Assign the next available rank
-        this.dataset.rank = nextRank;
-        // Create a badge <span> showing the rank number
-        const badge = document.createElement('span');
-        badge.className = 'rank-badge';
-        badge.textContent = nextRank;
-        // Prepend the badge to the <li> (so it appears before the text)
-        this.prepend(badge);
-        // Mark as “ranked” (for CSS styling)
-        this.classList.add('ranked');
-
-        nextRank++;
-
-        // Once every item has been clicked (i.e. nextRank > totalItems),
-        // build the final order and enable the “Next” button.
-        if (nextRank > totalItems) {
-          // Sort the items array by data-rank (1,2,3, …)
-          const ordered = items
-            .slice() // clone
-            .sort((a, b) => parseInt(a.dataset.rank, 10) - parseInt(b.dataset.rank, 10));
-          // Extract the data-value attributes in sorted order
-          const values = ordered.map(el => el.dataset.value);
-          hiddenInput.value = values.join(',');
-          nextBtn.disabled = false;
-        }
-      });
-    });
-  })();
-</script>
+<!-- Include the drag-and-drop logic (see js/block3-ranking.js) -->
+<script src="../js/block3-ranking.js"></script>
