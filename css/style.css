@@ -171,14 +171,15 @@ fieldset.likert-7 input[type="radio"]:checked + label::after {
 /* === BLOCK 3: Vignette Ranking Styles  === */
 /* ========================================= */
 
-/* 1) Container for a scrollable list of items */
+
+/* 1) Container for scrollable list of items */
 .ranking-wrapper {
   max-height: 300px;         /* Adjust if you have more/fewer vignettes */
   overflow-y: auto;          /* Enable vertical scrolling when needed */
   border: 1px solid #ddd;
   border-radius: 6px;
   margin-bottom: 1rem;
-  padding-right: 0.5rem;     /* Leave room for the scrollbar */
+  padding-right: 0.5rem;     /* Leave room for scrollbar */
 }
 
 /* 2) Reset and remove default UL styling */
@@ -230,7 +231,7 @@ fieldset.likert-7 input[type="radio"]:checked + label::after {
   cursor: pointer;
 }
 
-/* 8) Vignette text takes up all remaining space */
+/* 8) Vignette text takes up remaining space */
 .ranking-list .item-text {
   flex: 1 1 auto;
   word-break: break-word;     /* Wrap long text onto multiple lines */
@@ -263,5 +264,4 @@ fieldset.likert-7 input[type="radio"]:checked + label::after {
   clear: both;
 }
 
-/* 13) Disable Next button styling (JS handles the disabled state) */
-/*     (No extra CSS required here) */
+/* 13) The “Next” button’s disabled‐state is handled in JS (no extra CSS needed) */
