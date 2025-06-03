@@ -267,20 +267,31 @@ fieldset.likert-7 input[type="radio"]:checked + label::after {
 /* 13) The “Next” button’s disabled‐state is handled in JS (no extra CSS needed) */
 
 
-.ranking-list {
-  list-style: none;
-  padding: 0;
+/* Container around each vignette + input */
+.ranking-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
 }
 
-.ranking-list li {
-  padding: 10px;
-  margin-bottom: 6px;
+/* Make the label take up most of the width */
+.ranking-item label {
+  flex: 1;
+  margin-right: 10px;
+  font-size: 1rem;
+}
+
+/* Small number‐only box for the rank */
+.rank-input {
+  width: 60px;
+  padding: 6px;
+  font-size: 1rem;
   border: 1px solid #ccc;
-  background-color: #fafafa;
-  cursor: move;            /* indicates draggable */
+  border-radius: 4px;
 }
 
-.ranking-list li.over {
-  border: 2px dashed #666; /* highlight drop target */
+/* When the input is invalid (e.g., empty or out of range), highlight it */
+.rank-input:invalid {
+  border-color: #e74c3c;
+  background-color: #fdecea;
 }
-
