@@ -1,13 +1,11 @@
-<!-- ================================
-     blocks/block4-scaling.html
-     ================================ -->
+<!-- ================================================
+     blocks/block4-scaling.html (UPDATED AESTHETIC)
+     ================================================ -->
 <section class="survey-block" id="block4" data-type="scaling">
   <!-- (Optional) You can keep or remove this heading -->
   <h2 class="block-title">Block 4 – Novelty &amp; Confidence</h2>
 
-  <!-- ──────────────────────────────────────────────────────────────── -->
-  <!-- FLEX ROW: Novel?  |  Confidence  |  Wow effect  (all on one line) -->
-  <!-- ──────────────────────────────────────────────────────────────── -->
+  <!-- FLEX ROW: Novel?  |  Confidence  |  Wow effect  -->
   <div class="block-4-row">
     <!-- ──────── 1) Novel? (Yes / No radios) ──────── -->
     <div class="novel-group">
@@ -107,8 +105,8 @@
 
   <!-- ────────────────────────────────────────────────────────────────── -->
   <!-- 4) (Optional) Statement Text or Image can go ABOVE or BELOW this row -->
-  <!-- If you want the statement above, move this <p class="statement">... -->
-  <!-- to before the .block-4-row div.                                         -->
+  <!--    If you want the statement above, move this <p class="statement">… -->
+  <!--    to before the .block-4-row div.                                -->
   <!-- ────────────────────────────────────────────────────────────────── -->
   <!--
   <p class="statement">
@@ -118,7 +116,7 @@
   -->
 
   <!-- ────────────────────────────────────────────────────────────────── -->
-  <!-- 5) Navigation Buttons (Back / Next)                                 -->
+  <!-- 5) Navigation Buttons (Back / Next)                                -->
   <!-- ────────────────────────────────────────────────────────────────── -->
   <div class="nav-buttons">
     <button type="button" class="prev-btn">Back</button>
@@ -126,13 +124,13 @@
   </div>
 
   <!-- ────────────────────────────────────────────────────────────────── -->
-  <!-- 6) Inline Script: Wire up slider → <span> updates                       -->
+  <!-- 6) Inline Script: Wire up slider → <span> updates                    -->
   <!-- ────────────────────────────────────────────────────────────────── -->
   <script>
     (function() {
       // CONFIDENCE SLIDER
       const confSlider = document.getElementById('confidence-slider');
-      const confValue = document.getElementById('confidence-value');
+      const confValue  = document.getElementById('confidence-value');
       if (confSlider && confValue) {
         confValue.textContent = confSlider.value; // initialize
         confSlider.addEventListener('input', function() {
@@ -144,7 +142,7 @@
 
       // WOW EFFECT SLIDER
       const wowSlider = document.getElementById('wow-slider');
-      const wowValue = document.getElementById('wow-value');
+      const wowValue  = document.getElementById('wow-value');
       if (wowSlider && wowValue) {
         wowValue.textContent = wowSlider.value; // initialize
         wowSlider.addEventListener('input', function() {
@@ -159,7 +157,7 @@
 
 <style>
   /* ===================================== */
-  /* Block 4 Styles: Horizontal Flex Layout */
+  /* Block 4 Container Styles               */
   /* ===================================== */
   .survey-block {
     max-width: 800px;
@@ -186,15 +184,15 @@
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
-    gap: 24px; /* space between the three groups */
-    margin-bottom: 32px;
+    gap: 24px;            /* horizontal spacing between columns */
+    margin-bottom: 32px;   /* space below the row */
   }
 
   /* ──────────────────────────────────────────────────────────── */
   /* 2) Novel Group (first “column” in flex row)                 */
   /* ──────────────────────────────────────────────────────────── */
   .novel-group {
-    flex: 0 1 25%; /* take up ~25% of the row, but shrink if needed */
+    flex: 0 1 20%;       /* roughly 20% of row, but flexible */
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -208,36 +206,41 @@
   .novel-radios {
     display: flex;
     flex-direction: column;
-    gap: 12px; /* vertical space between Yes and No */
+    gap: 12px;           /* vertical space between “Yes” and “No” lines */
   }
 
-  /* Hide the native radio circle entirely */
+  /* Hide the native radio input, so we only see our custom ○/✖ */
   .novel-radio {
     display: none;
   }
-  /* Style each label with a pseudo-element ○ or ✕ */
+  /* Style each label so it can show ○ or ✖ before the text */
   .novel-label {
     position: relative;
-    padding-left: 28px; /* space for ○/✕ icon on left */
+    padding-left: 32px;   /* space on left for the icon */
     font-size: 1rem;
     color: #222;
     cursor: pointer;
     user-select: none;
+    line-height: 1;       /* so the icon can truly center vertically */
   }
-  /* By default, show an empty circle “○” */
+  /* By default, show a large hollow circle “◯” (U+25EF) */
   .novel-label::before {
-    content: "○";
+    content: "◯";
     position: absolute;
     left: 0;
-    top: 0;
-    font-size: 1.5rem;
-    line-height: 1;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.8rem;    /* make the circle bigger */
     color: #222;
+    line-height: 1;
   }
-  /* When the radio is checked, change the ○→✕ (in red) */
+  /* When the radio is checked, replace ◯ with a heavy “✖” (U+2716), in red */
   .novel-radio:checked + .novel-label::before {
-    content: "✕";
+    content: "✖";
     color: red;
+    font-size: 1.8rem;    /* same size as circle */
+    top: 50%;
+    transform: translateY(-50%);
   }
 
   /* ──────────────────────────────────────────────────────────── */
@@ -247,7 +250,7 @@
   /* ──────────────────────────────────────────────────────────── */
   .confidence-group,
   .wow-group {
-    flex: 0 1 30%; /* each takes ~30% of the row */
+    flex: 0 1 38%;       /* each takes ~38% of the row */
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -282,9 +285,10 @@
   /* ───────────────────────────────────────────────────────────── */
   .slider-input {
     width: 100%;
-    height: 24px;
-    background: transparent; /* let datalist ticks show through */
+    height: 28px;             /* a bit taller track */
+    background: transparent;   /* let datalist ticks show through */
     -webkit-appearance: none;
+    margin: 0;
   }
   .slider-input:focus {
     outline: none;
@@ -292,46 +296,46 @@
 
   /* TRACK */
   .slider-input::-webkit-slider-runnable-track {
-    height: 4px;
+    height: 6px;              /* thicker track */
     background: #ddd;
-    border-radius: 2px;
+    border-radius: 3px;
   }
   .slider-input::-moz-range-track {
-    height: 4px;
+    height: 6px;
     background: #ddd;
-    border-radius: 2px;
+    border-radius: 3px;
   }
   .slider-input::-ms-track {
-    height: 4px;
+    height: 6px;
     background: #ddd;
-    border-radius: 2px;
-    color: transparent; /* hide native ticks in IE/Edge */
+    border-radius: 3px;
+    color: transparent;       /* hide native ticks in IE/Edge */
   }
 
   /* THUMB */
   .slider-input::-webkit-slider-thumb {
     -webkit-appearance: none;
-    width: 20px;
-    height: 20px;
+    width: 24px;              /* larger thumb */
+    height: 24px;             /* larger thumb */
     background: #222;
-    border: 2px solid #fff;
+    border: 3px solid #fff;   /* thicker white border */
     border-radius: 50%;
-    margin-top: -8px; /* center thumb on the track */
+    margin-top: -9px;         /* center the thumb on the thicker track */
     cursor: pointer;
   }
   .slider-input::-moz-range-thumb {
-    width: 20px;
-    height: 20px;
+    width: 24px;
+    height: 24px;
     background: #222;
-    border: 2px solid #fff;
+    border: 3px solid #fff;
     border-radius: 50%;
     cursor: pointer;
   }
   .slider-input::-ms-thumb {
-    width: 20px;
-    height: 20px;
+    width: 24px;
+    height: 24px;
     background: #222;
-    border: 2px solid #fff;
+    border: 3px solid #fff;
     border-radius: 50%;
     cursor: pointer;
   }
@@ -344,10 +348,10 @@
     background: transparent;
   }
   .slider-input::-moz-range-ticks {
-    color: #888; /* tick color in Firefox, if supported */
+    color: #888;  /* tick color in Firefox, if supported */
   }
   .slider-input::-ms-ticks-after {
-    color: #888; /* tick color in IE/Edge, if supported */
+    color: #888;  /* tick color in IE/Edge, if supported */
   }
 
   /* ──────────────────────────────────────────────────────────── */
