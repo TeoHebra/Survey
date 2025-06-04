@@ -1,4 +1,5 @@
-<!-- blocks/block3‐ranking.html -->
+<!-- File: blocks/block3‐ranking.html -->
+
 <section class="survey-block active" id="block3" data-type="ranking">
   <h2>Block 3 &ndash; Vignette Ranking</h2>
   <p class="prompt">
@@ -44,7 +45,7 @@
       <div class="arrow down"></div>
     </div>
     <label for="rank_v1">
-      <strong>Vignette 1:</strong> Lorem ipsum dolor sit amet…
+      <strong>Vignette 1:</strong> Lorem ipsum dolor sit amet, consectetur adipiscing elit…
     </label>
   </div>
 
@@ -64,7 +65,7 @@
       <div class="arrow down"></div>
     </div>
     <label for="rank_v2">
-      <strong>Vignette 2:</strong> Sed do eiusmod tempor incididunt…
+      <strong>Vignette 2:</strong> Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua…
     </label>
   </div>
 
@@ -84,7 +85,7 @@
       <div class="arrow down"></div>
     </div>
     <label for="rank_v3">
-      <strong>Vignette 3:</strong> Ut enim ad minim veniam…
+      <strong>Vignette 3:</strong> Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris…
     </label>
   </div>
 
@@ -104,40 +105,13 @@
       <div class="arrow down"></div>
     </div>
     <label for="rank_v4">
-      <strong>Vignette 4:</strong> Duis aute irure dolor in reprehenderit…
+      <strong>Vignette 4:</strong> Duis aute irure dolor in reprehenderit in voluptate velit esse cillum…
     </label>
   </div>
 
-  <!-- ─────────── 3) JS TO HANDLE ARROW CLICKS ─────────── -->
-  <script>
-    document.querySelectorAll('#block3 .number-wrapper').forEach(wrapper => {
-      const input = wrapper.querySelector('.rank-input');
-      const up = wrapper.querySelector('.arrow.up');
-      const down = wrapper.querySelector('.arrow.down');
-
-      function clamp(val, min, max) {
-        return Math.min(Math.max(val, min), max);
-      }
-
-      up.addEventListener('click', () => {
-        const minVal = parseInt(input.getAttribute('min'), 10);
-        const maxVal = parseInt(input.getAttribute('max'), 10);
-        let current = parseInt(input.value, 10);
-        if (isNaN(current)) current = minVal - 1;
-        const nextVal = clamp(current + 1, minVal, maxVal);
-        input.value = nextVal;
-        input.dispatchEvent(new Event('input'));
-      });
-
-      down.addEventListener('click', () => {
-        const minVal = parseInt(input.getAttribute('min'), 10);
-        const maxVal = parseInt(input.getAttribute('max'), 10);
-        let current = parseInt(input.value, 10);
-        if (isNaN(current)) current = minVal + 1;
-        const nextVal = clamp(current - 1, minVal, maxVal);
-        input.value = nextVal;
-        input.dispatchEvent(new Event('input'));
-      });
-    });
-  </script>
+  <!-- ─────────── NAVIGATION BUTTONS ─────────── -->
+  <div class="navigation">
+    <button class="prev-btn">Back</button>
+    <button class="next-btn" id="submitRanking">Next</button>
+  </div>
 </section>
