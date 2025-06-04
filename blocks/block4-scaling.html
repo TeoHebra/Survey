@@ -17,14 +17,12 @@
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
       font-family: Arial, sans-serif;
     }
-
     .block-4 .statement {
       font-size: 1.1rem;
       margin-bottom: 15px;
       line-height: 1.4;
       color: #333;
     }
-
     .block-4 .optional-image {
       display: block;
       max-width: 100%;
@@ -32,41 +30,34 @@
       margin: 15px 0;
       border-radius: 4px;
     }
-
     .block-4 .question-group {
       margin: 20px 0;
     }
-
     .block-4 .question-group label {
       margin-right: 12px;
       font-weight: bold;
       color: #444;
     }
-
     .block-4 .radio-option {
       margin-right: 20px;
       font-size: 0.95rem;
       color: #222;
     }
-
     .block-4 .slider-container {
       margin-top: 20px;
     }
-
     .block-4 .slider-container label {
       display: block;
       font-weight: bold;
       margin-bottom: 6px;
       color: #444;
     }
-
     .block-4 .slider-container .slider-value {
       font-size: 1rem;
       font-weight: bold;
       margin-left: 8px;
       color: #007BFF;
     }
-
     .block-4 .slider-container input[type="range"] {
       width: 100%;
     }
@@ -74,12 +65,12 @@
 </head>
 <body>
   <div class="block-4">
-    <!-- 1) Statement Text (replace with your actual text) -->
+    <!-- 1) Statement Text -->
     <p class="statement">
       “In the last decade, the rapid rise of decentralized finance (DeFi) platforms has transformed how individuals access financial services.”
     </p>
 
-    <!-- 2) Optional Image (uncomment & set src/alt if you need one)
+    <!-- 2) Optional Image (uncomment & fill in src/alt if needed)
     <img
       src="path/to/your/image.jpg"
       alt="A visual representation of the statement"
@@ -113,7 +104,7 @@
     <div class="slider-container">
       <label for="confidence-slider">
         Confidence:
-        <!-- <span> that will update live -->
+        <!-- This <span> will update live -->
         <span id="confidence-value" class="slider-value">5</span>
         / 10
       </label>
@@ -131,13 +122,14 @@
 
   <!-- === Script: slider → <span> live update === -->
   <script>
-    // Wait until DOM is fully parsed
-    document.addEventListener('DOMContentLoaded', function () {
+    // As soon as this <script> tag is inserted into the DOM (by main.js),
+    // run the slider‐setup code immediately—no need to wait for another DOMContentLoaded.
+    (function() {
       const slider = document.getElementById('confidence-slider');
       const display = document.getElementById('confidence-value');
 
-      // If those elements exist, attach the listener
       if (slider && display) {
+        // “input” event fires continuously as you drag
         slider.addEventListener('input', function () {
           display.textContent = this.value;
         });
@@ -146,7 +138,7 @@
           'Block 4: Could not find #confidence-slider or #confidence-value in the DOM.'
         );
       }
-    });
+    })();
   </script>
 </body>
 </html>
