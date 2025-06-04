@@ -1,21 +1,25 @@
 <!-- File: blocks/block3-ranking.html -->
 
 <section class="survey-block active" id="block3" data-type="ranking">
-  <h2>Block 3 &ndash; Vignette Ranking</h2>
+  <h2>Block 3 – Vignette Ranking</h2>
   <p class="prompt">
     Please assign a unique rank to each vignette (1 = most necessary, 2 = second most, etc.). 
     Type a number (1–4) in the box next to each statement. Do not repeat ranks.
   </p>
 
   <script>
+    // ─────────────── duplicate‐value checker ───────────────
     function checkDups() {
       const inputs = document.querySelectorAll('#block3 .rank-input');
       const counts = {};
+
       inputs.forEach(input => {
         const val = input.value.trim();
+        // only consider numbers 1–4
         if (!val || !/^[1-4]$/.test(val)) return;
         counts[val] = (counts[val] || 0) + 1;
       });
+
       inputs.forEach(input => {
         const val = input.value.trim();
         if (val && counts[val] > 1) {
@@ -26,37 +30,52 @@
       });
     }
 
-    document.addEventListener("DOMContentLoaded", () => {
-      const blocks = document.querySelectorAll("#block3 .number-wrapper");
-
-      blocks.forEach(wrapper => {
+    // ─────────────── bind arrow clicks immediately ───────────────
+    (function() {
+      // As soon as this <script> runs, Block 3’s DOM has already been inserted,
+      // so we can safely query and attach listeners right away.
+      const wrappers = document.querySelectorAll("#block3 .number-wrapper");
+      wrappers.forEach(wrapper => {
         const input = wrapper.querySelector("input");
         const up = wrapper.querySelector(".arrow.up");
         const down = wrapper.querySelector(".arrow.down");
 
-        up.addEventListener("click", () => {
-          let value = parseInt(input.value || "0");
-          if (value < 4) {
-            input.value = value + 1;
-            checkDups();
-          }
-        });
+        if (up) {
+          up.addEventListener("click", () => {
+            let value = parseInt(input.value || "0");
+            if (value < 4) {
+              input.value = value + 1;
+              checkDups();
+            }
+          });
+        }
 
-        down.addEventListener("click", () => {
-          let value = parseInt(input.value || "0");
-          if (value > 1) {
-            input.value = value - 1;
-            checkDups();
-          }
-        });
+        if (down) {
+          down.addEventListener("click", () => {
+            let value = parseInt(input.value || "0");
+            if (value > 1) {
+              input.value = value - 1;
+              checkDups();
+            }
+          });
+        }
       });
-    });
+    })();
   </script>
 
-  <!-- ─────────── FOUR VIGNETTE ITEMS ─────────── -->
+  <!-- ─────────── FOUR VIGNETTES TO RANK ─────────── -->
   <div class="ranking-item">
     <div class="number-wrapper">
-      <input type="number" name="rank_v1" id="rank_v1" class="rank-input" min="1" max="4" required oninput="checkDups()" />
+      <input
+        type="number"
+        name="rank_v1"
+        id="rank_v1"
+        class="rank-input"
+        min="1"
+        max="4"
+        required
+        oninput="checkDups()"
+      />
       <div class="arrow up"></div>
       <div class="arrow down"></div>
     </div>
@@ -65,7 +84,16 @@
 
   <div class="ranking-item">
     <div class="number-wrapper">
-      <input type="number" name="rank_v2" id="rank_v2" class="rank-input" min="1" max="4" required oninput="checkDups()" />
+      <input
+        type="number"
+        name="rank_v2"
+        id="rank_v2"
+        class="rank-input"
+        min="1"
+        max="4"
+        required
+        oninput="checkDups()"
+      />
       <div class="arrow up"></div>
       <div class="arrow down"></div>
     </div>
@@ -74,7 +102,16 @@
 
   <div class="ranking-item">
     <div class="number-wrapper">
-      <input type="number" name="rank_v3" id="rank_v3" class="rank-input" min="1" max="4" required oninput="checkDups()" />
+      <input
+        type="number"
+        name="rank_v3"
+        id="rank_v3"
+        class="rank-input"
+        min="1"
+        max="4"
+        required
+        oninput="checkDups()"
+      />
       <div class="arrow up"></div>
       <div class="arrow down"></div>
     </div>
@@ -83,7 +120,16 @@
 
   <div class="ranking-item">
     <div class="number-wrapper">
-      <input type="number" name="rank_v4" id="rank_v4" class="rank-input" min="1" max="4" required oninput="checkDups()" />
+      <input
+        type="number"
+        name="rank_v4"
+        id="rank_v4"
+        class="rank-input"
+        min="1"
+        max="4"
+        required
+        oninput="checkDups()"
+      />
       <div class="arrow up"></div>
       <div class="arrow down"></div>
     </div>
@@ -92,7 +138,7 @@
 
   <!-- ─────────── NAVIGATION BUTTONS ─────────── -->
   <div class="nav-buttons">
-    <button type="button" class="nav-button" data-nav="prev">Back</button>
-    <button type="button" class="nav-button" data-nav="next">Next</button>
+    <button type="button" class="prev-btn">Back</button>
+    <button type="button" class="next-btn">Next</button>
   </div>
 </section>
