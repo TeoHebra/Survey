@@ -6,99 +6,107 @@
     Type a number (1–4) in the box next to each statement. Do not repeat ranks.
   </p>
 
-  <!-- INLINE CSS (fresh) -->
+  <!-- ─────────── 2) CUSTOM CSS ─────────── -->
   <style>
-    /* ---------------------------------------------------
-       Base container styling for Block 3 (you can tweak)
-       --------------------------------------------------- */
-    #block3 {
-      display: flex;                  /* “active” makes it visible */
-      flex-direction: column;
-      padding: 20px;
-      background-color: #ffffff;
-      border-radius: 6px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      max-width: 800px;
-      margin: 0 auto;
+    /* Hide default spinner */
+    #block3 .ranking-item .rank-input::-webkit-inner-spin-button,
+    #block3 .ranking-item .rank-input::-webkit-outer-spin-button {
+      -webkit-appearance: none; margin: 0;
     }
-
-    /* Heading */
-    #block3 h2 {
-      font-size: 1.6rem;
-      margin-bottom: 12px;
-      color: #333333;
-    }
-
-    /* Instruction text */
-    #block3 .prompt {
-      font-size: 1rem;
-      margin-bottom: 18px;
-      color: #555555;
-      line-height: 1.4;
-    }
-
-    /* Each “item” (vignette + input) */
-    #block3 .ranking-item {
-      display: flex;
-      align-items: center;
-      margin-bottom: 16px;
-      padding: 12px;
-      background-color: #f9f9f9;
-      border: 1px solid #dddddd;
-      border-radius: 4px;
-      transition: background-color 0.2s ease;
-    }
-    #block3 .ranking-item:hover {
-      background-color: #f1f1f1;
-    }
-
-    /* Label (vignette text) */
-    #block3 .ranking-item label {
-      flex: 1;
-      font-size: 1rem;
-      color: #333333;
-      margin-right: 12px;
-    }
-
-    /* Number‐only input */
     #block3 .ranking-item .rank-input {
-      width: 60px;
+      -moz-appearance: textfield;
+    }
+
+    /* Wrapper so we can overlay our custom arrows */
+    #block3 .ranking-item .number-wrapper {
+      position: relative;
+      display: inline-block;
+    }
+
+    /* Base input style */
+    #block3 .ranking-item .rank-input {
+      width: 40px;
       padding: 8px;
       font-size: 1rem;
       text-align: center;
-      border: 1px solid #cccccc;
-      border-radius: 4px;
-      background-color: #ffffff;
-      transition: border-color 0.2s ease, box-shadow 0.2s ease;
-    }
-    #block3 .ranking-item .rank-input:focus {
-      outline: none;
-      border-color: #66afe9;
-      box-shadow: 0 0 4px rgba(102,175,233,0.6);
-    }
-    #block3 .ranking-item .rank-input:invalid {
-      border-color: #e74c3c;
-      background-color: #fdecea;
-    }
-    #block3 .ranking-item .rank-input::placeholder {
-      color: #999999;
+      border: 3px solid #000;
+      border-radius: 6px;
+      background-color: #fff;
+      color: #000;
     }
 
-    /* DUPLICATE‐FLAGGING: whenever we add “.duplicate” to an input, it turns red */
+    /* Up arrow (top right) */
+    #block3 .ranking-item .number-wrapper .arrow.up {
+      position: absolute;
+      top: 6px; right: 6px;
+      width: 8px; height: 5px;
+      background-image: url("data:image/svg+xml;utf8,\
+        <svg xmlns='http://www.w3.org/2000/svg' width='8' height='5' viewBox='0 0 8 5'>\
+          <polygon points='4,0 8,5 0,5' fill='%23666'/>\
+        </svg>");
+      background-repeat: no-repeat;
+      background-size: 8px 5px;
+      cursor: pointer;
+    }
+
+    /* Down arrow (bottom right) */
+    #block3 .ranking-item .number-wrapper .arrow.down {
+      position: absolute;
+      bottom: 6px; right: 6px;
+      width: 8px; height: 5px;
+      background-image: url("data:image/svg+xml;utf8,\
+        <svg xmlns='http://www.w3.org/2000/svg' width='8' height='5' viewBox='0 0 8 5'>\
+          <polygon points='0,0 8,0 4,5' fill='%23666'/>\
+        </svg>");
+      background-repeat: no-repeat;
+      background-size: 8px 5px;
+      cursor: pointer;
+    }
+
+    /* On hover, fade arrow */
+    #block3 .ranking-item .number-wrapper .arrow.up:hover,
+    #block3 .ranking-item .number-wrapper .arrow.down:hover {
+      opacity: 0.7;
+    }
+
+    /* Duplicate styling (unchanged) */
     #block3 .rank-input.duplicate {
-      border-color: #e74c3c !important;
-      background-color: #fdecea !important;
+      border: 4px solid #e74c3c !important;
+      background-color: #ffebee !important;
+      color: #b71c1c;
     }
 
-    /* Responsive: stack vertically on very small screens */
+    /* Remove grey “card” and place input on left */
+    #block3 .ranking-item {
+      display: flex;
+      flex-direction: row-reverse;
+      align-items: center;
+      margin-bottom: 16px;
+      background-color: transparent !important;
+      border: none !important;
+      border-bottom: 1px solid #e0e0e0;
+      padding-bottom: 8px;
+      margin-bottom: 8px;
+    }
+    #block3 .ranking-item label {
+      flex: 1;
+      font-size: 1rem;
+      color: #333;
+      margin-left: 24px; /* more space from the box */
+    }
+
+    /* Responsive stacking */
     @media (max-width: 480px) {
       #block3 .ranking-item {
         flex-direction: column;
         align-items: stretch;
       }
       #block3 .ranking-item label {
-        margin-right: 0;
+        margin-left: 0;
         margin-bottom: 8px;
+      }
+      #block3 .ranking-item .number-wrapper {
+        width: 100%;
       }
       #block3 .ranking-item .rank-input {
         width: 100%;
@@ -106,26 +114,19 @@
     }
   </style>
 
-  <!-- INLINE SCRIPT: runs on every “input” to catch duplicates -->
+  <!-- ─────────── INLINE SCRIPT: checkDups() ─────────── -->
   <script>
     function checkDups() {
-      // 1) Grab all four rank-input fields
       const inputs = document.querySelectorAll('#block3 .rank-input');
       const counts = {};
-
-      // 2) Build a count map: value → how many times it appears
       inputs.forEach(input => {
         const val = input.value.trim();
-        if (val === '') return;   // skip empty
-        // Only consider numeric values 1–4
-        if (!/^[1-4]$/.test(val)) return;
+        if (!val || !/^[1-4]$/.test(val)) return;
         counts[val] = (counts[val] || 0) + 1;
       });
-
-      // 3) For each input, if its value appears >1 times, mark as .duplicate
       inputs.forEach(input => {
         const val = input.value.trim();
-        if (val !== '' && counts[val] > 1) {
+        if (val && counts[val] > 1) {
           input.classList.add('duplicate');
         } else {
           input.classList.remove('duplicate');
@@ -134,68 +135,117 @@
     }
   </script>
 
-  <!-- FOUR VIGNETTE + INPUT ITEMS (each oninput calls checkDups()) -->
+  <!-- ─────────── FOUR VIGNETTES ─────────── -->
   <div class="ranking-item">
+    <div class="number-wrapper">
+      <input
+        type="number"
+        name="rank_v1"
+        id="rank_v1"
+        class="rank-input"
+        min="1" max="4"
+        required
+        placeholder="1–4"
+        oninput="checkDups()"
+      />
+      <div class="arrow up"></div>
+      <div class="arrow down"></div>
+    </div>
     <label for="rank_v1">
-      <strong>Vignette 1:</strong> Lorem ipsum dolor sit amet, consectetur adipiscing elit…
+      <strong>Vignette 1:</strong> Lorem ipsum dolor sit amet…
     </label>
-    <input
-      type="number"
-      name="rank_v1"
-      id="rank_v1"
-      class="rank-input"
-      min="1" max="4"
-      required
-      placeholder="1–4"
-      oninput="checkDups()"
-    />
   </div>
 
   <div class="ranking-item">
+    <div class="number-wrapper">
+      <input
+        type="number"
+        name="rank_v2"
+        id="rank_v2"
+        class="rank-input"
+        min="1" max="4"
+        required
+        placeholder="1–4"
+        oninput="checkDups()"
+      />
+      <div class="arrow up"></div>
+      <div class="arrow down"></div>
+    </div>
     <label for="rank_v2">
-      <strong>Vignette 2:</strong> Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua…
+      <strong>Vignette 2:</strong> Sed do eiusmod tempor incididunt…
     </label>
-    <input
-      type="number"
-      name="rank_v2"
-      id="rank_v2"
-      class="rank-input"
-      min="1" max="4"
-      required
-      placeholder="1–4"
-      oninput="checkDups()"
-    />
   </div>
 
   <div class="ranking-item">
+    <div class="number-wrapper">
+      <input
+        type="number"
+        name="rank_v3"
+        id="rank_v3"
+        class="rank-input"
+        min="1" max="4"
+        required
+        placeholder="1–4"
+        oninput="checkDups()"
+      />
+      <div class="arrow up"></div>
+      <div class="arrow down"></div>
+    </div>
     <label for="rank_v3">
-      <strong>Vignette 3:</strong> Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris…
+      <strong>Vignette 3:</strong> Ut enim ad minim veniam…
     </label>
-    <input
-      type="number"
-      name="rank_v3"
-      id="rank_v3"
-      class="rank-input"
-      min="1" max="4"
-      required
-      placeholder="1–4"
-      oninput="checkDups()"
-    />
   </div>
 
   <div class="ranking-item">
+    <div class="number-wrapper">
+      <input
+        type="number"
+        name="rank_v4"
+        id="rank_v4"
+        class="rank-input"
+        min="1" max="4"
+        required
+        placeholder="1–4"
+        oninput="checkDups()"
+      />
+      <div class="arrow up"></div>
+      <div class="arrow down"></div>
+    </div>
     <label for="rank_v4">
-      <strong>Vignette 4:</strong> Duis aute irure dolor in reprehenderit in voluptate velit esse cillum…
+      <strong>Vignette 4:</strong> Duis aute irure dolor in reprehenderit…
     </label>
-    <input
-      type="number"
-      name="rank_v4"
-      id="rank_v4"
-      class="rank-input"
-      min="1" max="4"
-      required
-      placeholder="1–4"
-      oninput="checkDups()"
-    />
   </div>
+
+  <!-- ─────────── 3) JS TO MAKE ARROWS WORK ─────────── -->
+  <script>
+    document.querySelectorAll('#block3 .number-wrapper').forEach(wrapper => {
+      const input = wrapper.querySelector('.rank-input');
+      const up = wrapper.querySelector('.arrow.up');
+      const down = wrapper.querySelector('.arrow.down');
+
+      function clamp(val, min, max) {
+        return Math.min(Math.max(val, min), max);
+      }
+
+      up.addEventListener('click', () => {
+        const minVal = parseInt(input.getAttribute('min'), 10);
+        const maxVal = parseInt(input.getAttribute('max'), 10);
+        let current = parseInt(input.value, 10);
+        if (isNaN(current)) current = minVal - 1;
+        const nextVal = clamp(current + 1, minVal, maxVal);
+        input.value = nextVal;
+        input.dispatchEvent(new Event('input'));
+      });
+
+      down.addEventListener('click', () => {
+        const minVal = parseInt(input.getAttribute('min'), 10);
+        const maxVal = parseInt(input.getAttribute('max'), 10);
+        let current = parseInt(input.value, 10);
+        if (isNaN(current)) current = minVal + 1;
+        const nextVal = clamp(current - 1, minVal, maxVal);
+        input.value = nextVal;
+        input.dispatchEvent(new Event('input'));
+      });
+    });
+  </script>
 </section>
