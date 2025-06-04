@@ -734,3 +734,31 @@ fieldset.likert-7 label small {
   }
 }
 
+/* === Brand-enhanced sliders with filled track === */
+.slider-input::-webkit-slider-runnable-track {
+  height: 6px;
+  background: linear-gradient(
+    to right,
+    #0057D9 var(--slider-fill, 50%),
+    #ddd var(--slider-fill, 50%)
+  );
+  border-radius: 3px;
+}
+/* Firefox */
+.slider-input::-moz-range-track {
+  height: 6px;
+  background: #ddd;
+  border-radius: 3px;
+}
+.slider-input::-moz-range-progress {
+  background-color: #0057D9;
+  height: 6px;
+  border-radius: 3px;
+}
+/* IE */
+.slider-input::-ms-fill-lower {
+  background-color: #0057D9;
+}
+.slider-input::-ms-fill-upper {
+  background-color: #ddd;
+}
