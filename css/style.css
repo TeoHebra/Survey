@@ -171,107 +171,208 @@ fieldset.likert-7 input[type="radio"]:checked + label::after {
 /* === BLOCK 3: Vignette Ranking Styles  === */
 /* ========================================= */
 
+/* ==============================================================
+   Block 3 – Vignette Ranking Styles (arrows in black, bigger, text alignment)
+   ============================================================== */
 
-/* ================================
-   Block 3 – Vignette Ranking Styles
-   ================================ */
+/* ─────────────────────────────────────────────────────────────────
+   (1) CSS Variables – set box width, gap, and text‐alignment here:
+───────────────────────────────────────────────────────────────── */
+:root {
+  /* Width of the input box */
+  --box-width: 32px;
 
-/* Container for Block 3 */
-#block3 {
-  display: flex;
-  flex-direction: column;
-  padding: 20px;
-  background-color: #ffffff;
-  border-radius: 6px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  /* Gap between the box and vignette text */
+  --gap-between: 24px;
+
+  /* Horizontal offset (in pixels) for the text inside the input.
+     Positive → shift right; Negative → shift left. */
+  --text-horizontal-offset: 0px;
+}
+/* ─────────────────────────────────────────────────────────────────
+   Hide browser’s default number‐input spinners in Chrome/Safari/Edge
+───────────────────────────────────────────────────────────────── */
+#block3 .rank-input::-webkit-inner-spin-button,
+#block3 .rank-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
-/* Heading inside Block 3 */
-#block3 h2 {
-  font-size: 1.5rem;
-  margin-bottom: 12px;
-  color: #333333;
+/* Hide Firefox’s default spinner */
+#block3 .rank-input {
+  -moz-appearance: textfield;
 }
 
-/* Prompt/Instruction text */
-#block3 .prompt {
+/* ─────────────────────────────────────────────────────────────────
+   Wrapper so we can position our custom up/down arrows
+───────────────────────────────────────────────────────────────── */
+#block3 .number-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   Base styling for the number input
+───────────────────────────────────────────────────────────────── */
+#block3 .rank-input {
+  width: var(--box-width);      /* box width from variable */
+  padding: 8px;
   font-size: 1rem;
-  margin-bottom: 18px;
-  color: #555555;
-  line-height: 1.4;
+  text-align: var(--text-align-input); /* use the variable for alignment */
+
+  /* Thicker black border, square corners */
+  border: 3.5px solid #000000;
+  border-radius: 0px;
+
+  background-color: #ffffff;
+  color: #000000;
 }
 
-/* Each ranking‐item wraps one vignette + its input */
+/* ─────────────────────────────────────────────────────────────────
+   Custom “up” arrow at top‐right of the input in BLACK and larger
+───────────────────────────────────────────────────────────────── */
+#block3 .number-wrapper .arrow.up {
+  position: absolute;
+
+  /* You may need to adjust these if you change padding or box‐height */
+  top: 9px;      /* vertical offset from the top of the input */
+  right: 7px;    /* horizontal offset from the right edge */
+
+  /* Increase the “clickable” area and SVG size as needed */
+  width: 12px;   /* arrow container width */
+  height: 8px;   /* arrow container height */
+
+  /* Larger black “up” triangle SVG (12×8 px) */
+  background-image: url("data:image/svg+xml;utf8,\
+    <svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'>\
+      <polygon points='6,0 12,8 0,8' fill='%23000'/>\
+    </svg>");
+  background-repeat: no-repeat;
+  background-size: 12px 8px;
+  cursor: pointer;
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   Custom “down” arrow at bottom‐right of the input in BLACK and larger
+───────────────────────────────────────────────────────────────── */
+#block3 .number-wrapper .arrow.down {
+  position: absolute;
+
+  /* Match offsets to align with “up” arrow above */
+  bottom: 9px;   /* vertical offset from the bottom of the input */
+  right: 7px;    /* same horizontal offset */
+
+  width: 12px;   /* arrow container width */
+  height: 8px;   /* arrow container height */
+
+  /* Larger black “down” triangle SVG (12×8 px) */
+  background-image: url("data:image/svg+xml;utf8,\
+    <svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'>\
+      <polygon points='0,0 12,0 6,8' fill='%23000'/>\
+    </svg>");
+  background-repeat: no-repeat;
+  background-size: 12px 8px;
+  cursor: pointer;
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   On hover, slightly dim the arrow to indicate interactivity
+───────────────────────────────────────────────────────────────── */
+#block3 .number-wrapper .arrow.up:hover,
+#block3 .number-wrapper .arrow.down:hover {
+  opacity: 0.7;
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   Highlight duplicate inputs in a very obvious red
+───────────────────────────────────────────────────────────────── */
+#block3 .rank-input.duplicate {
+  border: 4px solid #e74c3c !important;   /* thick red border */
+  background-color: #ffebee !important;   /* pale red background */
+  color: #b71c1c;                         /* dark red text */
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   Remove the grey “card” wrapper and place input on the left
+   (use flex‐direction: row-reverse so input is on left, label on right)
+───────────────────────────────────────────────────────────────── */
 #block3 .ranking-item {
   display: flex;
+  flex-direction: left; /* input on left, label on right */
   align-items: center;
   margin-bottom: 16px;
-  padding: 10px;
-  background-color: #f9f9f9;
-  border: 1px solid #dddddd;
-  border-radius: 4px;
-  transition: background-color 0.2s ease;
+
+  background-color: transparent !important;
+  border: none !important;
+
+  /* thin bottom border as a separator */
+  border-bottom: 1px solid #e0e0e0;
+  padding-bottom: 8px;
+  margin-bottom: 8px;
 }
 
-/* Hover state for each ranking‐item */
-#block3 .ranking-item:hover {
-  background-color: #f1f1f1;
-}
-
-/* Label for vignette text */
+/* ─────────────────────────────────────────────────────────────────
+   The vignette label sits to the right of the input; add spacing
+───────────────────────────────────────────────────────────────── */
 #block3 .ranking-item label {
   flex: 1;
   font-size: 1rem;
   color: #333333;
-  margin-right: 12px;
+
+  margin-left: var(--gap-between); /* gap from the box */
 }
 
-/* Number‐only input box for rank */
-#block3 .ranking-item .rank-input {
-  width: 60px;
-  padding: 8px;
-  font-size: 1rem;
-  text-align: center;
-  border: 1px solid #cccccc;
-  border-radius: 4px;
-  background-color: #ffffff;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-/* Focus state for rank input */
-#block3 .ranking-item .rank-input:focus {
+/* ─────────────────────────────────────────────────────────────────
+   Focus style for the input (blue outline + glow)
+───────────────────────────────────────────────────────────────── */
+#block3 .rank-input:focus {
   outline: none;
-  border-color: #66afe9;
-  box-shadow: 0 0 4px rgba(102, 175, 233, 0.6);
+  border-color: #3b82f6; /* bright blue */
+  box-shadow: 0 0 5px rgba(59,130,246,0.5);
 }
 
-/* Invalid state (empty or out of range) */
-#block3 .ranking-item .rank-input:invalid {
+/* ─────────────────────────────────────────────────────────────────
+   Invalid state (empty or outside min/max) – optional
+───────────────────────────────────────────────────────────────── */
+#block3 .rank-input:invalid {
   border-color: #e74c3c;
   background-color: #fdecea;
 }
 
-/* Placeholder styling for rank input */
-#block3 .ranking-item .rank-input::placeholder {
+/* ─────────────────────────────────────────────────────────────────
+   Placeholder color
+───────────────────────────────────────────────────────────────── */
+#block3 .rank-input::placeholder {
   color: #999999;
 }
 
-/* Responsive adjustment: stack items vertically on very small screens */
+/* ─────────────────────────────────────────────────────────────────
+   Responsive: On small screens, stack each item vertically
+───────────────────────────────────────────────────────────────── */
 @media (max-width: 480px) {
   #block3 .ranking-item {
     flex-direction: column;
     align-items: stretch;
   }
   #block3 .ranking-item label {
-    margin-right: 0;
+    margin-left: 0;
     margin-bottom: 8px;
+  }
+  #block3 .ranking-item .number-wrapper {
+    width: 100%;
   }
   #block3 .ranking-item .rank-input {
     width: 100%;
   }
 }
 
-#block3 .rank-input.duplicate {
-  border-color: #e74c3c !important;
-  background-color: #fdecea !important;
+#block3 .rank-input {
+  /* ... your existing styles here ... */
+
+  /* Example: make the number sit 6px away from the left edge */
+  padding-left: 8px;  
+
+  /* If you want to keep a bit of room on the right (for arrows), reduce right padding */
+  padding-right: 0px;  
+
 }
