@@ -27,20 +27,22 @@
     }
 
     document.addEventListener("DOMContentLoaded", () => {
-      document.querySelectorAll("#block3 .arrow.up").forEach(btn => {
-        btn.addEventListener("click", () => {
-          const input = btn.previousElementSibling;
+      const blocks = document.querySelectorAll("#block3 .number-wrapper");
+
+      blocks.forEach(wrapper => {
+        const input = wrapper.querySelector("input");
+        const up = wrapper.querySelector(".arrow.up");
+        const down = wrapper.querySelector(".arrow.down");
+
+        up.addEventListener("click", () => {
           let value = parseInt(input.value || "0");
           if (value < 4) {
             input.value = value + 1;
             checkDups();
           }
         });
-      });
 
-      document.querySelectorAll("#block3 .arrow.down").forEach(btn => {
-        btn.addEventListener("click", () => {
-          const input = btn.previousElementSibling.previousElementSibling;
+        down.addEventListener("click", () => {
           let value = parseInt(input.value || "0");
           if (value > 1) {
             input.value = value - 1;
@@ -67,7 +69,7 @@
       <div class="arrow up"></div>
       <div class="arrow down"></div>
     </div>
-    <label for="rank_v2"><strong>Vignette 2:</strong> Vestibulum ante ipsum primis in faucibus orci luctus et ultrices…</label>
+    <label for="rank_v2"><strong>Vignette 2:</strong> Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua…</label>
   </div>
 
   <div class="ranking-item">
@@ -76,7 +78,7 @@
       <div class="arrow up"></div>
       <div class="arrow down"></div>
     </div>
-    <label for="rank_v3"><strong>Vignette 3:</strong> Curabitur non nulla sit amet nisl tempus convallis quis ac lectus…</label>
+    <label for="rank_v3"><strong>Vignette 3:</strong> Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris…</label>
   </div>
 
   <div class="ranking-item">
@@ -85,7 +87,7 @@
       <div class="arrow up"></div>
       <div class="arrow down"></div>
     </div>
-    <label for="rank_v4"><strong>Vignette 4:</strong> Donec rutrum congue leo eget malesuada…</label>
+    <label for="rank_v4"><strong>Vignette 4:</strong> Duis aute irure dolor in reprehenderit in voluptate velit esse cillum…</label>
   </div>
 
   <!-- ─────────── NAVIGATION BUTTONS ─────────── -->
