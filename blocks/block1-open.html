@@ -11,14 +11,20 @@
             name="metaboliteNovel"
             maxlength="250"
             rows="5"
-            placeholder="Write your answer here…"
+            placeholder="e.g. A metabolite feels novel when…"
             required
             oninput="
-              document.getElementById('charCounter').textContent =
-              this.value.length + '/250';
+              const counter = document.getElementById('charCounter');
+              const len = this.value.length;
+              if (len >= 200) {
+                counter.style.visibility = 'visible';
+                counter.textContent = len + '/250';
+              } else {
+                counter.style.visibility = 'hidden';
+              }
             "></textarea>
 
-  <div class="char-counter" id="charCounter">0/250</div>
+  <div class="char-counter" id="charCounter" style="visibility: hidden;">0/250</div>
 
   <div class="navigation">
     <button class="prev-btn">Back</button>
