@@ -217,6 +217,35 @@ fieldset.likert-7 input[type="radio"]:checked + label::after {
   /* inner-radius (16 / 2)  + border (3)  = 11 px */
   top: calc(var(--bullet-size) / 2 + 3px);
 }
+fieldset.likert-7 label span {
+  display: inline-block;
+  text-align: center;
+  line-height: 1.2;
+}
+
+fieldset.likert-7 label small {
+  font-size: 0.75rem;
+  color: #555;
+}
+
+/* Mobile fallback: stack vertically */
+@media (max-width: 600px) {
+  fieldset.likert-7 {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  fieldset.likert-7 label {
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 0.5rem;
+    text-align: left;
+  }
+
+  fieldset.likert-7 label span {
+    display: inline;
+  }
+}
 
 
 /* ========================================= */
