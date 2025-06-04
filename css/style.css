@@ -228,22 +228,59 @@ fieldset.likert-7 label small {
   color: #555;
 }
 
-/* Mobile fallback: stack vertically */
 @media (max-width: 600px) {
   fieldset.likert-7 {
     flex-direction: column;
     align-items: flex-start;
+    gap: 1rem;
+    position: relative;
+  }
+
+  fieldset.likert-7::before {
+    display: none !important;
   }
 
   fieldset.likert-7 label {
     flex-direction: row;
     justify-content: flex-start;
-    gap: 0.5rem;
+    align-items: center;
+    gap: 0.75rem;
     text-align: left;
+    margin-bottom: 0.5rem;
+    position: relative;
   }
 
   fieldset.likert-7 label span {
-    display: inline;
+    display: contents;
+  }
+
+  fieldset.likert-7 label small {
+    font-size: 1rem;
+    line-height: 1.3;
+    color: #333;
+  }
+
+/* 💯 Red X perfectly centered in the bullet */
+  fieldset.likert-7 input[type="radio"]:checked + label::after {
+    content: '✖';
+    position: absolute;
+    top: calc(50%);  /* 16px bullet / 2 = 8px */
+    left: 8%;
+    width: 16px;
+    height: 16px;
+    font-size: 2.2rem;
+    color: red;
+    line-height: 1;
+    text-align: center;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+  /* Prevent margin from shifting things down */
+  fieldset.likert-7 label::before {
+    margin-bottom: 0 !important;
   }
 }
 
