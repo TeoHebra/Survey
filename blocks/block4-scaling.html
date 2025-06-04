@@ -1,94 +1,151 @@
-<!-- ===========================
-     Block 2: Likert‐Style Row
-     =========================== -->
-<section class="likert‐scale" id="block2">
-  <!-- (Optional) Title above the row -->
-  <div class="scale‐title">Definition clarity</div>
+<section class="survey-block" id="block4" data-type="scaling">
+  <!-- ────────── FLEX ROW: Novel? | Confidence | Wow effect ────────── -->
+  <div class="block-4-row">
 
-  <!-- Container for the circles + labels -->
-  <div class="scale‐row">
-    <!-- Option 1 -->
-    <div class="scale‐option">
-      <input
-        type="radio"
-        id="opt1"
-        name="definition"
-        value="1"
-      />
-      <label for="opt1"></label>
-      <div class="option‐text">Strongly disagree</div>
+    <!-- ───── 1) NOVEL? (Yes / No, vertical, re-using Block 2 trick) ───── -->
+    <div class="novel-group">
+      <div class="group-label">novel?</div>
+
+      <!-- YES option -->
+      <div class="novel-option">
+        <input
+          type="radio"
+          id="novel-yes"
+          name="novel"
+          value="yes"
+          class="novel-radio"
+        />
+        <label for="novel-yes" class="novel-label">Yes</label>
+      </div>
+
+      <!-- NO option -->
+      <div class="novel-option">
+        <input
+          type="radio"
+          id="novel-no"
+          name="novel"
+          value="no"
+          class="novel-radio"
+          checked
+        />
+        <label for="novel-no" class="novel-label">No</label>
+      </div>
     </div>
 
-    <!-- Option 2 -->
-    <div class="scale‐option">
-      <input
-        type="radio"
-        id="opt2"
-        name="definition"
-        value="2"
-      />
-      <label for="opt2"></label>
-      <div class="option‐text">Disagree</div>
+    <!-- ───── 2) CONFIDENCE slider (0–10) ───── -->
+    <div class="confidence-group">
+      <div class="group-header">
+        <span class="group-label">Confidence</span>
+        <span class="slider-value" id="confidence-value">4</span>
+        <span class="slider-max">/ 10</span>
+      </div>
+      <div class="slider-wrapper">
+        <input
+          type="range"
+          id="confidence-slider"
+          name="confidence"
+          min="0"
+          max="10"
+          value="4"
+          step="1"
+          list="tickmarks-confidence"
+          class="slider-input"
+        />
+        <datalist id="tickmarks-confidence">
+          <option value="0"></option>
+          <option value="1"></option>
+          <option value="2"></option>
+          <option value="3"></option>
+          <option value="4"></option>
+          <option value="5"></option>
+          <option value="6"></option>
+          <option value="7"></option>
+          <option value="8"></option>
+          <option value="9"></option>
+          <option value="10"></option>
+        </datalist>
+      </div>
     </div>
 
-    <!-- Option 3 -->
-    <div class="scale‐option">
-      <input
-        type="radio"
-        id="opt3"
-        name="definition"
-        value="3"
-      />
-      <label for="opt3"></label>
-      <div class="option‐text">Somewhat disagree</div>
+    <!-- ───── 3) WOW EFFECT slider (0–10) ───── -->
+    <div class="wow-group">
+      <div class="group-header">
+        <span class="group-label">Wow effect</span>
+        <span class="slider-value" id="wow-value">4</span>
+        <span class="slider-max">/ 10</span>
+      </div>
+      <div class="slider-wrapper">
+        <input
+          type="range"
+          id="wow-slider"
+          name="wow"
+          min="0"
+          max="10"
+          value="4"
+          step="1"
+          list="tickmarks-wow"
+          class="slider-input"
+        />
+        <datalist id="tickmarks-wow">
+          <option value="0"></option>
+          <option value="1"></option>
+          <option value="2"></option>
+          <option value="3"></option>
+          <option value="4"></option>
+          <option value="5"></option>
+          <option value="6"></option>
+          <option value="7"></option>
+          <option value="8"></option>
+          <option value="9"></option>
+          <option value="10"></option>
+        </datalist>
+      </div>
     </div>
 
-    <!-- Option 4 -->
-    <div class="scale‐option">
-      <input
-        type="radio"
-        id="opt4"
-        name="definition"
-        value="4"
-      />
-      <label for="opt4"></label>
-      <div class="option‐text">Neutral</div>
-    </div>
-
-    <!-- Option 5 -->
-    <div class="scale‐option">
-      <input
-        type="radio"
-        id="opt5"
-        name="definition"
-        value="5"
-      />
-      <label for="opt5"></label>
-      <div class="option‐text">Somewhat agree</div>
-    </div>
-
-    <!-- Option 6 -->
-    <div class="scale‐option">
-      <input
-        type="radio"
-        id="opt6"
-        name="definition"
-        value="6"
-      />
-      <label for="opt6"></label>
-      <div class="option‐text">Agree</div>
-    </div>
-
-    <!-- Option 7 -->
-    <div class="scale‐option">
-      <input
-        type="radio"
-        id="opt7"
-        name="definition"
-        value="7"
-      />
-      <label for="opt7"></label>
-      <div class="option‐text">Strongly agree</div>
-    </div>
   </div>
+
+  <!-- ──────────────────────────────────────────────────────────── -->
+  <!-- 4) (Optional) If you want a statement or image, insert here -->
+  <!--    For example:                                           -->
+  <!-- <p class="statement"> …Your statement… </p>             -->
+  <!-- ──────────────────────────────────────────────────────────── -->
+
+  <!-- ──────────────────────────────────────────────────────────── -->
+  <!-- 5) Navigation Buttons (Back / Next)                        -->
+  <!-- ──────────────────────────────────────────────────────────── -->
+  <div class="nav-buttons">
+    <button type="button" class="prev-btn">Back</button>
+    <button type="button" class="next-btn">Next</button>
+  </div>
+
+  <!-- ──────────────────────────────────────────────────────────── -->
+  <!-- 6) Inline Script: Update slider → <span> in real time       -->
+  <!-- ──────────────────────────────────────────────────────────── -->
+  <script>
+    (function() {
+      // CONFIDENCE SLIDER
+      const confSlider = document.getElementById('confidence-slider');
+      const confValue  = document.getElementById('confidence-value');
+      if (confSlider && confValue) {
+        confValue.textContent = confSlider.value; // initialize
+        confSlider.addEventListener('input', function() {
+          confValue.textContent = this.value;
+        });
+      } else {
+        console.warn('Block 4: #confidence-slider or #confidence-value not found.');
+      }
+
+      // WOW EFFECT SLIDER
+      const wowSlider = document.getElementById('wow-slider');
+      const wowValue  = document.getElementById('wow-value');
+      if (wowSlider && wowValue) {
+        wowValue.textContent = wowSlider.value; // initialize
+        wowSlider.addEventListener('input', function() {
+          wowValue.textContent = this.value;
+        });
+      } else {
+        console.warn('Block 4: #wow-slider or #wow-value not found.');
+      }
+    })();
+  </script>
 </section>
