@@ -2,15 +2,38 @@
   --max-width: 720px;
   --primary-color: #004d99;
   --secondary-color: #F7F9FC;
+
+  /* Ranking block variables */
+  --box-width: 32px;
+  --gap-between: 24px;
+  --text-horizontal-offset: 0px;
+}
+
+html {
+  font-family: "Inter", "Roboto", sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+h1 {
+  font-weight: 600;
+  font-size: 1.35rem;
+  margin-bottom: 0.75rem;
+}
+
+p {
+  margin: 0.5rem 0 1rem;
+  color: #374151;
 }
 
 body {
-  font-family: Arial, sans-serif;
+  font-family: "Inter", "Roboto", sans-serif;
   margin: 0;
   background: var(--secondary-color);
   display: flex;
   justify-content: center;
 }
+
 
 main#survey-container {
   width: 100%;
@@ -391,8 +414,9 @@ fieldset.likert-7 input[type="radio"]:checked + label::after {
   border-radius: 8px;
   background-color: #fafafa;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  font-family: Arial, sans-serif;
+  font-family: "Inter", "Roboto", sans-serif;
 }
+
 
 /* 2) FLEX ROW: Novel? | Confidence | Wow effect */
 .block-4-row {
