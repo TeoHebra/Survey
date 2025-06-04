@@ -1,13 +1,12 @@
-<!-- ================================================
-     blocks/block4-scaling.html (UPDATED AESTHETIC)
-     ================================================ -->
 <section class="survey-block" id="block4" data-type="scaling">
-  <!-- (Optional) You can keep or remove this heading -->
+  <!-- (Optional) Block title -->
   <h2 class="block-title">Block 4 – Novelty &amp; Confidence</h2>
 
-  <!-- FLEX ROW: Novel?  |  Confidence  |  Wow effect  -->
+  <!-- ──────────────────────────────────────────────────────────── -->
+  <!-- 1) FLEX ROW: Novel?  |  Confidence  |  Wow effect  -->
+  <!-- ──────────────────────────────────────────────────────────── -->
   <div class="block-4-row">
-    <!-- ──────── 1) Novel? (Yes / No radios) ──────── -->
+    <!-- ──────── Novel? (Yes / No radios) ──────── -->
     <div class="novel-group">
       <span class="group-label">novel?</span>
       <div class="novel-radios">
@@ -34,7 +33,7 @@
       </div>
     </div>
 
-    <!-- ───── 2) Confidence Slider (0–10) ─────── -->
+    <!-- ───── Confidence Slider (0–10) ───── -->
     <div class="confidence-group">
       <div class="group-header">
         <span class="group-label">Confidence</span>
@@ -68,7 +67,7 @@
       </div>
     </div>
 
-    <!-- ───── 3) Wow effect Slider (0–10) ─────── -->
+    <!-- ───── Wow effect Slider (0–10) ───── -->
     <div class="wow-group">
       <div class="group-header">
         <span class="group-label">Wow effect</span>
@@ -104,19 +103,15 @@
   </div>
 
   <!-- ────────────────────────────────────────────────────────────────── -->
-  <!-- 4) (Optional) Statement Text or Image can go ABOVE or BELOW this row -->
-  <!--    If you want the statement above, move this <p class="statement">… -->
-  <!--    to before the .block-4-row div.                                -->
+  <!-- 2) (Optional) Statement Text / Image (If needed, move above)  -->
+  <!-- Example:                                                       -->
+  <!-- <p class="statement">                                          -->
+  <!--   “In the last decade, the rapid rise of DeFi platforms…”      -->
+  <!-- </p>                                                           -->
   <!-- ────────────────────────────────────────────────────────────────── -->
-  <!--
-  <p class="statement">
-    “In the last decade, the rapid rise of decentralized finance (DeFi)
-    platforms has transformed how individuals access financial services.”
-  </p>
-  -->
 
   <!-- ────────────────────────────────────────────────────────────────── -->
-  <!-- 5) Navigation Buttons (Back / Next)                                -->
+  <!-- 3) Navigation Buttons (Back / Next)                             -->
   <!-- ────────────────────────────────────────────────────────────────── -->
   <div class="nav-buttons">
     <button type="button" class="prev-btn">Back</button>
@@ -124,7 +119,7 @@
   </div>
 
   <!-- ────────────────────────────────────────────────────────────────── -->
-  <!-- 6) Inline Script: Wire up slider → <span> updates                    -->
+  <!-- 4) Inline Script: Wire up slider → <span> updates                -->
   <!-- ────────────────────────────────────────────────────────────────── -->
   <script>
     (function() {
@@ -154,224 +149,3 @@
     })();
   </script>
 </section>
-
-<style>
-  /* ===================================== */
-  /* Block 4 Container Styles               */
-  /* ===================================== */
-  .survey-block {
-    max-width: 800px;
-    margin: 40px auto;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    background-color: #fafafa;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    font-family: Arial, sans-serif;
-  }
-
-  /* (Optional) Block title styling */
-  .survey-block .block-title {
-    font-size: 1.4rem;
-    color: #333;
-    margin-bottom: 16px;
-  }
-
-  /* ──────────────────────────────────────────────────────────── */
-  /* 1) The flex row that holds all three groups side by side   */
-  /* ──────────────────────────────────────────────────────────── */
-  .block-4-row {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 24px;            /* horizontal spacing between columns */
-    margin-bottom: 32px;   /* space below the row */
-  }
-
-  /* ──────────────────────────────────────────────────────────── */
-  /* 2) Novel Group (first “column” in flex row)                 */
-  /* ──────────────────────────────────────────────────────────── */
-  .novel-group {
-    flex: 0 1 20%;       /* roughly 20% of row, but flexible */
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  .novel-group .group-label {
-    font-weight: bold;
-    font-size: 1rem;
-    color: #444;
-    margin-bottom: 8px;
-  }
-  .novel-radios {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;           /* vertical space between “Yes” and “No” lines */
-  }
-
-  /* Hide the native radio input, so we only see our custom ○/✖ */
-  .novel-radio {
-    display: none;
-  }
-  /* Style each label so it can show ○ or ✖ before the text */
-  .novel-label {
-    position: relative;
-    padding-left: 32px;   /* space on left for the icon */
-    font-size: 1rem;
-    color: #222;
-    cursor: pointer;
-    user-select: none;
-    line-height: 1;       /* so the icon can truly center vertically */
-  }
-  /* By default, show a large hollow circle “◯” (U+25EF) */
-  .novel-label::before {
-    content: "◯";
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 1.8rem;    /* make the circle bigger */
-    color: #222;
-    line-height: 1;
-  }
-  /* When the radio is checked, replace ◯ with a heavy “✖” (U+2716), in red */
-  .novel-radio:checked + .novel-label::before {
-    content: "✖";
-    color: red;
-    font-size: 1.8rem;    /* same size as circle */
-    top: 50%;
-    transform: translateY(-50%);
-  }
-
-  /* ──────────────────────────────────────────────────────────── */
-  /* 3) Slider Groups: Confidence & Wow effect (2nd & 3rd columns) */
-  /* Each slider group has a header (label + numeric value) and   */
-  /* the actual <input type="range"> with tick marks underneath.  */
-  /* ──────────────────────────────────────────────────────────── */
-  .confidence-group,
-  .wow-group {
-    flex: 0 1 38%;       /* each takes ~38% of the row */
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  .group-header {
-    display: flex;
-    align-items: baseline;
-    margin-bottom: 8px;
-  }
-  .group-header .group-label {
-    font-weight: bold;
-    font-size: 1rem;
-    color: #444;
-    margin-right: 8px;
-  }
-  .group-header .slider-value {
-    font-size: 1rem;
-    font-weight: bold;
-    color: #007BFF;
-    margin-right: 4px;
-  }
-  .group-header .slider-max {
-    font-size: 0.9rem;
-    color: #666;
-  }
-  .slider-wrapper {
-    width: 100%;
-  }
-
-  /* ───────────────────────────────────────────────────────────── */
-  /* 4) Range Input + Tick Marks Styling                          */
-  /* ───────────────────────────────────────────────────────────── */
-  .slider-input {
-    width: 100%;
-    height: 28px;             /* a bit taller track */
-    background: transparent;   /* let datalist ticks show through */
-    -webkit-appearance: none;
-    margin: 0;
-  }
-  .slider-input:focus {
-    outline: none;
-  }
-
-  /* TRACK */
-  .slider-input::-webkit-slider-runnable-track {
-    height: 6px;              /* thicker track */
-    background: #ddd;
-    border-radius: 3px;
-  }
-  .slider-input::-moz-range-track {
-    height: 6px;
-    background: #ddd;
-    border-radius: 3px;
-  }
-  .slider-input::-ms-track {
-    height: 6px;
-    background: #ddd;
-    border-radius: 3px;
-    color: transparent;       /* hide native ticks in IE/Edge */
-  }
-
-  /* THUMB */
-  .slider-input::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 24px;              /* larger thumb */
-    height: 24px;             /* larger thumb */
-    background: #222;
-    border: 3px solid #fff;   /* thicker white border */
-    border-radius: 50%;
-    margin-top: -9px;         /* center the thumb on the thicker track */
-    cursor: pointer;
-  }
-  .slider-input::-moz-range-thumb {
-    width: 24px;
-    height: 24px;
-    background: #222;
-    border: 3px solid #fff;
-    border-radius: 50%;
-    cursor: pointer;
-  }
-  .slider-input::-ms-thumb {
-    width: 24px;
-    height: 24px;
-    background: #222;
-    border: 3px solid #fff;
-    border-radius: 50%;
-    cursor: pointer;
-  }
-
-  /* TICK MARKS (via datalist) */
-  .slider-input::-webkit-slider-runnable-track {
-    background: #ddd;
-  }
-  .slider-input::-moz-range-progress {
-    background: transparent;
-  }
-  .slider-input::-moz-range-ticks {
-    color: #888;  /* tick color in Firefox, if supported */
-  }
-  .slider-input::-ms-ticks-after {
-    color: #888;  /* tick color in IE/Edge, if supported */
-  }
-
-  /* ──────────────────────────────────────────────────────────── */
-  /* 5) Navigation Buttons (Back / Next)                           */
-  /* ──────────────────────────────────────────────────────────── */
-  .nav-buttons {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 24px;
-  }
-  .nav-buttons button {
-    padding: 8px 16px;
-    font-size: 1rem;
-    background-color: #007BFF;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  .nav-buttons button:hover {
-    background-color: #0056b3;
-  }
-</style>
