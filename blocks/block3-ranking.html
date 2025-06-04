@@ -6,7 +6,7 @@
     Type a number (1–4) in the box next to each statement. Do not repeat ranks.
   </p>
 
-  <!-- INLINE CSS (fresh) -->
+  <!-- INLINE CSS (unchanged) -->
   <style>
     /* ---------------------------------------------------
        Base container styling for Block 3 (you can tweak)
@@ -106,10 +106,10 @@
     }
   </style>
 
-  <!-- INLINE SCRIPT: runs on every “input” to catch duplicates -->
+  <!-- INLINE SCRIPT: detects duplicates AND moves rank=1 to the top -->
   <script>
     function checkDups() {
-      // 1) Grab all four rank-input fields
+      // 1) Grab all four rank‐input fields
       const inputs = document.querySelectorAll('#block3 .rank-input');
       const counts = {};
 
@@ -132,9 +132,22 @@
         }
       });
     }
+
+    function moveTopIfOne(input) {
+      const val = input.value.trim();
+      if (val === '1') {
+        const item = input.closest('.ranking-item');
+        const parent = item.parentNode;
+        // Find the first existing .ranking-item in the parent
+        const firstItem = parent.querySelector('.ranking-item');
+        if (firstItem && firstItem !== item) {
+          parent.insertBefore(item, firstItem);
+        }
+      }
+    }
   </script>
 
-  <!-- FOUR VIGNETTE + INPUT ITEMS (each oninput calls checkDups()) -->
+  <!-- FOUR VIGNETTE + INPUT ITEMS (each oninput calls both functions) -->
   <div class="ranking-item">
     <label for="rank_v1">
       <strong>Vignette 1:</strong> Lorem ipsum dolor sit amet, consectetur adipiscing elit…
@@ -147,7 +160,7 @@
       min="1" max="4"
       required
       placeholder="1–4"
-      oninput="checkDups()"
+      oninput="checkDups(); moveTopIfOne(this)"
     />
   </div>
 
@@ -163,7 +176,7 @@
       min="1" max="4"
       required
       placeholder="1–4"
-      oninput="checkDups()"
+      oninput="checkDups(); moveTopIfOne(this)"
     />
   </div>
 
@@ -179,7 +192,7 @@
       min="1" max="4"
       required
       placeholder="1–4"
-      oninput="checkDups()"
+      oninput="checkDups(); moveTopIfOne(this)"
     />
   </div>
 
@@ -195,7 +208,7 @@
       min="1" max="4"
       required
       placeholder="1–4"
-      oninput="checkDups()"
+      oninput="checkDups(); moveTopIfOne(this)"
     />
   </div>
 </section>
