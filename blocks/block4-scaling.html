@@ -1,18 +1,179 @@
-<section id="block4" class="survey-block">
-  <h2>Rate The Novelty</h2>
-  <p>For each synopsis, move the slider to indicate your perceived level of novelty.</p>
-  <div>
-    <label>Study X: A cross‑disciplinary synthesis
-      <input type="range" min="0" max="100" />
-    </label>
+<!--
+  ===== Block 4: Statement + (optional) Image + Novel Yes/No + Confidence Slider =====
+  • Animate.css + WOW.js are used to give the entire block a slide‐in effect when it appears.
+  • Replace the <p class="statement"> and/or the <img> src with your actual content.
+  • The.slider‐widget updates its numeric label in real time.
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Block 4: Novelty & Confidence</title>
+
+  <!-- Animate.css (for CSS keyframes like slideInUp) -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+    integrity="sha512-b7kXnyp3W4i6ZQco+RBqAecx1b3zI2kmqTAfFpuFZ5l1wWoxSdp2VvU5yzT0r8WJ4Ri+4un1I+kz6jN2fjW9EA=="
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer"
+  />
+
+  <style>
+    /* Container styling for Block 4 */
+    .block-4 {
+      max-width: 600px;
+      margin: 40px auto;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background-color: #fafafa;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      font-family: Arial, sans-serif;
+    }
+
+    .block-4 .statement {
+      font-size: 1.1rem;
+      margin-bottom: 15px;
+      line-height: 1.4;
+      color: #333;
+    }
+
+    .block-4 .optional-image {
+      display: block;
+      max-width: 100%;
+      height: auto;
+      margin: 15px 0;
+      border-radius: 4px;
+    }
+
+    .block-4 .question-group {
+      margin: 20px 0;
+    }
+
+    .block-4 .question-group label {
+      margin-right: 12px;
+      font-weight: bold;
+      color: #444;
+    }
+
+    .block-4 .radio-option {
+      margin-right: 20px;
+      font-size: 0.95rem;
+      color: #222;
+    }
+
+    .block-4 .slider-container {
+      margin-top: 20px;
+    }
+
+    .block-4 .slider-container label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 6px;
+      color: #444;
+    }
+
+    .block-4 .slider-container .slider-value {
+      font-size: 1rem;
+      font-weight: bold;
+      margin-left: 8px;
+      color: #007BFF;
+    }
+
+    .block-4 .slider-container input[type="range"] {
+      width: 100%;
+    }
+
+    /* Optional: adjust the focus outline for accessibility */
+    .block-4 input[type="radio"]:focus + span,
+    .block-4 input[type="range"]:focus {
+      outline: 2px dashed #007BFF;
+      outline-offset: 2px;
+    }
+  </style>
+</head>
+<body>
+  <!--
+    Attach the class "wow slideInUp" to trigger Animate.css’s slide‐in animation.
+    data-wow-duration="1s" sets the animation to last 1 second.
+  -->
+  <div class="block-4 wow animate__animated animate__slideInUp" data-wow-duration="1s">
+    <!-- 1) Statement Text (replace this with your actual text) -->
+    <p class="statement">
+      <!-- Example placeholder; replace with your actual statement -->
+      “In the last decade, the rapid rise of decentralized finance (DeFi) platforms has transformed how individuals access financial services.”
+    </p>
+
+    <!-- 2) Optional Image (uncomment and replace src if needed) -->
+    <!--
+    <img
+      src="path/to/your/image.jpg"
+      alt="A visual representation of the statement"
+      class="optional-image"
+    />
+    -->
+
+    <!-- 3) Novel Yes/No Question -->
+    <div class="question-group">
+      <label for="novel-yesno">Novel?</label>
+      <input
+        type="radio"
+        id="novel-yes"
+        name="novel"
+        value="yes"
+        class="radio-option"
+      />
+      <label for="novel-yes">Yes</label>
+
+      <input
+        type="radio"
+        id="novel-no"
+        name="novel"
+        value="no"
+        class="radio-option"
+      />
+      <label for="novel-no">No</label>
+    </div>
+
+    <!-- 4) Confidence Slider (0–10) -->
+    <div class="slider-container">
+      <label for="confidence-slider">
+        Confidence:
+        <span id="confidence-value" class="slider-value">5</span>
+        / 10
+      </label>
+      <input
+        type="range"
+        id="confidence-slider"
+        name="confidence"
+        min="0"
+        max="10"
+        value="5"
+        step="1"
+      />
+    </div>
   </div>
-  <div>
-    <label>Study Y: Algorithm tweaks to improve speed
-      <input type="range" min="0" max="100" />
-    </label>
-  </div>
-  <div>
-    <button class="prev-btn">Back</button>
-    <button class="next-btn">Next</button>
-  </div>
-</section>
+
+  <!-- === Scripts: WOW.js to initialize the animation === -->
+  <script
+    src="https://cdnjs.cloudflare.com/ajax/libs/wow/1.1.2/wow.min.js"
+    integrity="sha512-2hXGNkOrxqCgJF5yJajY8r2SaOj9rkdw0w8a+1GoLUQIPk953jyjuHPY41C0+q3JuUWvEgj9l1QEyWjN/a1j0A=="
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer"
+  ></script>
+  <script>
+    // Initialize WOW.js so that elements with class="wow" animate on scroll/appearance
+    new WOW().init();
+
+    // Update the confidence‐value span whenever the slider moves
+    const slider = document.getElementById('confidence-slider');
+    const display = document.getElementById('confidence-value');
+
+    slider.addEventListener('input', function () {
+      display.textContent = this.value;
+    });
+  </script>
+</body>
+</html>
