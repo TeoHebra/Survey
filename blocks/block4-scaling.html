@@ -1,136 +1,78 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>Block 4: Novelty & Confidence</title>
-  <style>
-    /* ---------------------- */
-    /* Block 4 Container Styles */
-    /* ---------------------- */
-    .block-4 {
-      max-width: 600px;
-      margin: 40px auto;
-      padding: 20px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      background-color: #fafafa;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      font-family: Arial, sans-serif;
-    }
-    .block-4 .statement {
-      font-size: 1.1rem;
-      margin-bottom: 15px;
-      line-height: 1.4;
-      color: #333;
-    }
-    .block-4 .optional-image {
-      display: block;
-      max-width: 100%;
-      height: auto;
-      margin: 15px 0;
-      border-radius: 4px;
-    }
-    .block-4 .question-group {
-      margin: 20px 0;
-    }
-    .block-4 .question-group label {
-      margin-right: 12px;
-      font-weight: bold;
-      color: #444;
-    }
-    .block-4 .radio-option {
-      margin-right: 20px;
-      font-size: 0.95rem;
-      color: #222;
-    }
-    .block-4 .slider-container {
-      margin-top: 20px;
-    }
-    .block-4 .slider-container label {
-      display: block;
-      font-weight: bold;
-      margin-bottom: 6px;
-      color: #444;
-    }
-    .block-4 .slider-container .slider-value {
-      font-size: 1rem;
-      font-weight: bold;
-      margin-left: 8px;
-      color: #007BFF;
-    }
-    .block-4 .slider-container input[type="range"] {
-      width: 100%;
-    }
-  </style>
-</head>
-<body>
-  <div class="block-4">
-    <!-- 1) Statement Text -->
-    <p class="statement">
-      “In the last decade, the rapid rise of decentralized finance (DeFi) platforms has transformed how individuals access financial services.”
-    </p>
+<!-- File: blocks/block4-scaling.html -->
+<section class="survey-block" id="block4" data-type="scaling">
+  <h2>Block 4 – Novelty &amp; Confidence</h2>
 
-    <!-- 2) Optional Image (uncomment & fill in src/alt if needed)
-    <img
-      src="path/to/your/image.jpg"
-      alt="A visual representation of the statement"
-      class="optional-image"
+  <!-- 1) The statement text -->
+  <p class="statement">
+    “In the last decade, the rapid rise of decentralized finance (DeFi) platforms has transformed how individuals access financial services.”
+  </p>
+
+  <!-- 2) OPTIONAL IMAGE (uncomment and fill src / alt if needed) -->
+  <!--
+  <img
+    src="path/to/your/image.jpg"
+    alt="A visual representation of the statement"
+    class="optional-image"
+  />
+  -->
+
+  <!-- 3) Novel Yes/No Question -->
+  <div class="question-group">
+    <label for="novel-yesno">Novel?</label>
+    <input
+      type="radio"
+      id="novel-yes"
+      name="novel"
+      value="yes"
+      class="radio-option"
     />
-    -->
+    <label for="novel-yes">Yes</label>
 
-    <!-- 3) Novel Yes/No Question -->
-    <div class="question-group">
-      <label for="novel-yesno">Novel?</label>
-      <input
-        type="radio"
-        id="novel-yes"
-        name="novel"
-        value="yes"
-        class="radio-option"
-      />
-      <label for="novel-yes">Yes</label>
-
-      <input
-        type="radio"
-        id="novel-no"
-        name="novel"
-        value="no"
-        class="radio-option"
-      />
-      <label for="novel-no">No</label>
-    </div>
-
-    <!-- 4) Confidence Slider (0–10) -->
-    <div class="slider-container">
-      <label for="confidence-slider">
-        Confidence:
-        <!-- This <span> will update live -->
-        <span id="confidence-value" class="slider-value">5</span>
-        / 10
-      </label>
-      <input
-        type="range"
-        id="confidence-slider"
-        name="confidence"
-        min="0"
-        max="10"
-        value="5"
-        step="1"
-      />
-    </div>
+    <input
+      type="radio"
+      id="novel-no"
+      name="novel"
+      value="no"
+      class="radio-option"
+    />
+    <label for="novel-no">No</label>
   </div>
 
-  <!-- === Script: slider → <span> live update === -->
+  <!-- 4) Confidence Slider (0–10) -->
+  <div class="slider-container">
+    <label for="confidence-slider">
+      Confidence:
+      <!-- This <span> will update live as the user drags -->
+      <span id="confidence-value" class="slider-value">5</span>
+      / 10
+    </label>
+    <input
+      type="range"
+      id="confidence-slider"
+      name="confidence"
+      min="0"
+      max="10"
+      value="5"
+      step="1"
+    />
+  </div>
+
+  <!-- ─────── NAVIGATION BUTTONS ─────── -->
+  <div class="nav-buttons">
+    <button type="button" class="prev-btn">Back</button>
+    <button type="button" class="next-btn">Next</button>
+  </div>
+
+  <!-- ――――― Script to hook up the slider → <span> live‐update ――――― -->
   <script>
-    // As soon as this <script> tag is inserted into the DOM (by main.js),
-    // run the slider‐setup code immediately—no need to wait for another DOMContentLoaded.
+    // As soon as this <script> is inserted by main.js, it runs and
+    // finds the #confidence-slider inside the newly‐injected .survey-block.
     (function() {
       const slider = document.getElementById('confidence-slider');
       const display = document.getElementById('confidence-value');
 
       if (slider && display) {
-        // “input” event fires continuously as you drag
-        slider.addEventListener('input', function () {
+        slider.addEventListener('input', function() {
           display.textContent = this.value;
         });
       } else {
@@ -140,5 +82,4 @@
       }
     })();
   </script>
-</body>
-</html>
+</section>
