@@ -1,3 +1,4 @@
+
 :root {
   --max-width: 720px;
   --primary-color: #004d99;
@@ -32,6 +33,33 @@ body {
   background: var(--secondary-color);
   display: flex;
   justify-content: center;
+}
+
+.progress-wrapper {
+  width: 100%;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.progress {
+  width: 100%;
+  background: #f1f1f1;
+  height: 6px;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progress > div {
+  height: 100%;
+  background: var(--primary-color);
+  width: 0%;
+  transition: width 0.3s ease;
+}
+
+.progress-info {
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  color: #555;
 }
 
 
