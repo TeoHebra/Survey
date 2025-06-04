@@ -218,6 +218,37 @@ fieldset.likert-7 input[type="radio"]:checked + label::after {
   top: calc(var(--bullet-size) / 2 + 3px);
 }
 
+
+.likert-7-vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 1.5rem 0;
+  border: none;
+  padding: 0;
+}
+
+.likert-7-vertical .likert-option {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.likert-7-vertical input[type="radio"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--primary-color);
+  margin: 0;
+}
+
+.likert-7-vertical label {
+  font-size: 1rem;
+  line-height: 1.4;
+  color: #333;
+}
+
+
+
 /* ========================================= */
 /* === BLOCK 3: Vignette Ranking Styles  === */
 /* ========================================= */
