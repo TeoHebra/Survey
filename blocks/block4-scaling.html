@@ -1,13 +1,15 @@
-<!-- File: blocks/block4-scaling.html -->
+<!-- ================================================
+     Block 4: Novelty & Confidence + “Wow effect” Slider
+     ================================================ -->
 <section class="survey-block" id="block4" data-type="scaling">
   <h2>Block 4 – Novelty &amp; Confidence</h2>
 
-  <!-- 1) The statement text -->
+  <!-- ─── 1) Statement Text ─── -->
   <p class="statement">
     “In the last decade, the rapid rise of decentralized finance (DeFi) platforms has transformed how individuals access financial services.”
   </p>
 
-  <!-- 2) OPTIONAL IMAGE (uncomment and fill src / alt if needed) -->
+  <!-- ─── 2) OPTIONAL IMAGE (uncomment if needed) ─── -->
   <!--
   <img
     src="path/to/your/image.jpg"
@@ -16,69 +18,130 @@
   />
   -->
 
-  <!-- 3) Novel Yes/No Question -->
+  <!-- ─── 3) Novel Yes/No (○ → ✕) ─── -->
   <div class="question-group">
-    <label for="novel-yesno">Novel?</label>
+    <span class="question-label">Novel?</span>
+
+    <!-- Yes radio + label -->
     <input
       type="radio"
       id="novel-yes"
       name="novel"
       value="yes"
-      class="radio-option"
+      class="novel-radio"
     />
-    <label for="novel-yes">Yes</label>
+    <label for="novel-yes" class="novel-label">Yes</label>
 
+    <!-- No radio + label (default unselected; you can also add `checked` if you want “No” pre‐selected) -->
     <input
       type="radio"
       id="novel-no"
       name="novel"
       value="no"
-      class="radio-option"
+      class="novel-radio"
     />
-    <label for="novel-no">No</label>
+    <label for="novel-no" class="novel-label">No</label>
   </div>
 
-  <!-- 4) Confidence Slider (0–10) -->
-  <div class="slider-container">
-    <label for="confidence-slider">
-      Confidence:
-      <!-- This <span> will update live as the user drags -->
-      <span id="confidence-value" class="slider-value">5</span>
-      / 10
-    </label>
+  <!-- ─── 4) Confidence Slider (0–10) ─── -->
+  <div class="slider-block">
+    <div class="slider-header">
+      <span class="slider-label">Confidence</span>
+      <span class="slider-value" id="confidence-value">5</span>
+      <span class="slider-max">/ 10</span>
+    </div>
     <input
       type="range"
       id="confidence-slider"
-      name="confidence"
       min="0"
       max="10"
       value="5"
       step="1"
+      list="tickmarks-confidence"
+      class="slider-input"
     />
+    <datalist id="tickmarks-confidence">
+      <!-- Ten tick marks (0 through 10) -->
+      <option value="0"></option>
+      <option value="1"></option>
+      <option value="2"></option>
+      <option value="3"></option>
+      <option value="4"></option>
+      <option value="5"></option>
+      <option value="6"></option>
+      <option value="7"></option>
+      <option value="8"></option>
+      <option value="9"></option>
+      <option value="10"></option>
+    </datalist>
   </div>
 
-  <!-- ─────── NAVIGATION BUTTONS ─────── -->
+  <!-- ─── 5) “Wow effect” Slider (0–10) ─── -->
+  <div class="slider-block">
+    <div class="slider-header">
+      <span class="slider-label">Wow effect</span>
+      <span class="slider-value" id="wow-value">5</span>
+      <span class="slider-max">/ 10</span>
+    </div>
+    <input
+      type="range"
+      id="wow-slider"
+      min="0"
+      max="10"
+      value="5"
+      step="1"
+      list="tickmarks-wow"
+      class="slider-input"
+    />
+    <datalist id="tickmarks-wow">
+      <!-- Ten tick marks (0 through 10) -->
+      <option value="0"></option>
+      <option value="1"></option>
+      <option value="2"></option>
+      <option value="3"></option>
+      <option value="4"></option>
+      <option value="5"></option>
+      <option value="6"></option>
+      <option value="7"></option>
+      <option value="8"></option>
+      <option value="9"></option>
+      <option value="10"></option>
+    </datalist>
+  </div>
+
+  <!-- ─── 6) Navigation Buttons ─── -->
   <div class="nav-buttons">
     <button type="button" class="prev-btn">Back</button>
     <button type="button" class="next-btn">Next</button>
   </div>
 
-  <!-- ――――― Script to hook up the slider → <span> live‐update ――――― -->
+  <!-- ─── 7) Inline JavaScript to hook up both sliders ─── -->
   <script>
-    // As soon as this <script> is inserted by main.js, it runs and
-    // finds the #confidence-slider inside the newly‐injected .survey-block.
+    // Immediately run this code as soon as the survey injects / re-hydrates this block.
     (function() {
-      const slider = document.getElementById('confidence-slider');
-      const display = document.getElementById('confidence-value');
-
-      if (slider && display) {
-        slider.addEventListener('input', function() {
-          display.textContent = this.value;
+      // 1) Confidence slider
+      const confSlider = document.getElementById('confidence-slider');
+      const confValue  = document.getElementById('confidence-value');
+      if (confSlider && confValue) {
+        // Initialize display (in case default <input> value changes)
+        confValue.textContent = confSlider.value;
+        confSlider.addEventListener('input', function() {
+          confValue.textContent = this.value;
         });
       } else {
-        console.warn(
-          'Block 4: Could not find #confidence-slider or #confidence-value in the DOM.'
-        );
+        console.warn('Block 4: #confidence-slider or #confidence-value not found.');
+      }
+
+      // 2) Wow effect slider
+      const wowSlider = document.getElementById('wow-slider');
+      const wowValue  = document.getElementById('wow-value');
+      if (wowSlider && wowValue) {
+        wowValue.textContent = wowSlider.value;
+        wowSlider.addEventListener('input', function() {
+          wowValue.textContent = this.value;
+        });
+      } else {
+        console.warn('Block 4: #wow-slider or #wow-value not found.');
       }
     })();
   </script>
