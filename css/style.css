@@ -432,9 +432,9 @@ fieldset.likert-7 input[type="radio"]:checked + label::after {
 /* Style the label so it’s a circle */
 .novel-option label.novel-circle {
   position: relative;
-  width: 28px;            /* circle diameter */
-  height: 28px;
-  border: 3px solid #333; /* thick border */
+  width: 16px;            /* circle diameter */
+  height: 16px;
+  border: 3px solid #000; /* thick border */
   border-radius: 50%;     /* make it circular */
   background-color: #fff; /* white inside */
   cursor: pointer;
@@ -458,13 +458,13 @@ fieldset.likert-7 input[type="radio"]:checked + label::after {
   left: 50%;
   transform: translate(-50%, -50%);
   color: red;
-  font-size: 1.2rem;      /* sized to fit inside 28px circle */
+  font-size: 2.0rem;      /* sized to fit inside 28px circle */
   line-height: 1;
 }
 
 /* The “Yes” / “No” text sits in this span, to the right of the circle */
 .novel-option .novel-text {
-  font-size: 1rem;
+  font-size: 1.4rem;
   color: #222;
   user-select: none;
 }
@@ -613,7 +613,4 @@ fieldset.likert-7 input[type="radio"]:checked + label::after {
     margin-bottom: 8px;
   }
 }
-
-
-
 
