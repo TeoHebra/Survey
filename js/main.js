@@ -9,10 +9,15 @@ const blockFiles = [
 ];
 
 const container = document.getElementById('survey-container');
-const progressBar = document.createElement('div');
-progressBar.className = 'progress';
-progressBar.innerHTML = '<div></div>';
-container.prepend(progressBar);
+
+// Create progress bar with wrapper and info text
+const progressWrapper = document.createElement('div');
+progressWrapper.className = 'progress-wrapper';
+progressWrapper.innerHTML = `
+  <div class="progress"><div></div></div>
+  <div class="progress-info">Step 1 of ${blockFiles.length} · ~7 min left</div>
+`;
+container.prepend(progressWrapper);
 
 let currentIndex = 0;
 
@@ -28,24 +33,18 @@ async function loadBlock(index) {
   const block = container.querySelector('.survey-block');
   block.classList.add('active');
 
-  // ─── Re‐execute any <script> tags that came in with the HTML ───
-  // (handles both inline <script>…</script> and external <script src="…">)
+  // Re-execute <script> tags that came in with the block
   const inertScripts = block.querySelectorAll('script');
   inertScripts.forEach(oldScript => {
     const newScript = document.createElement('script');
-
     if (oldScript.src) {
-      // External <script src="…">
       newScript.src = oldScript.src;
       if (oldScript.defer) newScript.defer = true;
       if (oldScript.async) newScript.async = true;
-      if (oldScript.type)  newScript.type  = oldScript.type;
+      if (oldScript.type) newScript.type = oldScript.type;
     } else {
-      // Inline <script>…</script>
       newScript.textContent = oldScript.textContent;
     }
-
-    // Replace the inert node so the browser executes it
     oldScript.replaceWith(newScript);
   });
 
@@ -54,8 +53,13 @@ async function loadBlock(index) {
 }
 
 function updateProgress() {
-  const percent = (currentIndex / blockFiles.length) * 100;
-  progressBar.firstElementChild.style.width = percent + '%';
+  const percent = ((currentIndex + 1) / blockFiles.length) * 100;
+  document.querySelector('.progress > div').style.width = percent + '%';
+
+  const stepsLeft = blockFiles.length - (currentIndex + 1);
+  const estTime = Math.max(1, 7 - currentIndex); // crude estimate, adjust if needed
+  document.querySelector('.progress-info').textContent = 
+    `Step ${currentIndex + 1} of ${blockFiles.length} · ~${estTime} min left`;
 }
 
 function bindNavigation(block) {
@@ -80,5 +84,5 @@ function bindNavigation(block) {
   }
 }
 
-// Start survey
+// Start the survey
 loadBlock(currentIndex);
