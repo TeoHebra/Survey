@@ -376,3 +376,245 @@ fieldset.likert-7 input[type="radio"]:checked + label::after {
   padding-right: 0px;  
 
 }
+
+
+/* ================================================= */
+/* Block 4 Styling (copy/paste into your CSS file)    */
+/* ================================================= */
+
+/* ───────────────────────────────────────────────────── */
+/* 1) Container for each survey block                   */
+/* ───────────────────────────────────────────────────── */
+.survey-block {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #fafafa;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  font-family: Arial, sans-serif;
+}
+
+.survey-block .block-title {
+  font-size: 1.4rem;
+  color: #333;
+  margin-bottom: 16px;
+}
+
+/* ────────────────────────────────────────────────────────────────── */
+/* 2) Flex row to hold "Novel?", "Confidence", "Wow effect" columns  */
+/* ────────────────────────────────────────────────────────────────── */
+.block-4-row {
+  display: flex;
+  align-items: flex-start;       /* top-align each column */
+  justify-content: space-between;/* spread columns across row */
+  gap: 24px;                      /* horizontal gap between columns */
+  margin-bottom: 32px;            /* space below this entire row */
+}
+
+/* ────────────────────────────────────────────────────────────────── */
+/* 3) Novel Group (column #1)                                          */
+/* ────────────────────────────────────────────────────────────────── */
+.novel-group {
+  flex: 0 1 20%;                  /* roughly 20% width, but flexible */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.novel-group .group-label {
+  font-weight: bold;
+  font-size: 1rem;
+  color: #444;
+  margin-bottom: 8px;
+}
+
+.novel-radios {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;                      /* vertical spacing between Yes/No */
+}
+
+/* Hide the native radio input so only our custom icon appears */
+.novel-radio {
+  display: none;
+}
+
+/* Style each label (for Yes/No) to have a big circle or cross */
+.novel-label {
+  position: relative;
+  padding-left: 32px;             /* make room for the icon on the left */
+  font-size: 1rem;
+  color: #222;
+  cursor: pointer;
+  user-select: none;
+  line-height: 1;                 /* keeps icon vertically centered */
+}
+
+/* By default, the label::before shows a large hollow circle “◯” */
+.novel-label::before {
+  content: "◯";                   /* Hollow circle (U+25EF) */
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.8rem;              /* bigger circle */
+  color: #222;
+  line-height: 1;
+}
+
+/* When its radio is checked, switch to a large red cross “✖” */
+.novel-radio:checked + .novel-label::before {
+  content: "✖";                   /* Heavy Multiplication X (U+2716) */
+  color: red;
+  font-size: 1.8rem;              /* same size as circle */
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* ────────────────────────────────────────────────────────────────── */
+/* 4) Slider Groups (columns #2 & #3)                                 */
+/*    Each has a header (label + numeric value) and the range input.  */
+/* ────────────────────────────────────────────────────────────────── */
+.confidence-group,
+.wow-group {
+  flex: 0 1 38%;                  /* roughly 38% width each */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.group-header {
+  display: flex;
+  align-items: baseline;
+  margin-bottom: 8px;
+}
+
+.group-header .group-label {
+  font-weight: bold;
+  font-size: 1rem;
+  color: #444;
+  margin-right: 8px;
+}
+
+.group-header .slider-value {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #007BFF;
+  margin-right: 4px;
+}
+
+.group-header .slider-max {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.slider-wrapper {
+  width: 100%;
+}
+
+/* ────────────────────────────────────────────────────────────────── */
+/* 5) Range Input + Tick Marks Styling                                 */
+/* ────────────────────────────────────────────────────────────────── */
+.slider-input {
+  width: 100%;
+  height: 28px;                   /* taller track */
+  background: transparent;        /* allows datalist ticks to show */
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.slider-input:focus {
+  outline: none;
+}
+
+/* TRACK (the gray line behind the thumb) */
+.slider-input::-webkit-slider-runnable-track {
+  height: 6px;                    /* thicker track */
+  background: #ddd;
+  border-radius: 3px;
+}
+
+.slider-input::-moz-range-track {
+  height: 6px;
+  background: #ddd;
+  border-radius: 3px;
+}
+
+.slider-input::-ms-track {
+  height: 6px;
+  background: #ddd;
+  border-radius: 3px;
+  color: transparent;             /* hide native ticks in IE/Edge */
+}
+
+/* THUMB (the draggable circle) */
+.slider-input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 24px;                    /* larger thumb */
+  height: 24px;
+  background: #222;
+  border: 3px solid #fff;         /* thick white ring */
+  border-radius: 50%;
+  margin-top: -9px;               /* center on the thicker track */
+  cursor: pointer;
+}
+
+.slider-input::-moz-range-thumb {
+  width: 24px;
+  height: 24px;
+  background: #222;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.slider-input::-ms-thumb {
+  width: 24px;
+  height: 24px;
+  background: #222;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+/* TICK MARKS (via <datalist>) */
+.slider-input::-webkit-slider-runnable-track {
+  background: #ddd;
+}
+
+.slider-input::-moz-range-progress {
+  background: transparent;
+}
+
+.slider-input::-moz-range-ticks {
+  color: #888;      /* tick color in Firefox (if supported) */
+}
+
+.slider-input::-ms-ticks-after {
+  color: #888;      /* tick color in IE/Edge (if supported) */
+}
+
+/* ────────────────────────────────────────────────────────────────── */
+/* 6) Navigation Buttons (Back / Next)                                 */
+/* ────────────────────────────────────────────────────────────────── */
+.nav-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 24px;
+}
+
+.nav-buttons button {
+  padding: 8px 16px;
+  font-size: 1rem;
+  background-color: #007BFF;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.nav-buttons button:hover {
+  background-color: #0056b3;
+}
