@@ -8,6 +8,7 @@
   --box-width: 32px;
   --gap-between: 24px;
   --text-horizontal-offset: 0px;
+  --likert-mobile-spacing: 0.5rem;
 }
 
 html {
@@ -232,7 +233,7 @@ fieldset.likert-7 label small {
   fieldset.likert-7 {
     flex-direction: column;
     align-items: flex-start;
-    gap: 1rem;
+    gap: 0.0rem;
     position: relative;
   }
 
