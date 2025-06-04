@@ -6,115 +6,7 @@
     Type a number (1–4) in the box next to each statement. Do not repeat ranks.
   </p>
 
-  <!-- ─────────── 2) CUSTOM CSS ─────────── -->
-  <style>
-    /* Hide default spinner */
-    #block3 .ranking-item .rank-input::-webkit-inner-spin-button,
-    #block3 .ranking-item .rank-input::-webkit-outer-spin-button {
-      -webkit-appearance: none; margin: 0;
-    }
-    #block3 .ranking-item .rank-input {
-      -moz-appearance: textfield;
-    }
-
-    /* Wrapper so we can overlay our custom arrows */
-    #block3 .ranking-item .number-wrapper {
-      position: relative;
-      display: inline-block;
-    }
-
-    /* Base input style */
-    #block3 .ranking-item .rank-input {
-      width: 40px;
-      padding: 8px;
-      font-size: 1rem;
-      text-align: center;
-      border: 3px solid #000;
-      border-radius: 6px;
-      background-color: #fff;
-      color: #000;
-    }
-
-    /* Up arrow (top right) */
-    #block3 .ranking-item .number-wrapper .arrow.up {
-      position: absolute;
-      top: 6px; right: 6px;
-      width: 8px; height: 5px;
-      background-image: url("data:image/svg+xml;utf8,\
-        <svg xmlns='http://www.w3.org/2000/svg' width='8' height='5' viewBox='0 0 8 5'>\
-          <polygon points='4,0 8,5 0,5' fill='%23666'/>\
-        </svg>");
-      background-repeat: no-repeat;
-      background-size: 8px 5px;
-      cursor: pointer;
-    }
-
-    /* Down arrow (bottom right) */
-    #block3 .ranking-item .number-wrapper .arrow.down {
-      position: absolute;
-      bottom: 6px; right: 6px;
-      width: 8px; height: 5px;
-      background-image: url("data:image/svg+xml;utf8,\
-        <svg xmlns='http://www.w3.org/2000/svg' width='8' height='5' viewBox='0 0 8 5'>\
-          <polygon points='0,0 8,0 4,5' fill='%23666'/>\
-        </svg>");
-      background-repeat: no-repeat;
-      background-size: 8px 5px;
-      cursor: pointer;
-    }
-
-    /* On hover, fade arrow */
-    #block3 .ranking-item .number-wrapper .arrow.up:hover,
-    #block3 .ranking-item .number-wrapper .arrow.down:hover {
-      opacity: 0.7;
-    }
-
-    /* Duplicate styling (unchanged) */
-    #block3 .rank-input.duplicate {
-      border: 4px solid #e74c3c !important;
-      background-color: #ffebee !important;
-      color: #b71c1c;
-    }
-
-    /* Remove grey “card” and place input on left */
-    #block3 .ranking-item {
-      display: flex;
-      flex-direction: row-reverse;
-      align-items: center;
-      margin-bottom: 16px;
-      background-color: transparent !important;
-      border: none !important;
-      border-bottom: 1px solid #e0e0e0;
-      padding-bottom: 8px;
-      margin-bottom: 8px;
-    }
-    #block3 .ranking-item label {
-      flex: 1;
-      font-size: 1rem;
-      color: #333;
-      margin-left: 24px; /* more space from the box */
-    }
-
-    /* Responsive stacking */
-    @media (max-width: 480px) {
-      #block3 .ranking-item {
-        flex-direction: column;
-        align-items: stretch;
-      }
-      #block3 .ranking-item label {
-        margin-left: 0;
-        margin-bottom: 8px;
-      }
-      #block3 .ranking-item .number-wrapper {
-        width: 100%;
-      }
-      #block3 .ranking-item .rank-input {
-        width: 100%;
-      }
-    }
-  </style>
-
-  <!-- ─────────── INLINE SCRIPT: checkDups() ─────────── -->
+  <!-- INLINE SCRIPT: checkDups() (unchanged) -->
   <script>
     function checkDups() {
       const inputs = document.querySelectorAll('#block3 .rank-input');
@@ -135,7 +27,7 @@
     }
   </script>
 
-  <!-- ─────────── FOUR VIGNETTES ─────────── -->
+  <!-- ─────────── FOUR VIGNETTE ITEMS ─────────── -->
   <div class="ranking-item">
     <div class="number-wrapper">
       <input
@@ -216,7 +108,7 @@
     </label>
   </div>
 
-  <!-- ─────────── 3) JS TO MAKE ARROWS WORK ─────────── -->
+  <!-- ─────────── 3) JS TO HANDLE ARROW CLICKS ─────────── -->
   <script>
     document.querySelectorAll('#block3 .number-wrapper').forEach(wrapper => {
       const input = wrapper.querySelector('.rank-input');
