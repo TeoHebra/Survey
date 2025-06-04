@@ -382,7 +382,7 @@ fieldset.likert-7 input[type="radio"]:checked + label::after {
 /* Block 4 Styles (for blocks/block4-scaling.html)                     */
 /* ================================================================== */
 
-/* 1) Container for this survey block (consistent with your other blocks) */
+/* 1) Container for this survey block */
 .survey-block {
   max-width: 800px;
   margin: 40px auto;
@@ -394,18 +394,18 @@ fieldset.likert-7 input[type="radio"]:checked + label::after {
   font-family: Arial, sans-serif;
 }
 
-/* 2) FLEX ROW: Novel? | Confidence | Wow effect                        */
+/* 2) FLEX ROW: Novel? | Confidence | Wow effect */
 .block-4-row {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 24px;           /* horizontal space between the three columns */
+  gap: 24px;
   margin-bottom: 32px;
 }
 
-/* 3) NOVEL Group (column #1)                                            */
+/* 3) NOVEL Group (column #1) */
 .novel-group {
-  flex: 0 1 20%;       /* about 20% of the row width, but can shrink/grow */
+  flex: 0 1 20%;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -418,66 +418,61 @@ fieldset.likert-7 input[type="radio"]:checked + label::after {
   margin-bottom: 8px;
 }
 
-/* Each “Yes”/“No” line is a .novel-option */
 .novel-option {
   display: flex;
   align-items: center;
   margin-bottom: 12px;
 }
 
-/* Hide the native radio circle */
+/* Hide the native radio input */
 .novel-option input.novel-radio {
   display: none;
 }
 
-/* Style the label to be a circle by default */
-.novel-option label.novel-label {
+/* Style the label so it’s a circle */
+.novel-option label.novel-circle {
   position: relative;
-  width: 28px;          /* outer diameter of the circle */
+  width: 28px;            /* circle diameter */
   height: 28px;
-  border: 3px solid #333;
-  border-radius: 50%;   /* perfect circle */
-  background-color: #fff;
+  border: 3px solid #333; /* thick border */
+  border-radius: 50%;     /* make it circular */
+  background-color: #fff; /* white inside */
   cursor: pointer;
-  margin-right: 8px;    /* space between circle and “Yes”/“No” text */
   transition: border-color 0.15s;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 1rem;
-  line-height: 1;
+  margin-right: 8px;      /* space between circle and text */
 }
 
-/* On hover, darken the border slightly */
-.novel-option label.novel-label:hover {
+/* On hover, darken the border a bit */
+.novel-option label.novel-circle:hover {
   border-color: #000;
 }
 
-/* When the radio is checked, show a red “✖” inside */
-.novel-option input.novel-radio:checked + label.novel-label::after {
+/* When the radio is checked, show a red ✖ in the circle */
+.novel-option input.novel-radio:checked + label.novel-circle::after {
   content: "✖";
-  color: red;
-  font-size: 1.2rem;     /* fits neatly inside a 28px circle */
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  color: red;
+  font-size: 1.2rem;      /* sized to fit inside 28px circle */
+  line-height: 1;
 }
 
-/* The text “Yes” or “No” appears to the right of the circle */
-.novel-option label.novel-label + span,
-.novel-option input.novel-radio + label.novel-label + span {
-  /* We actually used label text itself for “Yes”/“No”, so no extra selector needed. */
+/* The “Yes” / “No” text sits in this span, to the right of the circle */
+.novel-option .novel-text {
+  font-size: 1rem;
+  color: #222;
+  user-select: none;
 }
 
-/* Actually, we included “Yes”/“No” as label text itself—no extra span needed. */
-/* So the markup “<label>Yes</label>” handles that portion. */
-
-
-/* 4) SLIDER Groups: Confidence & Wow effect (columns #2 and #3)        */
+/* 4) SLIDER groups: Confidence & Wow effect */
 .confidence-group,
 .wow-group {
-  flex: 0 1 38%;       /* each roughly 38% of the row */
+  flex: 0 1 38%;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -512,11 +507,11 @@ fieldset.likert-7 input[type="radio"]:checked + label::after {
   width: 100%;
 }
 
-/* 5) Range Input + Tick Marks Styling                                   */
+/* 5) Range Input + Tick Marks Styling */
 .slider-input {
   width: 100%;
-  height: 28px;           /* a bit taller track for visibility */
-  background: transparent; /* let the tick marks (datalist) show */
+  height: 28px;
+  background: transparent;
   -webkit-appearance: none;
   margin: 0;
 }
@@ -526,7 +521,7 @@ fieldset.likert-7 input[type="radio"]:checked + label::after {
 
 /* Track (gray line) */
 .slider-input::-webkit-slider-runnable-track {
-  height: 6px;            /* thicker track than default */
+  height: 6px;
   background: #ddd;
   border-radius: 3px;
 }
@@ -539,18 +534,18 @@ fieldset.likert-7 input[type="radio"]:checked + label::after {
   height: 6px;
   background: #ddd;
   border-radius: 3px;
-  color: transparent;     /* hide native ticks on IE/Edge */
+  color: transparent;
 }
 
-/* Thumb (black circle) */
+/* Thumb (dark circle) */
 .slider-input::-webkit-slider-thumb {
   -webkit-appearance: none;
-  width: 24px;            /* larger thumb */
+  width: 24px;
   height: 24px;
   background: #222;
-  border: 3px solid #fff; /* thick white border for contrast */
+  border: 3px solid #fff;
   border-radius: 50%;
-  margin-top: -9px;       /* center thumb onto the thicker track */
+  margin-top: -9px;
   cursor: pointer;
 }
 .slider-input::-moz-range-thumb {
@@ -570,7 +565,7 @@ fieldset.likert-7 input[type="radio"]:checked + label::after {
   cursor: pointer;
 }
 
-/* Tick marks from <datalist> */
+/* Tick marks (from datalist) */
 .slider-input::-webkit-slider-runnable-track {
   background: #ddd;
 }
@@ -578,13 +573,13 @@ fieldset.likert-7 input[type="radio"]:checked + label::after {
   background: transparent;
 }
 .slider-input::-moz-range-ticks {
-  color: #888;   /* Firefox ticks, if supported */
+  color: #888;
 }
 .slider-input::-ms-ticks-after {
-  color: #888;   /* IE/Edge ticks, if supported */
+  color: #888;
 }
 
-/* 6) Navigation Buttons (Back / Next)                                   */
+/* 6) Navigation Buttons (Back / Next) */
 .nav-buttons {
   display: flex;
   justify-content: space-between;
@@ -603,7 +598,7 @@ fieldset.likert-7 input[type="radio"]:checked + label::after {
   background-color: #0056b3;
 }
 
-/* 7) (Optional) Responsive tweaks for narrow screens */
+/* 7) Optional Responsive Tweaks */
 @media (max-width: 600px) {
   .block-4-row {
     flex-direction: column;
@@ -618,4 +613,7 @@ fieldset.likert-7 input[type="radio"]:checked + label::after {
     margin-bottom: 8px;
   }
 }
+
+
+
 
