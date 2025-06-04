@@ -2,7 +2,7 @@
   <!-- ────────── FLEX ROW: Novel? | Confidence | Wow effect ────────── -->
   <div class="block-4-row">
 
-    <!-- ───── 1) NOVEL? (Yes / No, vertical, re-using Block 2 trick) ───── -->
+    <!-- ───── 1) NOVEL? (Yes / No) ───── -->
     <div class="novel-group">
       <div class="group-label">novel?</div>
 
@@ -15,7 +15,8 @@
           value="yes"
           class="novel-radio"
         />
-        <label for="novel-yes" class="novel-label">Yes</label>
+        <label for="novel-yes" class="novel-circle"></label>
+        <span class="novel-text">Yes</span>
       </div>
 
       <!-- NO option -->
@@ -28,7 +29,8 @@
           class="novel-radio"
           checked
         />
-        <label for="novel-no" class="novel-label">No</label>
+        <label for="novel-no" class="novel-circle"></label>
+        <span class="novel-text">No</span>
       </div>
     </div>
 
@@ -105,9 +107,7 @@
   </div>
 
   <!-- ──────────────────────────────────────────────────────────── -->
-  <!-- 4) (Optional) If you want a statement or image, insert here -->
-  <!--    For example:                                           -->
-  <!-- <p class="statement"> …Your statement… </p>             -->
+  <!-- 4) (Optional) Statement / Image can go here if needed     -->
   <!-- ──────────────────────────────────────────────────────────── -->
 
   <!-- ──────────────────────────────────────────────────────────── -->
@@ -119,7 +119,7 @@
   </div>
 
   <!-- ──────────────────────────────────────────────────────────── -->
-  <!-- 6) Inline Script: Update slider → <span> in real time       -->
+  <!-- 6) Inline Script: Update slider → <span> updates           -->
   <!-- ──────────────────────────────────────────────────────────── -->
   <script>
     (function() {
@@ -131,8 +131,6 @@
         confSlider.addEventListener('input', function() {
           confValue.textContent = this.value;
         });
-      } else {
-        console.warn('Block 4: #confidence-slider or #confidence-value not found.');
       }
 
       // WOW EFFECT SLIDER
@@ -143,8 +141,6 @@
         wowSlider.addEventListener('input', function() {
           wowValue.textContent = this.value;
         });
-      } else {
-        console.warn('Block 4: #wow-slider or #wow-value not found.');
       }
     })();
   </script>
