@@ -550,6 +550,16 @@ fieldset.likert-7 label span {
   background-color: #ddd;
 }
 
+  /* 6 ─ Likert scale: bigger circles & hit-area (builds on existing mobile rules) */
+  fieldset.likert-7 { padding: 0; }
+  fieldset.likert-7 label { padding: 10px 0; }      /* 44 px tap zone */
+  fieldset.likert-7 label::before {
+    width: 20px;
+    height: 20px;
+    border-width: 3px;
+    margin: 0 12px 0 0;
+  }
+
 /* ──────────────────────────────────────────────── */
 /* MOBILE OPTIMISATION (≤ 600 px)                  */
 /* append this at the very end of the file         */
@@ -617,7 +627,6 @@ fieldset.likert-7 label span {
   /* ────────────────────────────────────────────────── */
 
 }
-
   /* 4 ─ Sticky nav footer with thumb-friendly buttons */
   .nav-buttons {
     position: sticky;
@@ -640,21 +649,7 @@ fieldset.likert-7 label span {
   /* 5 ─ Textarea grows to a comfortable height */
   textarea { min-height: 34vh; }
 
-  /* 6 ─ Likert scale: bigger circles & hit-area (builds on existing mobile rules) */
-  fieldset.likert-7 { padding: 0; }
-  fieldset.likert-7 label { padding: 10px 0; }      /* 44 px tap zone */
-  fieldset.likert-7 label::before {
-    width: 20px;
-    height: 20px;
-    border-width: 3px;
-    margin: 0 12px 0 0;
-  }
 
-  /* 7 ─ Ranking items full-width controls (if not already) */
-  #block3 .ranking-item .number-wrapper,
-  #block3 .ranking-item .rank-input {
-    width: 100%;
-  }
 
   /* 8 ─ Block 4 stacks vertically (extra safety) */
   .block-4-row { flex-direction: column; gap: 24px; }
