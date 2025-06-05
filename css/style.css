@@ -46,18 +46,19 @@ body {
    4. Progress bar
    =================================================== */
 .progress-wrapper {
-  width: 100%;
-  margin-bottom: 1rem;
-  text-align: center;
-}
+    display: flex;
+    align-items: center;
+    gap: 16px;               /* small gap between bar & text */
+    margin-bottom: 1rem;    /* keep a bit of breathing room */
+  }
 
-.progress {
-  width: 100%;
-  background: #f1f1f1;
-  height: 6px;
-  border-radius: 999px;
-  overflow: hidden;
-}
+  .progress {
+    flex: 1;                /* allow bar to fill all leftover width */
+    height: 12px;            /* a slightly thinner bar on phone */
+    background: #f1f1f1;    /* light‐grey track */
+    border-radius: 4px;     /* rounded ends */
+    overflow: hidden;
+  }
 
 .progress > div {
   height: 100%;
@@ -67,10 +68,29 @@ body {
 }
 
 .progress-info {
-  margin-top: 0.5rem;
-  font-size: 0.9rem;
+  position: relative;
+  bottom: 0px;          /* shift the text down by 4px (tweak as needed) */
+  font-size: 0.80rem;
   color: #555;
+  white-space: nowrap;
+  /* remove any line-height or flex rules you added earlier */
 }
+
+  .progress-fill {
+    height: 100%;
+    background: #000;       /* black (same as --primary-color) */
+    width: 0%;              /* updated by JS as user advances */
+    transition: width 0.3s ease;
+  }
+  
+   .progress-step {
+    font-weight: 500;
+  }
+  
+    .progress-time {
+    margin-top: 2px;        /* small gap between lines */
+  }
+  
 
 /* ===================================================
    5. White “card” container (the only card)
@@ -659,50 +679,6 @@ fieldset.likert-7 label span {
   /* 2 ─ Typography slightly smaller but looser line-height */
   html { font-size: 15px; line-height: 1.1; }
 
-  .progress-wrapper {
-    display: flex;
-    align-items: center;
-    gap: 16px;               /* small gap between bar & text */
-    margin-bottom: 1rem;    /* keep a bit of breathing room */
-  }
-
-  /* B) Make the bar thinner & flexible */
-  .progress {
-    flex: 1;                /* allow bar to fill all leftover width */
-    height: 12px;            /* a slightly thinner bar on phone */
-    background: #f1f1f1;    /* light‐grey track */
-    border-radius: 4px;     /* rounded ends */
-    overflow: hidden;
-  }
-
-  /* The inner fill (black) */
-  .progress-fill {
-    height: 100%;
-    background: #000;       /* black (same as --primary-color) */
-    width: 0%;              /* updated by JS as user advances */
-    transition: width 0.3s ease;
-  }
-
-  /* C) Two‐line progress text, stacked vertically */
-.progress-info {
-  position: relative;
-  bottom: 3px;          /* shift the text down by 4px (tweak as needed) */
-  font-size: 0.80rem;
-  color: #555;
-  white-space: nowrap;
-  /* remove any line-height or flex rules you added earlier */
-}
-
-
-  /* Optional: add a little letter‐spacing to “Step X of Y” */
-  .progress-step {
-    font-weight: 500;
-  }
-
-  /* (You can tweak margin/padding as you like) */
-  .progress-time {
-    margin-top: 2px;        /* small gap between lines */
-  }
 
   /* ────────────────────────────────────────────────── */
   /* D) If you originally had `.progress > div` as the fill, */
