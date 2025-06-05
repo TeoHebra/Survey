@@ -2,16 +2,16 @@
      BLOCK 2: Scaling Assessment
      ============================= -->
 <div id="block2-container">
-  <!-- The eight randomly‐selected items will be injected here -->
+  <!-- Eight randomly‐selected items (2 per category) will be injected here -->
 </div>
 
 <script>
-// ─── 1. Define all items by category ───
+// ─── 1. All items by category ───
 const categories = {
   S: [
     "S1 Incorporation of rare elements such as selenium or boron increases a metabolite’s novelty.",
     "S2 A new ring system is an indicator of novelty.",
-    "S3 (R) N-acylation or similar motif based decoration are unimportant when claiming novelty.",
+    "S3 (R) N-acylation or similar motif-based decoration are unimportant when claiming novelty.",
     "S4 (R) Changing the oxidation state of a functional group is of little novelty."
   ],
   B: [
@@ -34,7 +34,7 @@ const categories = {
   ]
 };
 
-// ─── 2. Fisher–Yates shuffle helper ───
+// ─── 2. Shuffle helper (Fisher–Yates) ───
 function shuffleArray(arr) {
   for (let i = arr.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -43,64 +43,59 @@ function shuffleArray(arr) {
   return arr;
 }
 
-// ─── 3. Randomly pick 2 from each category ───
+// ─── 3. Pick 2 items from each category ───
 function pickTwoPerCategory() {
   const selected = [];
   Object.keys(categories).forEach(catKey => {
-    // Make a shallow copy so we don’t destroy the original ordering
     const copy = categories[catKey].slice();
     shuffleArray(copy);
     selected.push(...copy.slice(0, 2));
   });
-  return selected;
+  return selected; // eight total
 }
 
-// ─── 4. Build the HTML for each selected statement ───
+// ─── 4. Render all eight statements with a 7-point Likert ───
 function renderBlock2() {
   const container = document.getElementById("block2-container");
-  container.innerHTML = ""; // clear if something was there
+  container.innerHTML = ""; // clear previous (if any)
 
-  // Pick exactly 2 items from S, 2 from B, 2 from F, 2 from E
+  // Grab exactly 2 from each of S, B, F, E
   const items = pickTwoPerCategory();
 
-  // Define your scale labels here (adjust if you want a different number of points)
-  const scaleLabels = [
-    "1 – Strongly Disagree",
-    "2 – Disagree",
-    "3 – Neutral",
-    "4 – Agree",
-    "5 – Strongly Agree"
-  ];
+  // Change these labels if your CSS expects something different.
+  // Right now we’re using simple numbers 1–7; your styles.css can add text/icons via pseudo-elements if desired.
+  const scaleLabels = ["1", "2", "3", "4", "5", "6", "7"];
 
   items.forEach((statementText, idx) => {
-    // Wrap each statement + its radio buttons in a <div>
+    // 4.1. Question wrapper
     const questionDiv = document.createElement("div");
-    questionDiv.className = "block2‐question";
-    questionDiv.style.marginBottom = "1.2em";
+    questionDiv.className = "block2-question";
 
-    // Label for the statement
+    // 4.2. Statement itself
     const p = document.createElement("p");
     p.textContent = statementText;
-    p.style.fontWeight = "500";
     questionDiv.appendChild(p);
 
-    // Radio‐button list
+    // 4.3. Radio buttons container
     const radioContainer = document.createElement("div");
-    radioContainer.className = "likert‐scale";
+    radioContainer.className = "likert-scale";
 
     scaleLabels.forEach((labelText, scaleIdx) => {
-      const radioId = `block2_q${idx}_opt${scaleIdx}`;
+      const radioId = `block2_q${idx}_opt${scaleIdx + 1}`;
+
+      // 4.3.1. <input type="radio">
       const radioInput = document.createElement("input");
       radioInput.type = "radio";
       radioInput.name = `block2_q${idx}`;
       radioInput.id = radioId;
-      radioInput.value = scaleIdx + 1;
-      radioInput.style.marginRight = "0.25em";
+      radioInput.value = String(scaleIdx + 1);
+      radioInput.className = "likert-input";
 
+      // 4.3.2. <label> for that input
       const radioLabel = document.createElement("label");
       radioLabel.htmlFor = radioId;
       radioLabel.textContent = labelText;
-      radioLabel.style.marginRight = "1em";
+      radioLabel.className = "likert-label";
 
       radioContainer.appendChild(radioInput);
       radioContainer.appendChild(radioLabel);
@@ -111,17 +106,6 @@ function renderBlock2() {
   });
 }
 
-// ─── 5. Run on page load ───
+// ─── 5. Fire on page load ───
 document.addEventListener("DOMContentLoaded", renderBlock2);
 </script>
-
-<style>
-/* Optional styling: adjust margins/padding/font‐size as needed */
-.block2-question p {
-  margin: 0 0 0.4em 0;
-}
-.likert-scale label {
-  cursor: pointer;
-  font-size: 0.95em;
-}
-</style>
