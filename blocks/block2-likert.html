@@ -1,14 +1,14 @@
-<!-- block2-likert.html -->
+<!-- blocks/block2-likert.html -->
 <section class="survey-block" id="block2" data-type="likert">
   <h2>Block 2 – Scaling Assessment</h2>
   <p class="prompt">
     For each statement below, please choose the option that best reflects your opinion.
   </p>
 
-  <!-- Add a horizontal rule to separate heading/prompt from questions -->
+  <!-- Horizontal rule to separate header from questions -->
   <hr/>
 
-  <!-- Container where 8 questions (2 from each category) will be injected -->
+  <!-- This DIV is where the 8 questions (2 per category) will be rendered -->
   <div id="likert-container"></div>
 
   <div class="navigation">
@@ -16,9 +16,15 @@
     <button class="next-btn">Next</button>
   </div>
 
+  <!-- ─────────────────────────────────────────────────────────────────
+       SCRIPT: “Cache‐once” block2 questions so they do NOT reshuffle
+       every time you navigate back into Block 2.
+     ───────────────────────────────────────────────────────────────── -->
   <script>
     (function() {
-      // 1) Define all 16 statements by category
+      // ────────────────────────────────────────────────────────────────
+      // 1) ALL 16 possible statements, grouped by category
+      // ────────────────────────────────────────────────────────────────
       const categories = {
         'Structural Novelty': [
           { id: 'S1', text: 'Incorporation of rare elements such as selenium or boron increases a metabolite’s novelty.' },
@@ -46,7 +52,9 @@
         ]
       };
 
-      // 2) Labels for the 7-point Likert scale:
+      // ────────────────────────────────────────────────────────────────
+      // 2) The seven‐point Likert labels (static)
+      // ────────────────────────────────────────────────────────────────
       const likertLabels = [
         'Strongly disagree',
         'Disagree',
@@ -57,72 +65,89 @@
         'Strongly agree'
       ];
 
-      // 3) Fisher–Yates shuffle (in-place):
-      function shuffle(array) {
-        for (let i = array.length - 1; i > 0; i--) {
+      // ────────────────────────────────────────────────────────────────
+      // 3) Fisher–Yates shuffle utility
+      // ────────────────────────────────────────────────────────────────
+      function shuffle(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
-          [array[i], array[j]] = [array[j], array[i]];
+          [arr[i], arr[j]] = [arr[j], arr[i]];
         }
       }
 
-      // 4) Build a single array of “2 random items per category”
-      let selectedItems = [];
-      Object.values(categories).forEach(categoryArray => {
-        // Make a shallow copy, shuffle it, pick the first 2
-        const copy = categoryArray.slice();
-        shuffle(copy);
-        selectedItems.push(copy[0], copy[1]);
-      });
+      // ────────────────────────────────────────────────────────────────
+      // 4) MAIN: either read from window.block2Questions or pick+save
+      // ────────────────────────────────────────────────────────────────
+      let questions = window.block2Questions;
 
-      // 5) Now shuffle those 8 items so categories are intermingled
-      shuffle(selectedItems);
+      if (!questions) {
+        // FIRST‐TIME: pick 2 random items from each category, then shuffle all 8
+        questions = [];
 
-      // 6) Grab the container where we’ll append our questions
+        // (a) For each category array: shuffle it, take first 2
+        Object.values(categories).forEach(catArr => {
+          const copy = catArr.slice();
+          shuffle(copy);
+          questions.push(copy[0], copy[1]);
+        });
+
+        // (b) Shuffle the final pool of 8 questions so the categories intermix
+        shuffle(questions);
+
+        // (c) Save to a global so subsequent injections use the same 8
+        window.block2Questions = questions;
+      }
+
+      // ────────────────────────────────────────────────────────────────
+      // 5) Now “render” those 8 questions into #likert-container
+      //    (including a bold numbering “1.”, “2.”, …)
+      // ────────────────────────────────────────────────────────────────
       const container = document.getElementById('likert-container');
 
-      // 7) Loop through selectedItems, rendering each with a bold number
-      selectedItems.forEach((item, index) => {
-        // index goes 0..7, but we want to display “1.” through “8.”
-        const displayNumber = index + 1;
+      // Clear any existing content (just in case)
+      container.innerHTML = '';
 
-        // Create a wrapper <div> so each question is a distinct block
+      questions.forEach((item, idx) => {
+        const displayNumber = idx + 1; // 1…8
+
+        // (a) Wrap each question in its own block for spacing
         const questionDiv = document.createElement('div');
         questionDiv.className = 'question-block';
 
-        // 7a) Create the statement <p>, with bold “1.”, “2.”, etc.
+        // (b) Create the <p class="statement"> with bold “n.” prefix
         const p = document.createElement('p');
         p.className = 'statement';
-        // Use innerHTML so we can embed the <strong> number
+        // Using innerHTML so we can embed <strong> tags
         p.innerHTML = `<strong>${displayNumber}.</strong> ${item.text}`;
         questionDiv.appendChild(p);
 
-        // 7b) Wrap the <fieldset> in a div.likert-wrapper for spacing control:
+        // (c) Wrap the <fieldset> in a .likert-wrapper for spacing control
         const likertWrapper = document.createElement('div');
         likertWrapper.className = 'likert-wrapper';
 
-        // 7c) Build the <fieldset class="likert-7">
+        // (d) Build the actual <fieldset class="likert-7">
         const fieldset = document.createElement('fieldset');
         fieldset.className = 'likert-7';
+        // (We omit a <legend>—if you need aria-label for screen readers,
+        //  you could add: fieldset.setAttribute('aria-label', item.text); )
 
-        // (We are omitting a visible <legend> so respondents only see the statement text.
-        // If you need a screen-reader label, you could add e.g. fieldset.setAttribute('aria-label', item.id); )
+        likertLabels.forEach((labelText, i) => {
+          const val = i + 1; // 1…7
 
-        // 7d) Create seven <input type="radio"> + <label> pairs
-        likertLabels.forEach((labelText, idx) => {
-          const value = idx + 1; // 1..7
-
-          // <input type="radio" id="S1-1" name="S1" value="1" required>
+          // Create the <input type="radio">
           const input = document.createElement('input');
           input.type = 'radio';
-          input.id = `${item.id}-${value}`;
+          input.id = `${item.id}-${val}`;
           input.name = item.id;
-          input.value = `${value}`;
-          // Only the first radio in each group needs “required”
-          if (value === 1) input.required = true;
+          input.value = `${val}`;
+          // Only the first input in each group needs “required”
+          if (val === 1) {
+            input.required = true;
+          }
 
-          // <label for="S1-1"><span><small>Strongly disagree</small></span></label>
+          // Create the <label>
           const label = document.createElement('label');
-          label.setAttribute('for', `${item.id}-${value}`);
+          label.setAttribute('for', `${item.id}-${val}`);
           const span = document.createElement('span');
           const small = document.createElement('small');
           small.textContent = labelText;
@@ -133,7 +158,7 @@
           fieldset.appendChild(label);
         });
 
-        // 7e) Nest the fieldset inside likert-wrapper, then append both
+        // (e) Nest the fieldset inside its wrapper, then append to questionDiv
         likertWrapper.appendChild(fieldset);
         questionDiv.appendChild(likertWrapper);
         container.appendChild(questionDiv);
