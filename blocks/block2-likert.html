@@ -1,111 +1,138 @@
-<!-- =============================
-     BLOCK 2: Scaling Assessment
-     ============================= -->
-<div id="block2-container">
-  <!-- Eight randomly‐selected items (2 per category) will be injected here -->
-</div>
+<!-- block2-likert.html -->
+<section class="survey-block" id="block2" data-type="likert">
+  <h2>Block 2 – Scaling Assessment</h2>
+  <p class="prompt">
+    For each statement below, please choose the option that best reflects your opinion.
+  </p>
 
-<script>
-// ─── 1. All items by category ───
-const categories = {
-  S: [
-    "S1 Incorporation of rare elements such as selenium or boron increases a metabolite’s novelty.",
-    "S2 A new ring system is an indicator of novelty.",
-    "S3 (R) N-acylation or similar motif-based decoration are unimportant when claiming novelty.",
-    "S4 (R) Changing the oxidation state of a functional group is of little novelty."
-  ],
-  B: [
-    "B1 An enzyme that catalyses a unprecedented reaction is novel.",
-    "B2 Use of uncommon cofactors increases the novelty of a pathway.",
-    "B3 (R) Including a tailoring enzyme from another pathway is of low novelty.",
-    "B4 (R) If the final product of a reaction resembles a known compound, the catalysis is not novel."
-  ],
-  F: [
-    "F1 Bioactivity in an under-explored target class is an important factor for novelty.",
-    "F2 (R) Without demonstrated bioactivity, a new structure is not an important novelty discovery.",
-    "F3 Selective activity against a previously untreatable pathogen is an important novelty signal.",
-    "F4 Dual-function metabolites (e.g. toxin + signal) are an important form of novelty."
-  ],
-  E: [
-    "E1 Production by a taxon where the compound was never seen is an important novelty factor.",
-    "E2 Chemical convergence across distant lineages is an important novelty cue.",
-    "E3 (R) Finding a known metabolite in a new species is not an important novelty event.",
-    "E4 Chemical-diversity hotspots in unexplored biomes are important indicators of future novelty."
-  ]
-};
+  <!-- Container where 2 random items per category (8 total) will be injected -->
+  <div id="likert-container"></div>
 
-// ─── 2. Shuffle helper (Fisher–Yates) ───
-function shuffleArray(arr) {
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
-  return arr;
-}
+  <div class="navigation">
+    <button class="prev-btn">Back</button>
+    <button class="next-btn">Next</button>
+  </div>
 
-// ─── 3. Pick 2 items from each category ───
-function pickTwoPerCategory() {
-  const selected = [];
-  Object.keys(categories).forEach(catKey => {
-    const copy = categories[catKey].slice();
-    shuffleArray(copy);
-    selected.push(...copy.slice(0, 2));
-  });
-  return selected; // eight total
-}
+  <!-- -------------------------------------------------------------------
+       SCRIPT: define all 16 items, pick 2 per category, and render them
+       ------------------------------------------------------------------- -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // 1) All 16 statements, organized by category:
+      const categories = {
+        // Structural Novelty (S)
+        'Structural Novelty': [
+          { id: 'S1', text: 'Incorporation of rare elements such as selenium or boron increases a metabolite’s novelty.' },
+          { id: 'S2', text: 'A new ring system is an indicator of novelty.' },
+          { id: 'S3', text: 'N-acylation or similar motif based decoration are unimportant when claiming novelty.', reverse: true },
+          { id: 'S4', text: 'Changing the oxidation state of a functional group is of little novelty.', reverse: true }
+        ],
+        // Biosynthetic / Catalytic Novelty (B)
+        'Biosynthetic / Catalytic Novelty': [
+          { id: 'B1', text: 'An enzyme that catalyses an unprecedented reaction is novel.' },
+          { id: 'B2', text: 'Use of uncommon cofactors increases the novelty of a pathway.' },
+          { id: 'B3', text: 'Including a tailoring enzyme from another pathway is of low novelty.', reverse: true },
+          { id: 'B4', text: 'If the final product of a reaction resembles a known compound, the catalysis is not novel.', reverse: true }
+        ],
+        // Functional / Phenotypic Novelty (F)
+        'Functional / Phenotypic Novelty': [
+          { id: 'F1', text: 'Bioactivity in an under-explored target class is an important factor for novelty.' },
+          { id: 'F2', text: 'Without demonstrated bioactivity, a new structure is not an important novelty discovery.', reverse: true },
+          { id: 'F3', text: 'Selective activity against a previously untreatable pathogen is an important novelty signal.' },
+          { id: 'F4', text: 'Dual-function metabolites (e.g. toxin + signal) are an important form of novelty.' }
+        ],
+        // Ecological / Phylogenetic Novelty (E)
+        'Ecological / Phylogenetic Novelty': [
+          { id: 'E1', text: 'Production by a taxon where the compound was never seen is an important novelty factor.' },
+          { id: 'E2', text: 'Chemical convergence across distant lineages is an important novelty cue.' },
+          { id: 'E3', text: 'Finding a known metabolite in a new species is not an important novelty event.', reverse: true },
+          { id: 'E4', text: 'Chemical-diversity hotspots in unexplored biomes are important indicators of future novelty.' }
+        ]
+      };
 
-// ─── 4. Render all eight statements with a 7-point Likert ───
-function renderBlock2() {
-  const container = document.getElementById("block2-container");
-  container.innerHTML = ""; // clear previous (if any)
+      // 2) Seven-point Likert labels (always the same):
+      const likertLabels = [
+        'Strongly disagree',
+        'Disagree',
+        'Somewhat disagree',
+        'Neutral',
+        'Somewhat agree',
+        'Agree',
+        'Strongly agree'
+      ];
 
-  // Grab exactly 2 from each of S, B, F, E
-  const items = pickTwoPerCategory();
+      // 3) Utility: shuffle an array in-place (Fisher–Yates):
+      function shuffle(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [array[i], array[j]] = [array[j], array[i]];
+        }
+      }
 
-  // Change these labels if your CSS expects something different.
-  // Right now we’re using simple numbers 1–7; your styles.css can add text/icons via pseudo-elements if desired.
-  const scaleLabels = ["1", "2", "3", "4", "5", "6", "7"];
+      // 4) Grab container where we will append our 8 items:
+      const container = document.getElementById('likert-container');
 
-  items.forEach((statementText, idx) => {
-    // 4.1. Question wrapper
-    const questionDiv = document.createElement("div");
-    questionDiv.className = "block2-question";
+      // 5) For each category, pick two at random and render them:
+      Object.keys(categories).forEach((catName) => {
+        // Clone & shuffle
+        const arr = categories[catName].slice();
+        shuffle(arr);
 
-    // 4.2. Statement itself
-    const p = document.createElement("p");
-    p.textContent = statementText;
-    questionDiv.appendChild(p);
+        // Take the first two after shuffling
+        const selectedTwo = arr.slice(0, 2);
 
-    // 4.3. Radio buttons container
-    const radioContainer = document.createElement("div");
-    radioContainer.className = "likert-scale";
+        selectedTwo.forEach((item) => {
+          // 5a) Create the statement <p> element
+          const p = document.createElement('p');
+          p.className = 'statement';
+          p.textContent = item.text;
+          container.appendChild(p);
 
-    scaleLabels.forEach((labelText, scaleIdx) => {
-      const radioId = `block2_q${idx}_opt${scaleIdx + 1}`;
+          // 5b) Build the <fieldset class="likert-7"> HTML
+          const fieldset = document.createElement('fieldset');
+          fieldset.className = 'likert-7';
 
-      // 4.3.1. <input type="radio">
-      const radioInput = document.createElement("input");
-      radioInput.type = "radio";
-      radioInput.name = `block2_q${idx}`;
-      radioInput.id = radioId;
-      radioInput.value = String(scaleIdx + 1);
-      radioInput.className = "likert-input";
+          // Visually-hidden <legend> for a11y (we can just use the ID as legend content)
+          const legend = document.createElement('legend');
+          legend.className = 'visually-hidden';
+          legend.textContent = item.id;
+          fieldset.appendChild(legend);
 
-      // 4.3.2. <label> for that input
-      const radioLabel = document.createElement("label");
-      radioLabel.htmlFor = radioId;
-      radioLabel.textContent = labelText;
-      radioLabel.className = "likert-label";
+          // 5c) For each of the 7 Likert options, create an <input> + <label>
+          likertLabels.forEach((labelText, idx) => {
+            const value = idx + 1; // 1…7
 
-      radioContainer.appendChild(radioInput);
-      radioContainer.appendChild(radioLabel);
+            // <input type="radio" id="S1-1" name="S1" value="1" required>
+            const input = document.createElement('input');
+            input.type = 'radio';
+            input.id = `${item.id}-${value}`;
+            input.name = item.id;
+            input.value = `${value}`;
+            // Only mark the first input as required; it forces at least one to be picked
+            if (value === 1) {
+              input.required = true;
+            }
+
+            // <label for="S1-1"><span><small>Strongly disagree</small></span></label>
+            const label = document.createElement('label');
+            label.setAttribute('for', `${item.id}-${value}`);
+
+            // We wrap the <small> inside <span> to match your CSS structure exactly:
+            const span = document.createElement('span');
+            const small = document.createElement('small');
+            small.textContent = labelText;
+            span.appendChild(small);
+            label.appendChild(span);
+
+            // Append to fieldset
+            fieldset.appendChild(input);
+            fieldset.appendChild(label);
+          });
+
+          // 5d) Finally, append the fieldset to the container
+          container.appendChild(fieldset);
+        });
+      });
     });
-
-    questionDiv.appendChild(radioContainer);
-    container.appendChild(questionDiv);
-  });
-}
-
-// ─── 5. Fire on page load ───
-document.addEventListener("DOMContentLoaded", renderBlock2);
-</script>
+  </script>
+</section>
