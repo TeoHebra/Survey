@@ -565,7 +565,6 @@ fieldset.likert-7 label span {
 /* append this at the very end of the file         */
 /* ──────────────────────────────────────────────── */
 @media (max-width: 600px) {
-
   /* 1 ─ Card becomes edge-to-edge */
   main#survey-container {
     margin: 0;
@@ -645,10 +644,8 @@ fieldset.likert-7 label span {
     border-radius: 6px;
   }
   .nav-buttons button:first-child { margin-right: 8px; }
-
   /* 5 ─ Textarea grows to a comfortable height */
   textarea { min-height: 34vh; }
-
 
   /* 8 ─ Block 4 stacks vertically (extra safety) */
   .block-4-row { flex-direction: column; gap: 24px; }
@@ -657,52 +654,36 @@ fieldset.likert-7 label span {
     width: 28px; height: 28px; margin-top: -11px;   /* easier to grab */
   }
 }
+
+/* ────────────────────────────────────────────────
+   MOBILE FIX: center the “✖” inside the circle
+   only when viewport ≤ 600px
+   ──────────────────────────────────────────────── */
 @media (max-width: 600px) {
+  /* (1) Ensure --bullet-size is 20px on mobile: */
   fieldset.likert-7 {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.0rem;
-    position: relative;
+    --bullet-size: 22px;
+    /* (you already have label::before { width:20px; height:20px; } somewhere above) */
   }
-  fieldset.likert-7::before {
-    display: none !important;
-  }
+
+  /* (2) Add vertical padding to each <label> so there’s a bigger tap‐area: */
   fieldset.likert-7 label {
-    flex-direction: row;
-    justify-content: flex-start;
-    align-items: center;
-    gap: 0.75rem;
-    text-align: left;
-    margin-bottom: 0.5rem;
-    position: relative;
+    padding: 10px 0;  /* ← your existing mobile rule */
   }
-  fieldset.likert-7 label span {
-    display: contents;
-  }
-  fieldset.likert-7 label small {
-    font-size: 1rem;
-    line-height: 1.3;
-    color: #333;
-  }
+
+  /* (3) Override the “✖” position when a radio is checked: */
   fieldset.likert-7 input[type="radio"]:checked + label::after {
-    content: '✖';
-    position: absolute;
-    top: calc(50%);
-    left: 8%;
-    width: 16px;
-    height: 16px;
-    font-size: 2.2rem;
-    color: red;
-    line-height: 1;
-    text-align: center;
-    pointer-events: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    /*  horizontal centering inside the label: */
+    left: 37%;
+    transform: translateX(-50%);
+    /*  calculate vertical so X sits exactly in the middle of the 20px circle + 10px top padding: */
+    top: calc(12px + (var(--bullet-size) / 2));
+    /*  keep the same translateY(-50%) if you want a little vertical insurance: */
+    transform: translate(-50%, -50%);
+    /*  font‐size stays as-is from your existing rule (≈20px * 1.8) */
   }
 }
-fieldset.likert-7 label::before {
-  margin-bottom: 0 !important;
-}
+
+
 
 
