@@ -16,16 +16,17 @@
     <button class="next-btn">Next</button>
   </div>
 
-  <!-- ─────────────────────────────────────────────────────────────────
+  <!-- ────────────────────────────────────────────────────────────────────
        SCRIPT: 
-       1) “Cache-once” the 8 random questions in window.block2Questions 
-       2) Render them 
-       3) Save any radio-choice to localStorage as soon as it changes 
-       4) On re-render, read localStorage so checked radios are retained
-     ───────────────────────────────────────────────────────────────── -->
+       1) “Cache once” the 8 random questions in window.block2Questions
+       2) Store each answer in window.block2Answers (in-memory only)
+       3) On full reload, window.block2Answers is gone, so answers reset
+     ──────────────────────────────────────────────────────────────────── -->
   <script>
     (function() {
+      // ───────────────────────────────────────────────────────────
       // 1) All 16 possible statements, grouped by category
+      // ───────────────────────────────────────────────────────────
       const categories = {
         'Structural Novelty': [
           { id: 'S1', text: 'Incorporation of rare elements such as selenium or boron increases a metabolite’s novelty.' },
@@ -53,7 +54,9 @@
         ]
       };
 
-      // 2) The seven-point Likert labels (static)
+      // ───────────────────────────────────────────────────────────
+      // 2) The seven‐point Likert labels (static)
+      // ───────────────────────────────────────────────────────────
       const likertLabels = [
         'Strongly disagree',
         'Disagree',
@@ -64,7 +67,9 @@
         'Strongly agree'
       ];
 
+      // ───────────────────────────────────────────────────────────
       // 3) Fisher–Yates shuffle (in-place)
+      // ───────────────────────────────────────────────────────────
       function shuffle(arr) {
         for (let i = arr.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
@@ -72,50 +77,62 @@
         }
       }
 
-      // 4) Determine our “eight questions” (either from window.block2Questions or by picking new)
+      // ───────────────────────────────────────────────────────────
+      // 4) Build or retrieve the “eight questions” in memory
+      // ───────────────────────────────────────────────────────────
       let questions = window.block2Questions;
 
       if (!questions) {
-        // A) First-time: pick 2 random statements from each category
+        // First‐time: pick 2 random items from each category, then shuffle all 8
         questions = [];
         Object.values(categories).forEach(catArr => {
           const copy = catArr.slice();
           shuffle(copy);
           questions.push(copy[0], copy[1]);
         });
-        // B) Now shuffle these 8 so they are intermingled
         shuffle(questions);
-        // C) Save globally so future injections use the same order
         window.block2Questions = questions;
       }
 
-      // 5) Render those eight questions into the "#likert-container"
+      // ───────────────────────────────────────────────────────────
+      // 5) Create or reuse window.block2Answers as an object mapping
+      //    question‐ID → chosen value (1..7). This lives only in memory.
+      // ───────────────────────────────────────────────────────────
+      if (!window.block2Answers) {
+        window.block2Answers = {}; 
+        // e.g. { S1: "3", B2: "6", … } once the user chooses
+      }
+
+      // ───────────────────────────────────────────────────────────
+      // 6) Render those eight questions into #likert-container
+      // ───────────────────────────────────────────────────────────
       const container = document.getElementById('likert-container');
-      container.innerHTML = ''; // clear any old content
+      container.innerHTML = ''; // clear any existing content
 
       questions.forEach((item, idx) => {
         const displayNumber = idx + 1; // 1..8
 
-        // (a) Wrap each question in its own block for spacing
+        // (a) Wrap each question in its own block <div> for spacing
         const questionDiv = document.createElement('div');
         questionDiv.className = 'question-block';
 
-        // (b) <p class="statement"><strong>n.</strong> text…</p>
+        // (b) Create the <p class="statement"> with bold “n.” prefix
         const p = document.createElement('p');
         p.className = 'statement';
         p.innerHTML = `<strong>${displayNumber}.</strong> ${item.text}`;
         questionDiv.appendChild(p);
 
-        // (c) Wrap the <fieldset> in a .likert-wrapper (for spacing control)
+        // (c) Wrap the <fieldset> in a .likert-wrapper for spacing control
         const likertWrapper = document.createElement('div');
         likertWrapper.className = 'likert-wrapper';
 
         // (d) Build the <fieldset class="likert-7">
         const fieldset = document.createElement('fieldset');
         fieldset.className = 'likert-7';
-        // (No visible <legend>; if you need aria-label: 
-        //  fieldset.setAttribute('aria-label', item.text); )
+        // (If you need an aria-label instead of a visible legend, do this:
+        //   fieldset.setAttribute('aria-label', item.text); )
 
+        // (e) Create the 7 radio inputs + labels
         likertLabels.forEach((labelText, i) => {
           const val = i + 1; // 1..7
 
@@ -125,25 +142,24 @@
           input.id = `${item.id}-${val}`;
           input.name = item.id;
           input.value = `${val}`;
+          // Only the first radio needs “required”
           if (val === 1) {
             input.required = true;
           }
 
-          // **Restore from localStorage** if the user had previously selected
-          const savedKey = `block2-${item.id}`;
-          const savedValue = localStorage.getItem(savedKey);
-          if (savedValue !== null && parseInt(savedValue, 10) === val) {
+          // Restore from window.block2Answers if previously selected
+          if (window.block2Answers[item.id] === `${val}`) {
             input.checked = true;
           }
 
-          // When the user changes a radio choice, save to localStorage immediately
+          // When the user selects a radio, store it in window.block2Answers
           input.addEventListener('change', () => {
             if (input.checked) {
-              localStorage.setItem(savedKey, `${val}`);
+              window.block2Answers[item.id] = `${val}`;
             }
           });
 
-          // Create the corresponding <label>
+          // Create the <label> for this radio
           const label = document.createElement('label');
           label.setAttribute('for', `${item.id}-${val}`);
           const span = document.createElement('span');
@@ -156,7 +172,7 @@
           fieldset.appendChild(label);
         });
 
-        // (e) Nest the fieldset inside its wrapper, then append to questionDiv
+        // (f) Nest the fieldset inside its wrapper, append to questionDiv
         likertWrapper.appendChild(fieldset);
         questionDiv.appendChild(likertWrapper);
         container.appendChild(questionDiv);
