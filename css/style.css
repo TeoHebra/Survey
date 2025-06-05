@@ -210,7 +210,7 @@ fieldset.likert-7 input[type="radio"]:checked + label::after {
     /* Now the “✖” is perfectly centered horizontally & vertically inside the circle */
   font-size: calc(var(--bullet-size) * 1.8);
     /* slightly smaller than the circle’s diameter */
-  color: red;
+  color: darkgoldenrod;
   pointer-events: none;  /* so clicks still go to the label/radio */
   z-index: 2;          /* on top of everything else */
 }
@@ -406,7 +406,7 @@ fieldset.likert-7 label span {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  color: red;
+  color: darkgoldenrod;
   font-size: 2rem;
   line-height: 1;
 }
