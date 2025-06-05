@@ -1,57 +1,49 @@
 <!-- File: blocks/block3-ranking.html -->
 <section class="survey-block" id="block3" data-type="ranking">
-  <!-- ─────────────────────────────────────────────────────────────────
-       STAGE 1: Rank the Four Top‐Level Domains
-     ───────────────────────────────────────────────────────────────── -->
-  <div id="stage1">
-    <h2>Block 3 – Domain Prioritization</h2>
-    <p class="prompt">
-      Please assign a unique rank to each domain (1 = most important, 4 = least important).  
-      Type a number (1–4) in the box next to each statement. Do not repeat ranks.
-    </p>
+  <h2>Block 3 – Domain Prioritization</h2>
+  <p class="prompt">
+    Please assign a unique rank to each domain (1 = most important, 4 = least important).  
+    Type a number (1–4) in the box next to each statement. Do not repeat ranks.
+  </p>
 
-    <!-- This is where the four “domain” ranking‐items will be injected -->
+  <!-- STAGE 1: Rank Four Top‐Level Domains -->
+  <div id="stage1">
     <div id="vignette-list"></div>
 
     <div class="navigation">
       <button class="prev-btn">Back</button>
-      <!-- Notice: no “next-btn” class here, so main.js will not advance to block 4 -->
+      <!-- Notice: no “next-btn” here, so main.js will not advance to block 4 -->
       <button id="stage1-next">Next</button>
     </div>
   </div>
 
-  <!-- ─────────────────────────────────────────────────────────────────
-       STAGE 2: Rank Subcategories of One of the Top 2 Domains
-     ───────────────────────────────────────────────────────────────── -->
+  <!-- STAGE 2: Rank Subcategories of One of the Top 2 -->
   <div id="stage2" style="display: none;">
-    <h2>Block 3 – Subcategory Prioritization</h2>
-    <p class="prompt" id="stage2-prompt">
-      <!-- This will be replaced with, for example:
-           “Rank the following subcategories of Structural / Scaffold novelty:” -->
-    </p>
-
-    <!-- This is where the chosen domain’s subcategories will be injected -->
+    <p class="prompt" id="stage2-prompt"></p>
     <div id="vignette-list-2"></div>
 
     <div class="navigation">
-      <!-- Goes back to Stage 1 -->
       <button id="stage2-back">Back</button>
-      <!-- class="next-btn" so clicking this advances to Block 4 -->
+      <!-- This “Next” has class="next-btn", so main.js will go to block 4 -->
       <button class="next-btn">Next</button>
     </div>
   </div>
 
   <!-- ─────────────────────────────────────────────────────────────────
-       Duplicate‐value checker (exactly as in your original)
+       UPDATED Duplicate‐value checker: only checks inputs in the VISIBLE stage
      ───────────────────────────────────────────────────────────────── -->
   <script>
     function checkDups() {
-      const inputs = document.querySelectorAll('#block3 .rank-input');
+      // Determine which stage is currently visible
+      const stage1Visible = document.getElementById('stage1').style.display !== 'none';
+      const containerSelector = stage1Visible ? '#stage1' : '#stage2';
+
+      // Only select .rank-input within the visible stage
+      const inputs = document.querySelectorAll(containerSelector + ' .rank-input');
       const counts = {};
 
       inputs.forEach(input => {
         const val = input.value.trim();
-        // only consider numbers 1–4
         if (!val || !/^[1-4]$/.test(val)) return;
         counts[val] = (counts[val] || 0) + 1;
       });
@@ -68,17 +60,14 @@
   </script>
 
   <!-- ─────────────────────────────────────────────────────────────────
-       Stage 1 & Stage 2 Logic (shuffling, rendering, answer persistence)
+       Stage 1 & Stage 2 Logic (shuffling, rendering, in‐memory answers)
      ───────────────────────────────────────────────────────────────── -->
   <script>
     (function() {
-      // ─────────────────────────────────────────────────────────────────
-      // 1) DATA: the four domains + their subcategories
-      // ─────────────────────────────────────────────────────────────────
+      // 1) Data: domains + their subcategories
       const domains = [
         {
-          id: 'Structural',
-          label: 'Structural / Scaffold novelty',
+          id: 'Structural',  label: 'Structural / Scaffold novelty',
           subs: [
             { id: 'Structural1', text: 'New carbon/heteroatom scaffold' },
             { id: 'Structural2', text: 'Unusual functional group (e.g., N=N=N)' },
@@ -88,8 +77,7 @@
           ]
         },
         {
-          id: 'Biosynthetic',
-          label: 'Biosynthetic / Catalytic novelty',
+          id: 'Biosynthetic', label: 'Biosynthetic / Catalytic novelty',
           subs: [
             { id: 'Biosynthetic1', text: 'Entirely new enzyme class (e.g. new fold + AA homology low)' },
             { id: 'Biosynthetic2', text: 'Known folds, new catalytic chemistry' },
@@ -98,8 +86,7 @@
           ]
         },
         {
-          id: 'Functional',
-          label: 'Functional / Phenotypic novelty',
+          id: 'Functional',   label: 'Functional / Phenotypic novelty',
           subs: [
             { id: 'Functional1', text: 'New bioactivity spectrum' },
             { id: 'Functional2', text: 'New mode of action for a known target' },
@@ -107,8 +94,7 @@
           ]
         },
         {
-          id: 'Evolutionary',
-          label: 'Evolutionary / Ecological novelty',
+          id: 'Evolutionary', label: 'Evolutionary / Ecological novelty',
           subs: [
             { id: 'Evolutionary1', text: 'Produced by a previously unsuspected taxon' },
             { id: 'Evolutionary2', text: 'Unique to a taxon (signature compound)' },
@@ -117,9 +103,7 @@
         }
       ];
 
-      // ─────────────────────────────────────────────────────────────────
-      // 2) UTILITY: Fisher–Yates shuffle (in‐place)
-      // ─────────────────────────────────────────────────────────────────
+      // 2) Fisher–Yates shuffle helper
       function shuffle(array) {
         for (let i = array.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
@@ -127,20 +111,9 @@
         }
       }
 
-      // ─────────────────────────────────────────────────────────────────
-      // 3) GLOBAL VARIABLES IN WINDOW FOR PERSISTENCE (memory only)
-      // ─────────────────────────────────────────────────────────────────
-      //
-      // window.block3DomainOrder  = Array of 4 domain IDs in shuffled order.
-      // window.block3DomainAnswers = { DomainID: "1"|"2"|"3"|"4", … } for Stage 1.
-      // window.block3SubParent    = ID of the chosen parent domain (randomly from top 2).
-      // window.block3SubOrder     = Array of subcategory IDs in shuffled order (for Stage 2).
-      // window.block3SubAnswers   = { SubID: "1"|"2"|…, … } for Stage 2.
-      //
-      // All of these live only in‐memory and vanish on full refresh.
-      // ─────────────────────────────────────────────────────────────────
-
-      // Ensure the global objects exist (or create them)
+      // 3) Ensure our window‐scope storage objects exist:
+      //    - block3DomainOrder: the shuffled 4 domains
+      //    - block3DomainAnswers: { DomainID: "1"|"2"|"3"|"4", … }
       if (!window.block3DomainOrder) {
         const ids = domains.map(d => d.id);
         shuffle(ids);
@@ -149,28 +122,25 @@
       if (!window.block3DomainAnswers) {
         window.block3DomainAnswers = {};
       }
-      // Note: Stage 2 globals will be created only once the user clicks “Next” from Stage 1.
 
-      // References to our two “stages” and their containers
-      const stage1Div       = document.getElementById('stage1');
-      const stage2Div       = document.getElementById('stage2');
-      const domList         = document.getElementById('vignette-list');
-      const subList         = document.getElementById('vignette-list-2');
-      const stage2Prompt    = document.getElementById('stage2-prompt');
+      // References to Stage1/Stage2 containers
+      const stage1Div    = document.getElementById('stage1');
+      const stage2Div    = document.getElementById('stage2');
+      const domList      = document.getElementById('vignette-list');
+      const subList      = document.getElementById('vignette-list-2');
+      const stage2Prompt = document.getElementById('stage2-prompt');
 
-      // ─────────────────────────────────────────────────────────────────
-      // 4) FUNCTION: Render Stage 1 (Rank Domains)
-      // ─────────────────────────────────────────────────────────────────
+      // 4) Render Stage 1: rank 4 domains
       function renderStage1() {
-        domList.innerHTML = ''; // clear previous
+        domList.innerHTML = '';
         window.block3DomainOrder.forEach(domainId => {
           const domObj = domains.find(d => d.id === domainId);
 
-          // Build <div class="ranking-item"> for this domain
+          // Create .ranking-item
           const itemDiv = document.createElement('div');
           itemDiv.className = 'ranking-item';
 
-          // number‐wrapper holding <input> + arrows
+          // number‐wrapper
           const numWrap = document.createElement('div');
           numWrap.className = 'number-wrapper';
 
@@ -179,18 +149,15 @@
           input.name = `rank_${domObj.id}`;
           input.id   = `rank_${domObj.id}`;
           input.className = 'rank-input';
-          input.min  = '1';
-          input.max  = '4';
+          input.min = '1';
+          input.max = '4';
           input.required = true;
           input.setAttribute('oninput', 'checkDups()');
 
-          // Restore any previous answer from memory
+          // Restore any in‐memory answer
           const saved = window.block3DomainAnswers[domObj.id];
-          if (saved) {
-            input.value = saved;
-          }
+          if (saved) input.value = saved;
 
-          // On change, save to memory & run duplicate check
           input.addEventListener('input', () => {
             const v = input.value.trim();
             if (/^[1-4]$/.test(v)) {
@@ -201,6 +168,7 @@
             checkDups();
           });
 
+          // up/down arrows
           const up = document.createElement('div');
           up.className = 'arrow up';
           up.addEventListener('click', () => {
@@ -234,32 +202,24 @@
           domList.appendChild(itemDiv);
         });
 
-        // Highlight duplicates right away if they exist
-        checkDups();
-
-        // Show Stage 1, hide Stage 2
+        checkDups();              // highlight duplicates if any
         stage1Div.style.display = 'block';
         stage2Div.style.display = 'none';
       }
 
-      // ─────────────────────────────────────────────────────────────────
-      // 5) FUNCTION: Render Stage 2 (Rank Subcategories)
-      // ─────────────────────────────────────────────────────────────────
+      // 5) Render Stage 2: rank subcategories of a top-2 domain
       function renderStage2() {
-        // (A) Figure out the user’s top‐two from Stage 1
-        const domainOrder = window.block3DomainOrder;
-        const ansObj      = window.block3DomainAnswers;
-        // We want to sort domainOrder by the numeric answers the user gave.
-        // But if any domain is missing or invalid, treat its rank as Infinity.
-        const sorted = [...domainOrder].sort((a, b) => {
-          const va = parseInt(ansObj[a] || 'Infinity', 10);
-          const vb = parseInt(ansObj[b] || 'Infinity', 10);
+        // (A) Sort domains by the numeric answers to find top‐2
+        const order = window.block3DomainOrder;
+        const answers = window.block3DomainAnswers;
+        const sorted = [...order].sort((a, b) => {
+          const va = parseInt(answers[a] || 'Infinity', 10);
+          const vb = parseInt(answers[b] || 'Infinity', 10);
           return va - vb;
         });
+        const topTwo = sorted.slice(0, 2);
 
-        const topTwo = sorted.slice(0, 2); // two domain IDs the user ranked #1 and #2
-
-        // (B) If we have not yet chosen a “parent” for Stage 2, pick one randomly
+        // (B) If we haven’t picked a parent for Stage 2 yet, choose one at random
         if (!window.block3SubParent) {
           const choice = topTwo[Math.floor(Math.random() * 2)];
           window.block3SubParent = choice;
@@ -267,24 +227,22 @@
         const parentId = window.block3SubParent;
         const parentObj = domains.find(d => d.id === parentId);
 
-        // (C) Update the Stage 2 prompt to mention the chosen parent’s label
+        // (C) Update prompt text
         stage2Prompt.innerHTML = `
           Rank the following subcategories of <strong>${parentObj.label}</strong>:
         `;
 
-        // (D) If we don’t have a shuffled sub‐order for this parent yet, build & store it
+        // (D) Shuffle parent’s subs once
         if (!window.block3SubOrder) {
           const subIds = parentObj.subs.map(s => s.id);
           shuffle(subIds);
           window.block3SubOrder = subIds;
         }
-
-        // (E) Ensure we have an answers‐object for Stage 2
         if (!window.block3SubAnswers) {
           window.block3SubAnswers = {};
         }
 
-        // (F) Render each subcategory in the saved order
+        // (E) Render subcategories
         subList.innerHTML = '';
         window.block3SubOrder.forEach(subId => {
           const subObj = parentObj.subs.find(s => s.id === subId);
@@ -300,21 +258,19 @@
           input.name = `rank_${subObj.id}`;
           input.id   = `rank_${subObj.id}`;
           input.className = 'rank-input';
-          input.min  = '1';
-          input.max  = '5';
+          input.min = '1';
+          input.max = String(parentObj.subs.length);
           input.required = true;
           input.setAttribute('oninput', 'checkDups()');
 
-          // Restore any previously typed answer
           const saved = window.block3SubAnswers[subObj.id];
-          if (saved) {
-            input.value = saved;
-          }
+          if (saved) input.value = saved;
 
           input.addEventListener('input', () => {
             const v = input.value.trim();
-            // We expect ranks from 1..(number of subcats). Let's assume 1..5 max.
-            if (/^[1-5]$/.test(v)) {
+            const max = parentObj.subs.length;
+            const regex = new RegExp(`^[1-${max}]$`);
+            if (regex.test(v)) {
               window.block3SubAnswers[subObj.id] = v;
             } else {
               delete window.block3SubAnswers[subObj.id];
@@ -355,45 +311,30 @@
           subList.appendChild(itemDiv);
         });
 
-        // Highlight duplicates if any exist
         checkDups();
-
-        // Show Stage 2, hide Stage 1
         stage1Div.style.display = 'none';
         stage2Div.style.display = 'block';
       }
 
-      // ─────────────────────────────────────────────────────────────────
-      // 6) BUTTON HANDLERS FOR NAVIGATION INSIDE BLOCK 3
-      // ─────────────────────────────────────────────────────────────────
+      // 6) Button handlers
       document.getElementById('stage1-next').addEventListener('click', () => {
-        // Before moving to Stage 2, do a final duplicate‐check for Stage 1
         checkDups();
-        // Now render Stage 2
         renderStage2();
       });
-
       document.getElementById('stage2-back').addEventListener('click', () => {
-        // Going back to Stage 1: do not clear any answers, just re-render
         renderStage1();
       });
 
-      // ─────────────────────────────────────────────────────────────────
-      // 7) INITIAL ENTRY POINT
-      //    On first insertion of Block 3: decide which Stage to show
-      // ─────────────────────────────────────────────────────────────────
+      // 7) Initialize: if we already picked a subParent, jump to Stage 2
       function initBlock3() {
-        // If the user has already done Stage 2 (i.e. block3SubParent exists),
-        // jump to Stage 2 directly. Otherwise start at Stage 1.
         if (window.block3SubParent) {
           renderStage2();
         } else {
           renderStage1();
         }
       }
-
-      // Run it!
       initBlock3();
     })();
   </script>
 </section>
+
