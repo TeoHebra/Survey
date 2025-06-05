@@ -133,6 +133,31 @@ textarea {
   min-height: 120px;
 }
 
+
+/* ===========================
+   Question text (p.statement)
+   =========================== */
+p.statement {
+  font-size: 1.15rem;   /* ↑ Increase or decrease as desired */
+  line-height: 1.0;      /* ↑ Adjust line‐height (optional) */
+  margin: 0;             /* remove default top/bottom on p */
+  margin-bottom: 0.0rem; /* if you want a little breathing below */
+  color: #000000;        /* same color as your normal <p> (optional) */
+}
+/* =============================================
+   Space between question text & the Likert scale
+   ============================================= */
+.likert-wrapper {
+  margin-top: 0.0rem;  /* ↑ space above the circles (change to e.g. 0.5rem, 1rem, etc.) */
+}
+/* ===============================
+   Space between one question-block and the next
+   =============================== */
+.question-block {
+  margin-bottom: 1.5rem;  /* ↑ change to 1rem, 2rem, etc. as needed */
+}
+
+
 /* ===================================================
    9. Seven-point Likert scale (Block 2)
    =================================================== */
