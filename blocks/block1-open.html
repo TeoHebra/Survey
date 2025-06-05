@@ -20,24 +20,25 @@
   </div>
 
   <!-- ─────────────────────────────────────────────────────────────────
-       SCRIPT: Persist Block 1’s textarea value in localStorage so that
-       when you click “Next”→“Back” the text remains intact.
+       SCRIPT: Persist Block 1’s textarea value on the window object only,
+       so it survives Next→Back but resets on a full refresh.
      ───────────────────────────────────────────────────────────────── -->
   <script>
     (function() {
       // 1) Grab the <textarea> by ID
       const textarea = document.getElementById('block1-text');
-      if (!textarea) return; // nothing to do if the element isn't found
+      if (!textarea) return;
 
-      // 2) On first load, check localStorage for a saved value and populate
-      const saved = localStorage.getItem('block1-text-value');
-      if (saved !== null) {
-        textarea.value = saved;
+      // 2) On first load of this block, check if we have window.block1Text
+      //    If so, restore it. Otherwise, leave blank.
+      if (window.block1Text !== undefined) {
+        textarea.value = window.block1Text;
       }
 
-      // 3) Every time the user types (input event), save current value
+      // 3) Every time the user types (input event), save the current value
+      //    to a window‐level variable (not localStorage).
       textarea.addEventListener('input', () => {
-        localStorage.setItem('block1-text-value', textarea.value);
+        window.block1Text = textarea.value;
       });
     })();
   </script>
