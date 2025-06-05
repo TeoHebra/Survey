@@ -133,6 +133,62 @@ textarea {
   min-height: 120px;
 }
 
+#block2 > h2 {
+  font-size: 1.75rem;     /* ~28px; increase/decrease as desired */
+  font-weight: 600;       /* make it bold */
+  color: #1F2937;         /* a deep charcoal gray instead of plain black */
+  margin: 0;              /* remove default top/bottom margin */
+  margin-bottom: 0.0rem; /* space below the heading */
+  text-align: left;       /* you can also use “center” if you prefer */
+  letter-spacing: 0.5px;  /* slight tracking for a polished look */
+}
+
+#block2 > p.prompt {
+  font-size: 1rem;        /* ~16px; adjust up/down as needed */
+  line-height: 1.0;       /* give it breathing room if it wraps to two lines */
+  color: #4B5563;         /* mid‐gray (so it’s less “heavy” than h2) */
+  margin: 0;              /* reset default margins */
+  margin-bottom: 0.25rem; /* space between prompt and the <hr> */
+  max-width: 700px;       /* limit line‐length so it doesn’t stretch too far */
+}
+
+#block1 > h2 {
+  font-size: 1.75rem;     /* ~28px; increase/decrease as desired */
+  font-weight: 600;       /* make it bold */
+  color: #1F2937;         /* a deep charcoal gray instead of plain black */
+  margin: 0;              /* remove default top/bottom margin */
+  margin-bottom: 0.0rem; /* space below the heading */
+  text-align: left;       /* you can also use “center” if you prefer */
+  letter-spacing: 0.5px;  /* slight tracking for a polished look */
+}
+
+#block1 > p.prompt {
+  font-size: 1rem;        /* ~16px; adjust up/down as needed */
+  line-height: 1.0;       /* give it breathing room if it wraps to two lines */
+  color: #4B5563;         /* mid‐gray (so it’s less “heavy” than h2) */
+  margin: 0;              /* reset default margins */
+  margin-bottom: 1.25rem; /* space between prompt and the <hr> */
+  max-width: 700px;       /* limit line‐length so it doesn’t stretch too far */
+}
+
+#block3 > h2 {
+  font-size: 1.75rem;     /* ~28px; increase/decrease as desired */
+  font-weight: 600;       /* make it bold */
+  color: #1F2937;         /* a deep charcoal gray instead of plain black */
+  margin: 0;              /* remove default top/bottom margin */
+  margin-bottom: 0.0rem; /* space below the heading */
+  text-align: left;       /* you can also use “center” if you prefer */
+  letter-spacing: 0.5px;  /* slight tracking for a polished look */
+}
+
+#block3 > p.prompt {
+  font-size: 1rem;        /* ~16px; adjust up/down as needed */
+  line-height: 1.0;       /* give it breathing room if it wraps to two lines */
+  color: #4B5563;         /* mid‐gray (so it’s less “heavy” than h2) */
+  margin: 0;              /* reset default margins */
+  margin-bottom: 1.2rem; /* space between prompt and the <hr> */
+  max-width: 700px;       /* limit line‐length so it doesn’t stretch too far */
+}
 
 /* ===========================
    Question text (p.statement)
