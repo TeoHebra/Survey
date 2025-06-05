@@ -209,54 +209,6 @@ fieldset.likert-7 label small {
   color: #555;
 }
 
-@media (max-width: 600px) {
-  fieldset.likert-7 {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.0rem;
-    position: relative;
-  }
-  fieldset.likert-7::before {
-    display: none !important;
-  }
-  fieldset.likert-7 label {
-    flex-direction: row;
-    justify-content: flex-start;
-    align-items: center;
-    gap: 0.75rem;
-    text-align: left;
-    margin-bottom: 0.5rem;
-    position: relative;
-  }
-  fieldset.likert-7 label span {
-    display: contents;
-  }
-  fieldset.likert-7 label small {
-    font-size: 1rem;
-    line-height: 1.3;
-    color: #333;
-  }
-  fieldset.likert-7 input[type="radio"]:checked + label::after {
-    content: '✖';
-    position: absolute;
-    top: calc(50%);
-    left: 8%;
-    width: 16px;
-    height: 16px;
-    font-size: 2.2rem;
-    color: red;
-    line-height: 1;
-    text-align: center;
-    pointer-events: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-}
-fieldset.likert-7 label::before {
-  margin-bottom: 0 !important;
-}
-
 /* ===================================================
    10. Vignette Ranking (Block 3)
    =================================================== */
@@ -362,22 +314,6 @@ fieldset.likert-7 label::before {
   color: #999999;
 }
 
-@media (max-width: 480px) {
-  #block3 .ranking-item {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  #block3 .ranking-item label {
-    margin-left: 0;
-    margin-bottom: 8px;
-  }
-  #block3 .ranking-item .number-wrapper {
-    width: 100%;
-  }
-  #block3 .ranking-item .rank-input {
-    width: 100%;
-  }
-}
 
 /* ===================================================
    11. Block 4: Novel? + Sliders (you deleted container above)
@@ -566,21 +502,6 @@ fieldset.likert-7 label::before {
   background-color: #0056b3;
 }
 
-/* 7) Responsive tweaks */
-@media (max-width: 600px) {
-  .block-4-row {
-    flex-direction: column;
-    gap: 16px;
-  }
-  .novel-group,
-  .confidence-group,
-  .wow-group {
-    flex: 1 1 100%;
-  }
-  .novel-option {
-    margin-bottom: 8px;
-  }
-}
 
 /* Brand‐enhanced slider fill (Chrome/Firefox/IE) */
 .slider-input::-webkit-slider-runnable-track {
@@ -607,4 +528,196 @@ fieldset.likert-7 label::before {
 }
 .slider-input::-ms-fill-upper {
   background-color: #ddd;
+}
+
+/* ──────────────────────────────────────────────── */
+/* MOBILE OPTIMISATION (≤ 600 px)                  */
+/* append this at the very end of the file         */
+/* ──────────────────────────────────────────────── */
+@media (max-width: 600px) {
+
+  /* 1 ─ Card becomes edge-to-edge */
+  main#survey-container {
+    margin: 0;
+    border-radius: 0;
+    box-shadow: none;
+    padding: 16px;               /* tighter internal padding */
+  }
+  /* 2 ─ Typography slightly smaller but looser line-height */
+  html { font-size: 15px; line-height: 1.1; }
+
+  .progress-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 16px;               /* small gap between bar & text */
+    margin-bottom: 1rem;    /* keep a bit of breathing room */
+  }
+
+  /* B) Make the bar thinner & flexible */
+  .progress {
+    flex: 1;                /* allow bar to fill all leftover width */
+    height: 12px;            /* a slightly thinner bar on phone */
+    background: #f1f1f1;    /* light‐grey track */
+    border-radius: 4px;     /* rounded ends */
+    overflow: hidden;
+  }
+
+  /* The inner fill (black) */
+  .progress-fill {
+    height: 100%;
+    background: #000;       /* black (same as --primary-color) */
+    width: 0%;              /* updated by JS as user advances */
+    transition: width 0.3s ease;
+  }
+
+  /* C) Two‐line progress text, stacked vertically */
+.progress-info {
+  position: relative;
+  bottom: 3px;          /* shift the text down by 4px (tweak as needed) */
+  font-size: 0.80rem;
+  color: #555;
+  white-space: nowrap;
+  /* remove any line-height or flex rules you added earlier */
+}
+
+
+  /* Optional: add a little letter‐spacing to “Step X of Y” */
+  .progress-step {
+    font-weight: 500;
+  }
+
+  /* (You can tweak margin/padding as you like) */
+  .progress-time {
+    margin-top: 2px;        /* small gap between lines */
+  }
+
+  /* ────────────────────────────────────────────────── */
+  /* D) If you originally had `.progress > div` as the fill, */
+  /*    just ensure you now target `.progress-fill` instead.  */
+  /* ────────────────────────────────────────────────── */
+
+}
+
+  /* 4 ─ Sticky nav footer with thumb-friendly buttons */
+  .nav-buttons {
+    position: sticky;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 900;
+    background: #fff;
+    padding: 12px 16px;
+    box-shadow: 0 -1px 3px rgba(0,0,0,.08);
+  }
+  .nav-buttons button {
+    flex: 1 1 50%;
+    padding: 14px 0;
+    font-size: 1rem;
+    border-radius: 6px;
+  }
+  .nav-buttons button:first-child { margin-right: 8px; }
+
+  /* 5 ─ Textarea grows to a comfortable height */
+  textarea { min-height: 34vh; }
+
+  /* 6 ─ Likert scale: bigger circles & hit-area (builds on existing mobile rules) */
+  fieldset.likert-7 { padding: 0; }
+  fieldset.likert-7 label { padding: 10px 0; }      /* 44 px tap zone */
+  fieldset.likert-7 label::before {
+    width: 20px;
+    height: 20px;
+    border-width: 3px;
+    margin: 0 12px 0 0;
+  }
+
+  /* 7 ─ Ranking items full-width controls (if not already) */
+  #block3 .ranking-item .number-wrapper,
+  #block3 .ranking-item .rank-input {
+    width: 100%;
+  }
+
+  /* 8 ─ Block 4 stacks vertically (extra safety) */
+  .block-4-row { flex-direction: column; gap: 24px; }
+  .slider-input::-webkit-slider-thumb,
+  .slider-input::-moz-range-thumb {
+    width: 28px; height: 28px; margin-top: -11px;   /* easier to grab */
+  }
+}
+@media (max-width: 600px) {
+  fieldset.likert-7 {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.0rem;
+    position: relative;
+  }
+  fieldset.likert-7::before {
+    display: none !important;
+  }
+  fieldset.likert-7 label {
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 0.75rem;
+    text-align: left;
+    margin-bottom: 0.5rem;
+    position: relative;
+  }
+  fieldset.likert-7 label span {
+    display: contents;
+  }
+  fieldset.likert-7 label small {
+    font-size: 1rem;
+    line-height: 1.3;
+    color: #333;
+  }
+  fieldset.likert-7 input[type="radio"]:checked + label::after {
+    content: '✖';
+    position: absolute;
+    top: calc(50%);
+    left: 8%;
+    width: 16px;
+    height: 16px;
+    font-size: 2.2rem;
+    color: red;
+    line-height: 1;
+    text-align: center;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+fieldset.likert-7 label::before {
+  margin-bottom: 0 !important;
+}
+@media (max-width: 480px) {
+  #block3 .ranking-item {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  #block3 .ranking-item label {
+    margin-left: 0;
+    margin-bottom: 8px;
+  }
+  #block3 .ranking-item .number-wrapper {
+    width: 100%;
+  }
+  #block3 .ranking-item .rank-input {
+    width: 100%;
+  }
+}
+/* 7) Responsive tweaks */
+@media (max-width: 600px) {
+  .block-4-row {
+    flex-direction: column;
+    gap: 16px;
+  }
+  .novel-group,
+  .confidence-group,
+  .wow-group {
+    flex: 1 1 100%;
+  }
+  .novel-option {
+    margin-bottom: 8px;
+  }
 }
