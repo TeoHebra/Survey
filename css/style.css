@@ -136,77 +136,97 @@ textarea {
 /* ===================================================
    9. Seven-point Likert scale (Block 2)
    =================================================== */
+/* 1) Define two CSS variables for easy tweaking:
+      --bullet-size: how big each circle is
+      --label-gap:  vertical gap between circle and text
+*/
 fieldset.likert-7 {
-  --bullet-size: 16px;
+  --bullet-size: 22px;   /* ← change this to 16px/20px/28px/etc. if you want bigger/smaller circles */
+  --label-gap:    8px;   /* ← change this to control the gap between circle and label text */
+
   position: relative;
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 0.5rem;
-  margin: 2rem 0;
-  padding: 0 1rem;
-  border: none;
+  justify-content: space-between;   /* spread the 7 labels evenly left ↔ right */
+  align-items: flex-start;          /* all labels “start” at the same top edge */
+  padding-left: 1rem;   /* small left/right “margins” so the first/last circles don’t butt too hard against the edge */
+  padding-right: 1rem;
+  margin: 0rem 0;       /* optional vertical spacing around this block */
+  border: none;         /* remove any default fieldset border */
 }
+
+/* 2) Draw the 2px black “track” through the center of every circle */
 fieldset.likert-7::before {
-  content: '';
+  content: "";
   position: absolute;
+  top: calc(var(--bullet-size));   /* half of the circle’s diameter + half again = exactly the circle’s center */
   left: 0;
   right: 0;
-  top: calc(var(--bullet-size) / 2 + 3px);
   height: 2px;
   background: #000;
-  z-index: 0;
+  z-index: 0;     /* behind the circles */
 }
+
+/* 3) Hide the native radio buttons */
 fieldset.likert-7 input[type="radio"] {
   display: none;
 }
+
+/* 4) Style each <label> so that it’s a vertical stack:
+*/
 fieldset.likert-7 label {
-  flex: 1 1 0;
-  min-width: 0;
-  margin: 0 .25rem;
+  flex: 1;                               /* each label takes up equal width */
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  text-align: center;
-  cursor: pointer;
-  font-size: 0.9rem;
-  line-height: 1.2;
-  position: relative;
-  z-index: 1;
+  flex-direction: column;                /* stack the circle above its text */
+  align-items: center;                   /* center‐align circle + text */
+  top: 0px;
+  text-align: center;                    /* center the <small> under the circle */
+  cursor: pointer;                       /* clicking anywhere on the label toggles the radio */
+  position: relative;                    /* so we can absolutely‐position the ✖ inside the circle */
+  z-index: 1;                            /* so the circle (and ✔/✖) sits above the black track */
+  margin: 0 0.25rem;                     /* small horizontal breathing room between labels */
 }
+
+/* 5) Draw each circle using label::before */
 fieldset.likert-7 label::before {
-  content: '';
+  content: "";
   width: var(--bullet-size);
   height: var(--bullet-size);
-  border: 3.5px solid #000;
+  border: 2px solid #000;
   border-radius: 50%;
   background: #fff;
-  margin: 0 auto 0.6rem;
-  position: relative;
-  z-index: 1;
+  display: block;
+  margin-bottom: var(--label-gap);
+    /*
+    */
 }
+
+/* 6) Show a red “✖” dead‐center inside the circle when its radio is checked */
 fieldset.likert-7 input[type="radio"]:checked + label::after {
-  content: '✖';
+  content: "✖";
   position: absolute;
-  top: calc(var(--bullet-size) / 2 + 3px);
-  left: 50%;
+  left: 37px;
+  top: 22.5px;
   transform: translate(-50%, -50%);
-  font-size: 2rem;
-  font-weight: 2000;
-  line-height: 1;
+    /* Now the “✖” is perfectly centered horizontally & vertically inside the circle */
+  font-size: calc(var(--bullet-size) * 1.8);
+    /* slightly smaller than the circle’s diameter */
   color: red;
-  z-index: 2;
-  pointer-events: none;
+  pointer-events: none;  /* so clicks still go to the label/radio */
+  z-index: 2;          /* on top of everything else */
 }
-fieldset.likert-7 label span {
-  display: inline-block;
-  text-align: center;
-  line-height: 1.2;
-}
+
+/* 7) Style the <small> inside each label so it sits below the circle */
 fieldset.likert-7 label small {
-  font-size: 0.75rem;
-  color: #555;
+  display: block;         /* ensure it’s on its own line, below the circle */
+  font-size: 0.75rem;     /* tweak as desired */
+  color: #555;            /* a slightly‐muted gray for your text */
+  line-height: 1.2;       /* readable line‐height if your text wraps */
+  
+}
+
+fieldset.likert-7 label span {
+  position: relative;
+  left: -5px;   /* push the label‐block 8px to the right */
 }
 
 /* ===================================================
