@@ -1,33 +1,44 @@
-<!-- Block 1: Open Question (max 250 chars) -->
+<!-- blocks/block1-open.html -->
 <section class="survey-block" id="block1" data-type="open">
-  <h2>Block 1 – Open Question</h2>
-  <p class="prompt">In your own words, what makes a metabolite ‘novel’?</p>
+  <h2>Block 1 – Open‐Ended Response</h2>
+  <p class="prompt">
+    In your own words, please describe what “novelty” means to you in the context of metabolites.
+  </p>
 
-  <label for="metaboliteNovel" class="visually-hidden">
-    Your answer (max 250 characters)
-  </label>
-
-  <textarea id="metaboliteNovel"
-            name="metaboliteNovel"
-            maxlength="250"
-            rows="5"
-            placeholder="e.g. A metabolite is novel…"
-            required
-            oninput="
-              const counter = document.getElementById('charCounter');
-              const len = this.value.length;
-              if (len >= 200) {
-                counter.style.visibility = 'visible';
-                counter.textContent = len + '/250';
-              } else {
-                counter.style.visibility = 'hidden';
-              }
-            "></textarea>
-
-  <div class="char-counter" id="charCounter" style="visibility: hidden;">0/250</div>
+  <!-- The <textarea> where the respondent types their answer -->
+  <textarea
+    id="block1-text"
+    name="block1-text"
+    placeholder="Type your answer here…"
+    rows="6"
+    style="width: 100%; box-sizing: border-box;"
+  ></textarea>
 
   <div class="navigation">
-    <button class="prev-btn">Back</button>
+    <button class="prev-btn" disabled>Back</button>
     <button class="next-btn">Next</button>
   </div>
+
+  <!-- ─────────────────────────────────────────────────────────────────
+       SCRIPT: Persist Block 1’s textarea value in localStorage so that
+       when you click “Next”→“Back” the text remains intact.
+     ───────────────────────────────────────────────────────────────── -->
+  <script>
+    (function() {
+      // 1) Grab the <textarea> by ID
+      const textarea = document.getElementById('block1-text');
+      if (!textarea) return; // nothing to do if the element isn't found
+
+      // 2) On first load, check localStorage for a saved value and populate
+      const saved = localStorage.getItem('block1-text-value');
+      if (saved !== null) {
+        textarea.value = saved;
+      }
+
+      // 3) Every time the user types (input event), save current value
+      textarea.addEventListener('input', () => {
+        localStorage.setItem('block1-text-value', textarea.value);
+      });
+    })();
+  </script>
 </section>
