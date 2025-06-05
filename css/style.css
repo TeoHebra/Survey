@@ -687,42 +687,52 @@ fieldset.likert-7 label span {
   }
 }
 
+/* ──────────────────────────────────────────────────────────
+   RESPONSIVE LIKERT SCALE (≤ 600px)
+   ────────────────────────────────────────────────────────── */
 @media (max-width: 600px) {
+  /* 1) Shrink the bullet size a bit more (down from 20px → 16px).
+        Adjust this value if you still see overflow. */
+  fieldset.likert-7 {
+    --bullet-size: 16px;
+    /* Remove any extra left/right padding so the circles can hug the edges: */
+    padding-left: 0.5rem;   /* instead of 1rem */
+    padding-right: 0.5rem;  /* instead of 1rem */
+  }
+
+  /* 2) Tighten up the gap between each label. */
   fieldset.likert-7 label {
-    position: relative;
-    /* (we rely on the global 10px pad‐top here) */
+    margin: 0 0.1rem;   /* instead of 0 0.25rem */
   }
-  fieldset.likert-7 label::before {
-    position: absolute;
-    top: 10px;           /* same as that 10px pad-top */
-    left: 50%;
-    transform: translateX(-50%);
-    margin-bottom: 0;    /* remove any extra “margin-bottom” for the circle */
-  }
+
+  /* 3) Make the tiny “small” text under each circle scale down (so it never wraps). */
   fieldset.likert-7 label small {
-    display: block;
-    margin-top: calc(var(--label-gap) + var(--bullet-size));
-    /* var(--bullet-size) is 20px on mobile, var(--label-gap) is usually 8px */
+    font-size: 0.6rem;  /* down from 0.75rem */
+    line-height: 1.1;   /* keep it a bit tighter */
   }
+
+  /* 4) Force the ::before circle itself to shrink to 16×16 px. */
+  fieldset.likert-7 label::before {
+    width: var(--bullet-size);   /* now 16px */
+    height: var(--bullet-size);  /* now 16px */
+    border-width: 2px;           /* thinner border to match smaller circle */
+    margin-bottom: 0.4rem;       /* guard a small gap (0.4rem ≈ 6px) */
+  }
+
+  /* 5) Re-center the “✖” in the smaller 16px circle exactly as before. */
   fieldset.likert-7 input[type="radio"]:checked + label::after {
-    content: "✖";
-    position: absolute;
-    left: 50%;
-    top: 22px;  /* 10px + (20px ÷ 2) = 20px from the top of the <label> */
+    /* top = 10px (label-padding) + 8px (half of 16px) = 18px from label-top */
+    top: 20px;  /* 10 + (16/2) = 18px */
+    left: 38%;
     transform: translate(-50%, -50%);
-    font-size: calc(var(--bullet-size) * 1.8); /* 36px if bullet-size is 20px */
-    color: red;
-    pointer-events: none;
-    z-index: 2;
+    font-size: calc(var(--bullet-size) * 1.8);  /* 16 × 1.8 = 28.8px */
   }
+
+  /* 6) Slide the black track line so it also bisects the new 16px bubbles. */
   fieldset.likert-7::before {
-    top: 28.5%;  /* moves the black track through the circle’s center */
+    top: 29%;  /* 10 + (16/2) = 18px */
+    height: 2px;       /* keep it 2px tall */
   }
-  
-fieldset.likert-7 label span {
-  position: relative;
-  left: -0%;   /* push the label‐block 8px to the right */
-}  
 }
 
 
