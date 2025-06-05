@@ -1,40 +1,127 @@
-<!-- Block 2: 7‑point Likert Scale -->
-<section class="survey-block" id="block2" data-type="likert">
-  <h2>Block 2 – Likert Scale</h2>
-  <p class="prompt">For each statement, please choose the option that best reflects your opinion.</p>
+<!-- =============================
+     BLOCK 2: Scaling Assessment
+     ============================= -->
+<div id="block2-container">
+  <!-- The eight randomly‐selected items will be injected here -->
+</div>
 
-  <!-- Statement 1 -->
-  <p class="statement">The definition of a “novel” metabolite is clear in my field.</p>
-  <fieldset class="likert-7">
-    <legend class="visually-hidden">Definition clarity</legend>
-  
-    <input type="radio" id="clarity1" name="clarity" value="1" required>
-    <label for="clarity1"><span><small>Strongly disagree</small></span></label>
-  
-    <input type="radio" id="clarity2" name="clarity" value="2">
-    <label for="clarity2"><span><small>Disagree</small></span></label>
-  
-    <input type="radio" id="clarity3" name="clarity" value="3">
-    <label for="clarity3"><span><small>Somewhat disagree</small></span></label>
-  
-    <input type="radio" id="clarity4" name="clarity" value="4">
-    <label for="clarity4"><span><small>Neutral</small></span></label>
-  
-    <input type="radio" id="clarity5" name="clarity" value="5">
-    <label for="clarity5"><span><small>Somewhat agree</small></span></label>
-  
-    <input type="radio" id="clarity6" name="clarity" value="6">
-    <label for="clarity6"><span><small>Agree</small></span></label>
-  
-    <input type="radio" id="clarity7" name="clarity" value="7">
-    <label for="clarity7"><span><small>Strongly agree</small></span></label>
-  </fieldset>
-   
+<script>
+// ─── 1. Define all items by category ───
+const categories = {
+  S: [
+    "S1 Incorporation of rare elements such as selenium or boron increases a metabolite’s novelty.",
+    "S2 A new ring system is an indicator of novelty.",
+    "S3 (R) N-acylation or similar motif based decoration are unimportant when claiming novelty.",
+    "S4 (R) Changing the oxidation state of a functional group is of little novelty."
+  ],
+  B: [
+    "B1 An enzyme that catalyses a unprecedented reaction is novel.",
+    "B2 Use of uncommon cofactors increases the novelty of a pathway.",
+    "B3 (R) Including a tailoring enzyme from another pathway is of low novelty.",
+    "B4 (R) If the final product of a reaction resembles a known compound, the catalysis is not novel."
+  ],
+  F: [
+    "F1 Bioactivity in an under-explored target class is an important factor for novelty.",
+    "F2 (R) Without demonstrated bioactivity, a new structure is not an important novelty discovery.",
+    "F3 Selective activity against a previously untreatable pathogen is an important novelty signal.",
+    "F4 Dual-function metabolites (e.g. toxin + signal) are an important form of novelty."
+  ],
+  E: [
+    "E1 Production by a taxon where the compound was never seen is an important novelty factor.",
+    "E2 Chemical convergence across distant lineages is an important novelty cue.",
+    "E3 (R) Finding a known metabolite in a new species is not an important novelty event.",
+    "E4 Chemical-diversity hotspots in unexplored biomes are important indicators of future novelty."
+  ]
+};
 
-  <!-- Add more statements by duplicating the block above -->
+// ─── 2. Fisher–Yates shuffle helper ───
+function shuffleArray(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
 
-  <div class="navigation">
-    <button class="prev-btn">Back</button>
-    <button class="next-btn">Next</button>
-  </div>
-</section>
+// ─── 3. Randomly pick 2 from each category ───
+function pickTwoPerCategory() {
+  const selected = [];
+  Object.keys(categories).forEach(catKey => {
+    // Make a shallow copy so we don’t destroy the original ordering
+    const copy = categories[catKey].slice();
+    shuffleArray(copy);
+    selected.push(...copy.slice(0, 2));
+  });
+  return selected;
+}
+
+// ─── 4. Build the HTML for each selected statement ───
+function renderBlock2() {
+  const container = document.getElementById("block2-container");
+  container.innerHTML = ""; // clear if something was there
+
+  // Pick exactly 2 items from S, 2 from B, 2 from F, 2 from E
+  const items = pickTwoPerCategory();
+
+  // Define your scale labels here (adjust if you want a different number of points)
+  const scaleLabels = [
+    "1 – Strongly Disagree",
+    "2 – Disagree",
+    "3 – Neutral",
+    "4 – Agree",
+    "5 – Strongly Agree"
+  ];
+
+  items.forEach((statementText, idx) => {
+    // Wrap each statement + its radio buttons in a <div>
+    const questionDiv = document.createElement("div");
+    questionDiv.className = "block2‐question";
+    questionDiv.style.marginBottom = "1.2em";
+
+    // Label for the statement
+    const p = document.createElement("p");
+    p.textContent = statementText;
+    p.style.fontWeight = "500";
+    questionDiv.appendChild(p);
+
+    // Radio‐button list
+    const radioContainer = document.createElement("div");
+    radioContainer.className = "likert‐scale";
+
+    scaleLabels.forEach((labelText, scaleIdx) => {
+      const radioId = `block2_q${idx}_opt${scaleIdx}`;
+      const radioInput = document.createElement("input");
+      radioInput.type = "radio";
+      radioInput.name = `block2_q${idx}`;
+      radioInput.id = radioId;
+      radioInput.value = scaleIdx + 1;
+      radioInput.style.marginRight = "0.25em";
+
+      const radioLabel = document.createElement("label");
+      radioLabel.htmlFor = radioId;
+      radioLabel.textContent = labelText;
+      radioLabel.style.marginRight = "1em";
+
+      radioContainer.appendChild(radioInput);
+      radioContainer.appendChild(radioLabel);
+    });
+
+    questionDiv.appendChild(radioContainer);
+    container.appendChild(questionDiv);
+  });
+}
+
+// ─── 5. Run on page load ───
+document.addEventListener("DOMContentLoaded", renderBlock2);
+</script>
+
+<style>
+/* Optional styling: adjust margins/padding/font‐size as needed */
+.block2-question p {
+  margin: 0 0 0.4em 0;
+}
+.likert-scale label {
+  cursor: pointer;
+  font-size: 0.95em;
+}
+</style>
