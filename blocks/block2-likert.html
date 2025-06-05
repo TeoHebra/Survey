@@ -1,16 +1,13 @@
-<!-- block2-likert.html -->
+<!-- ================================
+     block2-likert.html (UPDATED)
+     ================================ -->
 <section class="survey-block" id="block2" data-type="likert">
-  <h2>Block 2 – Likert Scale</h2>
+  <h2>Block 2 – Scaling Assessment</h2>
   <p class="prompt">
-    For each statement, please choose the option that best reflects your opinion.
+    For each statement below, please choose the option that best reflects your opinion.
   </p>
 
-  <!-- ───────────────────────────────────────────────
-       THIS DIV IS THE “HOOK” FOR OUR DYNAMIC CONTENT
-       The script below will pick 2 statements from each
-       category (S, B, F, E) and render them here, each
-       with a 7-point Likert scale.
-     ─────────────────────────────────────────────── -->
+  <!-- This is where 8 random items (2 from each S/B/F/E) will be injected -->
   <div id="likert-container"></div>
 
   <div class="navigation">
@@ -18,12 +15,13 @@
     <button class="next-btn">Next</button>
   </div>
 
-  <!-- ─────────────────────────────────────────────────────────────────
-       SCRIPT: Defines all 16 items, shuffles them per category,
-       picks 2 from each category, and injects them into #likert-container
-     ───────────────────────────────────────────────────────────────── -->
+  <!-- ───────────────────────────────────────────────────────────────────────────
+       IMPORTANT CHANGE:
+       Remove the “DOMContentLoaded” wrapper so that this script runs 
+       as soon as it is inserted by main.js (i.e. immediately).
+     ─────────────────────────────────────────────────────────────────────────── -->
   <script>
-    document.addEventListener('DOMContentLoaded', function () {
+    (function() {
       // 1) Define all 16 statements by category:
       const categories = {
         'Structural Novelty': [
@@ -63,7 +61,7 @@
         'Strongly agree'
       ];
 
-      // 3) Fisher–Yates shuffle function:
+      // 3) Fisher–Yates shuffle (in‐place):
       function shuffle(array) {
         for (let i = array.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
@@ -71,49 +69,43 @@
         }
       }
 
-      // 4) Grab the container where we’ll append 8 randomized questions:
+      // 4) Grab the container where we’ll append eight randomized questions:
       const container = document.getElementById('likert-container');
 
-      // 5) Loop over each category, shuffle & pick two items:
+      // 5) For each of the four categories, shuffle & pick two items:
       Object.keys(categories).forEach((categoryName) => {
-        // Copy & shuffle
         const pool = categories[categoryName].slice();
         shuffle(pool);
+        const chosenTwo = pool.slice(0, 2);
 
-        // Take the first two after shuffling
-        const chosen = pool.slice(0, 2);
-
-        chosen.forEach((item) => {
-          // 5a) Create and append the statement <p> element
+        chosenTwo.forEach((item) => {
+          // (5a) Create a <p class="statement">…</p>
           const p = document.createElement('p');
           p.className = 'statement';
           p.textContent = item.text;
           container.appendChild(p);
 
-          // 5b) Create the <fieldset class="likert-7">
+          // (5b) Build the <fieldset class="likert-7">…</fieldset>
           const fieldset = document.createElement('fieldset');
           fieldset.className = 'likert-7';
 
-          // Visually hidden <legend> (for screen readers)
+          // Visually-hidden <legend> for accessibility
           const legend = document.createElement('legend');
           legend.className = 'visually-hidden';
           legend.textContent = item.id;
           fieldset.appendChild(legend);
 
-          // 5c) Generate seven <input type="radio"> + <label> pairs
+          // (5c) Create seven <input type="radio"> + <label> pairs
           likertLabels.forEach((labelText, idx) => {
             const val = idx + 1; // 1..7
-
-            // <input type="radio" id="S1-1" name="S1" value="1" required>
             const input = document.createElement('input');
             input.type = 'radio';
             input.id = `${item.id}-${val}`;
             input.name = item.id;
             input.value = `${val}`;
-            // Only the first radio needs to be “required”
+            // Only the first radio in each group needs to be “required”
             if (val === 1) input.required = true;
 
-            // <label for="S1-1"><span><small>Strongly disagree</small></span></label>
             const label = document.createElement('label');
             label.setAttribute('for', `${item.id}-${val}`);
             const span = document.createElement('span');
@@ -126,10 +118,10 @@
             fieldset.appendChild(label);
           });
 
-          // 5d) Append this <fieldset> underneath the statement
+          // (5d) Append the completed <fieldset> under the <p>
           container.appendChild(fieldset);
         });
       });
-    });
+    })();
   </script>
 </section>
