@@ -1,144 +1,322 @@
-<!-- File: blocks/block3-ranking.html -->
+<!-- blocks/block3-ranking.html -->
+<section class="survey-block" id="block3" data-type="ranking">
+  <!-- ───────────────────────────────────────────────────────────────────
+       STAGE 1: RANK THE FOUR TOP-LEVEL DOMAINS
+     ─────────────────────────────────────────────────────────────────── -->
+  <div id="stage1">
+    <h2>Block 3 – Domain Prioritization</h2>
+    <p class="prompt">
+      Drag the four cards so that <strong>#1</strong> is the domain you consider most important when deciding whether a metabolite is truly novel, and <strong>#4</strong> the least important.<br>
+      Please break ties by gut feeling; there is no “right” answer.
+    </p>
 
-<section class="survey-block active" id="block3" data-type="ranking">
-  <h2>Block 3 – Vignette Ranking</h2>
-  <p class="prompt">
-    Please assign a unique rank to each vignette (1 = most necessary, 2 = second most, etc.). 
-    Type a number (1–4) in the box next to each statement. Do not repeat ranks.
-  </p>
+    <!-- Draggable container for the four domains -->
+    <div id="category-list" class="draggable-list"></div>
 
+    <div class="navigation">
+      <!-- “Back” goes back to Block 2 automatically (class="prev-btn") -->
+      <button class="prev-btn">Back</button>
+      <!-- “Next” switches to Stage 2 within Block 3 (id="stage1-next") -->
+      <button id="stage1-next">Next</button>
+    </div>
+  </div>
+
+  <!-- ───────────────────────────────────────────────────────────────────
+       STAGE 2: RANK THE SUBCATEGORIES OF ONE OF THE TOP-TWO
+     ─────────────────────────────────────────────────────────────────── -->
+  <div id="stage2" style="display: none;">
+    <h2>Block 3 – Subcategory Prioritization</h2>
+    <p class="prompt" id="stage2-prompt">
+      <!-- We will fill this in with “Rank the following subcategories of [CategoryName]” -->
+      <!-- E.g. “Rank the following subcategories of Structural / Scaffold novelty:” -->
+    </p>
+
+    <!-- Draggable container for whichever subcategories belong to the chosen “top-2” category -->
+    <div id="subcategory-list" class="draggable-list"></div>
+
+    <div class="navigation">
+      <!-- “Back” returns to Stage 1 (id="stage2-back") -->
+      <button id="stage2-back">Back</button>
+      <!-- “Next” (class="next-btn") finally moves on to Block 4 -->
+      <button class="next-btn">Next</button>
+    </div>
+  </div>
+
+  <!-- ───────────────────────────────────────────────────────────────────
+       SCRIPT: Handle both Stage 1 & Stage 2 logic, dragging, persistence
+     ─────────────────────────────────────────────────────────────────── -->
   <script>
-    // ─────────────── duplicate‐value checker ───────────────
-    function checkDups() {
-      const inputs = document.querySelectorAll('#block3 .rank-input');
-      const counts = {};
-
-      inputs.forEach(input => {
-        const val = input.value.trim();
-        // only consider numbers 1–4
-        if (!val || !/^[1-4]$/.test(val)) return;
-        counts[val] = (counts[val] || 0) + 1;
-      });
-
-      inputs.forEach(input => {
-        const val = input.value.trim();
-        if (val && counts[val] > 1) {
-          input.classList.add('duplicate');
-        } else {
-          input.classList.remove('duplicate');
-        }
-      });
-    }
-
-    // ─────────────── bind arrow clicks immediately ───────────────
     (function() {
-      // As soon as this <script> runs, Block 3’s DOM has already been inserted,
-      // so we can safely query and attach listeners right away.
-      const wrappers = document.querySelectorAll("#block3 .number-wrapper");
-      wrappers.forEach(wrapper => {
-        const input = wrapper.querySelector("input");
-        const up = wrapper.querySelector(".arrow.up");
-        const down = wrapper.querySelector(".arrow.down");
+      //
+      // ───────────────────────────────────────────────────────────────
+      // 1) DATA STRUCTURES: Domains + Their Subcategories
+      // ───────────────────────────────────────────────────────────────
+      const domains = [
+        {
+          id: 'Structural',
+          name: 'Structural / Scaffold novelty',
+          subs: [
+            { id: 'Structural1', text: 'New carbon/heteroatom scaffold' },
+            { id: 'Structural2', text: 'Unusual functional group (e.g., N=N=N)' },
+            { id: 'Structural3', text: 'Rare stereochemical pattern' },
+            { id: 'Structural4', text: 'Presence of “exotic” atoms (e.g., F or Br)' },
+            { id: 'Structural5', text: 'Extreme size/complexity related to carbons (ratio C/Hetero)' }
+          ]
+        },
+        {
+          id: 'Biosynthetic',
+          name: 'Biosynthetic / Catalytic novelty',
+          subs: [
+            { id: 'Biosynthetic1', text: 'Entirely new enzyme class (e.g. new fold + AA homology low)' },
+            { id: 'Biosynthetic2', text: 'Known folds, new catalytic chemistry' },
+            { id: 'Biosynthetic3', text: 'Use of uncommon cofactors' },
+            { id: 'Biosynthetic4', text: 'Compounds produced by convergence of 2 pathways' }
+          ]
+        },
+        {
+          id: 'Functional',
+          name: 'Functional / Phenotypic novelty',
+          subs: [
+            { id: 'Functional1', text: 'New bioactivity spectrum' },
+            { id: 'Functional2', text: 'New mode of action for a known target' },
+            { id: 'Functional3', text: 'New Ecological role for a taxonomic rank' }
+          ]
+        },
+        {
+          id: 'Evolutionary',
+          name: 'Evolutionary / Ecological novelty',
+          subs: [
+            { id: 'Evolutionary1', text: 'Produced by a previously unsuspected taxon' },
+            { id: 'Evolutionary2', text: 'Unique to a taxon (signature compound)' },
+            { id: 'Evolutionary3', text: 'Horizontal transfer' }
+          ]
+        }
+      ];
 
-        if (up) {
-          up.addEventListener("click", () => {
-            let value = parseInt(input.value || "0");
-            if (value < 4) {
-              input.value = value + 1;
-              checkDups();
-            }
-          });
+      // ───────────────────────────────────────────────────────────────
+      // 2) UTILITY: Fisher–Yates shuffle (in-place)
+      // ───────────────────────────────────────────────────────────────
+      function shuffle(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [array[i], array[j]] = [array[j], array[i]];
+        }
+      }
+
+      // ───────────────────────────────────────────────────────────────
+      // 3) LOCALSTORAGE KEYS
+      // ───────────────────────────────────────────────────────────────
+      const KEY_CAT_ORDER        = 'block3-category-order';
+      const KEY_SUB_PARENT       = 'block3-chosen-parent';
+      const KEY_SUB_ORDER        = 'block3-subcategory-order';
+
+      // ───────────────────────────────────────────────────────────────
+      // 4) REFERENCE TO STAGE 1 & STAGE 2 CONTAINERS
+      // ───────────────────────────────────────────────────────────────
+      const stage1Div        = document.getElementById('stage1');
+      const stage2Div        = document.getElementById('stage2');
+      const categoryList     = document.getElementById('category-list');
+      const subcategoryList  = document.getElementById('subcategory-list');
+      const stage2Prompt     = document.getElementById('stage2-prompt');
+
+      // ───────────────────────────────────────────────────────────────
+      // 5) RENDER STAGE 1 (CATEGORY RANKING)
+      // ───────────────────────────────────────────────────────────────
+      function renderStage1() {
+        // (A) See if localStorage already has a saved category order
+        let savedOrder = JSON.parse(localStorage.getItem(KEY_CAT_ORDER) || 'null');
+
+        if (!savedOrder) {
+          // First time: create an array of domain IDs, shuffle, and save
+          savedOrder = domains.map(d => d.id);
+          shuffle(savedOrder);
+          localStorage.setItem(KEY_CAT_ORDER, JSON.stringify(savedOrder));
         }
 
-        if (down) {
-          down.addEventListener("click", () => {
-            let value = parseInt(input.value || "0");
-            if (value > 1) {
-              input.value = value - 1;
-              checkDups();
+        // (B) Render cards in that saved order
+        categoryList.innerHTML = ''; // clear existing
+        savedOrder.forEach(catId => {
+          const domainObj = domains.find(d => d.id === catId);
+          const card = document.createElement('div');
+          card.className = 'draggable-item';
+          card.draggable = true;
+          card.dataset.id = domainObj.id;
+          card.textContent = domainObj.name;
+          categoryList.appendChild(card);
+        });
+
+        // (C) Attach drag/drop listeners
+        attachDragAndDrop(categoryList, updateCategoryOrder);
+
+        // Show Stage 1, hide Stage 2
+        stage1Div.style.display = 'block';
+        stage2Div.style.display = 'none';
+      }
+
+      // ───────────────────────────────────────────────────────────────
+      // 6) UPDATE localStorage WHEN CATEGORY ORDER CHANGES
+      // ───────────────────────────────────────────────────────────────
+      function updateCategoryOrder() {
+        const newOrder = Array.from(categoryList.children).map(div => div.dataset.id);
+        localStorage.setItem(KEY_CAT_ORDER, JSON.stringify(newOrder));
+      }
+
+      // ───────────────────────────────────────────────────────────────
+      // 7) RENDER STAGE 2 (SUBCATEGORY RANKING)
+      // ───────────────────────────────────────────────────────────────
+      function renderStage2() {
+        // (A) Determine the user’s top-two categories from localStorage
+        const catOrder = JSON.parse(localStorage.getItem(KEY_CAT_ORDER));
+        // Top 2 IDs:
+        const topTwo = catOrder.slice(0, 2);
+
+        // (B) See if we already chose a “parent” subcategory before
+        let chosenParent = localStorage.getItem(KEY_SUB_PARENT);
+        if (!chosenParent) {
+          // Randomly pick one of the topTwo
+          chosenParent = topTwo[Math.floor(Math.random() * 2)];
+          localStorage.setItem(KEY_SUB_PARENT, chosenParent);
+        }
+
+        // (C) Find that domain object (so we know its full name and subs)
+        const parentObj = domains.find(d => d.id === chosenParent);
+
+        // (D) Update the prompt text to reference the chosen parent’s full name
+        stage2Prompt.innerHTML = `
+          Rank the following subcategories of <strong>${parentObj.name}</strong>:
+        `;
+
+        // (E) Check if localStorage has a saved subcategory order for this parent
+        let savedSubOrder = JSON.parse(localStorage.getItem(KEY_SUB_ORDER) || 'null');
+
+        if (!savedSubOrder) {
+          // First time in Stage 2: build an array of sub-IDs, shuffle, and save
+          savedSubOrder = parentObj.subs.map(s => s.id);
+          shuffle(savedSubOrder);
+          localStorage.setItem(KEY_SUB_ORDER, JSON.stringify(savedSubOrder));
+        }
+
+        // (F) Render the subcategory cards in that saved order
+        subcategoryList.innerHTML = '';
+        savedSubOrder.forEach(subId => {
+          const subObj = parentObj.subs.find(s => s.id === subId);
+          const card = document.createElement('div');
+          card.className = 'draggable-item';
+          card.draggable = true;
+          card.dataset.id = subObj.id;
+          card.textContent = subObj.text;
+          subcategoryList.appendChild(card);
+        });
+
+        // (G) Attach drag/drop listeners for subcategories
+        attachDragAndDrop(subcategoryList, updateSubcategoryOrder);
+
+        // Show Stage 2, hide Stage 1
+        stage1Div.style.display = 'none';
+        stage2Div.style.display = 'block';
+      }
+
+      // ───────────────────────────────────────────────────────────────
+      // 8) UPDATE localStorage WHEN SUBCATEGORY ORDER CHANGES
+      // ───────────────────────────────────────────────────────────────
+      function updateSubcategoryOrder() {
+        const newOrder = Array.from(subcategoryList.children).map(div => div.dataset.id);
+        localStorage.setItem(KEY_SUB_ORDER, JSON.stringify(newOrder));
+      }
+
+      // ───────────────────────────────────────────────────────────────
+      // 9) UNIVERSAL DRAG-AND-DROP ATTACHER
+      //
+      //    - Takes a container <div> (e.g. #category-list or #subcategory-list)
+      //    - Allows its direct children with class="draggable-item" to be
+      //      freely reordered by dragging & dropping.
+      //    - Calls the provided callback () => void whenever a drop happens,
+      //      so we can update localStorage.
+      // ───────────────────────────────────────────────────────────────
+      function attachDragAndDrop(container, onOrderChange) {
+        let draggedItem = null;
+
+        Array.from(container.children).forEach(item => {
+          item.addEventListener('dragstart', function(e) {
+            draggedItem = this;
+            e.dataTransfer.effectAllowed = 'move';
+          });
+
+          item.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+          });
+
+          item.addEventListener('drop', function(e) {
+            e.preventDefault();
+            if (draggedItem && draggedItem !== this) {
+              // Insert draggedItem before the drop target
+              const parent = this.parentNode;
+              parent.insertBefore(draggedItem, this);
+              draggedItem = null;
+              onOrderChange();
             }
           });
+        });
+
+        // Also allow dropping at the end (when dragged over the container itself)
+        container.addEventListener('dragover', function(e) {
+          e.preventDefault();
+          e.dataTransfer.dropEffect = 'move';
+        });
+        container.addEventListener('drop', function(e) {
+          e.preventDefault();
+          if (draggedItem && draggedItem.parentNode === container) {
+            // If dropped on empty space in the container, move to end
+            container.appendChild(draggedItem);
+            draggedItem = null;
+            onOrderChange();
+          }
+        });
+      }
+
+      // ───────────────────────────────────────────────────────────────
+      // 10) INITIAL ENTRY POINT
+      //
+      //     Decide: Should we show Stage 1 or Stage 2?
+      //     If localStorage has both a category order AND a chosen parent,
+      //     assume the user already finished Stage 1 and show Stage 2.
+      //     Otherwise, start at Stage 1.
+      // ───────────────────────────────────────────────────────────────
+      function initBlock3() {
+        const hasCatOrder  = localStorage.getItem(KEY_CAT_ORDER) !== null;
+        const hasSubParent = localStorage.getItem(KEY_SUB_PARENT) !== null;
+
+        if (hasCatOrder && hasSubParent) {
+          renderStage2();
+        } else {
+          renderStage1();
         }
+      }
+
+      // ───────────────────────────────────────────────────────────────
+      // 11) BUTTON HANDLERS FOR NAVIGATION INSIDE BLOCK 3
+      // ───────────────────────────────────────────────────────────────
+      // (A) Stage 1 → Stage 2
+      document.getElementById('stage1-next').addEventListener('click', function() {
+        // Before advancing, ensure we have an up-to-date category order stored.
+        updateCategoryOrder();
+
+        // Then render Stage 2
+        renderStage2();
       });
+
+      // (B) Stage 2 → Stage 1 (Back)
+      document.getElementById('stage2-back').addEventListener('click', function() {
+        renderStage1();
+      });
+
+      // (C) Stage 2 → Next (class="next-btn") will be handled by main.js,
+      //     because this has class="next-btn" inside a .survey-block. That
+      //     click will move to Block 4 (just as for other blocks).
+
+      // Finally, initialize:
+      initBlock3();
     })();
   </script>
-
-  <!-- ─────────── FOUR VIGNETTES TO RANK ─────────── -->
-  <div class="ranking-item">
-    <div class="number-wrapper">
-      <input
-        type="number"
-        name="rank_v1"
-        id="rank_v1"
-        class="rank-input"
-        min="1"
-        max="4"
-        required
-        oninput="checkDups()"
-      />
-      <div class="arrow up"></div>
-      <div class="arrow down"></div>
-    </div>
-    <label for="rank_v1"><strong>Vignette 1:</strong> Lorem ipsum dolor sit amet, consectetur adipiscing elit…</label>
-  </div>
-
-  <div class="ranking-item">
-    <div class="number-wrapper">
-      <input
-        type="number"
-        name="rank_v2"
-        id="rank_v2"
-        class="rank-input"
-        min="1"
-        max="4"
-        required
-        oninput="checkDups()"
-      />
-      <div class="arrow up"></div>
-      <div class="arrow down"></div>
-    </div>
-    <label for="rank_v2"><strong>Vignette 2:</strong> Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua…</label>
-  </div>
-
-  <div class="ranking-item">
-    <div class="number-wrapper">
-      <input
-        type="number"
-        name="rank_v3"
-        id="rank_v3"
-        class="rank-input"
-        min="1"
-        max="4"
-        required
-        oninput="checkDups()"
-      />
-      <div class="arrow up"></div>
-      <div class="arrow down"></div>
-    </div>
-    <label for="rank_v3"><strong>Vignette 3:</strong> Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris…</label>
-  </div>
-
-  <div class="ranking-item">
-    <div class="number-wrapper">
-      <input
-        type="number"
-        name="rank_v4"
-        id="rank_v4"
-        class="rank-input"
-        min="1"
-        max="4"
-        required
-        oninput="checkDups()"
-      />
-      <div class="arrow up"></div>
-      <div class="arrow down"></div>
-    </div>
-    <label for="rank_v4"><strong>Vignette 4:</strong> Duis aute irure dolor in reprehenderit in voluptate velit esse cillum…</label>
-  </div>
-
-  <!-- ─────────── NAVIGATION BUTTONS ─────────── -->
-  <div class="navigation">
-    <button class="prev-btn">Back</button>
-    <button class="next-btn">Next</button>
-  </div>
 </section>
