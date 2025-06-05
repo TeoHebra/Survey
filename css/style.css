@@ -650,7 +650,6 @@ fieldset.likert-7 label span {
   textarea { min-height: 34vh; }
 
 
-
   /* 8 ─ Block 4 stacks vertically (extra safety) */
   .block-4-row { flex-direction: column; gap: 24px; }
   .slider-input::-webkit-slider-thumb,
@@ -705,34 +704,5 @@ fieldset.likert-7 label span {
 fieldset.likert-7 label::before {
   margin-bottom: 0 !important;
 }
-@media (max-width: 480px) {
-  #block3 .ranking-item {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  #block3 .ranking-item label {
-    margin-left: 0;
-    margin-bottom: 8px;
-  }
-  #block3 .ranking-item .number-wrapper {
-    width: 100%;
-  }
-  #block3 .ranking-item .rank-input {
-    width: 100%;
-  }
-}
-/* 7) Responsive tweaks */
-@media (max-width: 600px) {
-  .block-4-row {
-    flex-direction: column;
-    gap: 16px;
-  }
-  .novel-group,
-  .confidence-group,
-  .wow-group {
-    flex: 1 1 100%;
-  }
-  .novel-option {
-    margin-bottom: 8px;
-  }
-}
+
+
