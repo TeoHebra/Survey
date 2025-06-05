@@ -1,322 +1,171 @@
-<!-- blocks/block3-ranking.html -->
+<!-- File: blocks/block3-ranking.html -->
+
 <section class="survey-block" id="block3" data-type="ranking">
-  <!-- ───────────────────────────────────────────────────────────────────
-       STAGE 1: RANK THE FOUR TOP-LEVEL DOMAINS
-     ─────────────────────────────────────────────────────────────────── -->
-  <div id="stage1">
-    <h2>Block 3 – Domain Prioritization</h2>
-    <p class="prompt">
-      Drag the four cards so that <strong>#1</strong> is the domain you consider most important when deciding whether a metabolite is truly novel, and <strong>#4</strong> the least important.<br>
-      Please break ties by gut feeling; there is no “right” answer.
-    </p>
+  <h2>Block 3 – Domain Prioritization</h2>
+  <p class="prompt">
+    Please assign a unique rank to each domain (1 = most important, 4 = least important).  
+    Type a number (1–4) in the box next to each statement. Do not repeat ranks.
+  </p>
 
-    <!-- Draggable container for the four domains -->
-    <div id="category-list" class="draggable-list"></div>
+  <!-- Container where we will dynamically inject the four “domain” ranking items -->
+  <div id="vignette-list"></div>
 
-    <div class="navigation">
-      <!-- “Back” goes back to Block 2 automatically (class="prev-btn") -->
-      <button class="prev-btn">Back</button>
-      <!-- “Next” switches to Stage 2 within Block 3 (id="stage1-next") -->
-      <button id="stage1-next">Next</button>
-    </div>
+  <!-- Navigation Buttons for Block 3 -->
+  <div class="navigation">
+    <button class="prev-btn">Back</button>
+    <button class="next-btn">Next</button>
   </div>
 
-  <!-- ───────────────────────────────────────────────────────────────────
-       STAGE 2: RANK THE SUBCATEGORIES OF ONE OF THE TOP-TWO
-     ─────────────────────────────────────────────────────────────────── -->
-  <div id="stage2" style="display: none;">
-    <h2>Block 3 – Subcategory Prioritization</h2>
-    <p class="prompt" id="stage2-prompt">
-      <!-- We will fill this in with “Rank the following subcategories of [CategoryName]” -->
-      <!-- E.g. “Rank the following subcategories of Structural / Scaffold novelty:” -->
-    </p>
+  <!-- ─────────────────────────────────────────────────────────────────
+       Duplicate‐value checker (unchanged from your original)
+     ───────────────────────────────────────────────────────────────── -->
+  <script>
+    function checkDups() {
+      const inputs = document.querySelectorAll('#block3 .rank-input');
+      const counts = {};
 
-    <!-- Draggable container for whichever subcategories belong to the chosen “top-2” category -->
-    <div id="subcategory-list" class="draggable-list"></div>
+      inputs.forEach(input => {
+        const val = input.value.trim();
+        // only consider numbers 1–4
+        if (!val || !/^[1-4]$/.test(val)) return;
+        counts[val] = (counts[val] || 0) + 1;
+      });
 
-    <div class="navigation">
-      <!-- “Back” returns to Stage 1 (id="stage2-back") -->
-      <button id="stage2-back">Back</button>
-      <!-- “Next” (class="next-btn") finally moves on to Block 4 -->
-      <button class="next-btn">Next</button>
-    </div>
-  </div>
+      inputs.forEach(input => {
+        const val = input.value.trim();
+        if (val && counts[val] > 1) {
+          input.classList.add('duplicate');
+        } else {
+          input.classList.remove('duplicate');
+        }
+      });
+    }
+  </script>
 
-  <!-- ───────────────────────────────────────────────────────────────────
-       SCRIPT: Handle both Stage 1 & Stage 2 logic, dragging, persistence
-     ─────────────────────────────────────────────────────────────────── -->
+  <!-- ─────────────────────────────────────────────────────────────────
+       SCRIPT: Build & persist the four domain‐ranking items dynamically
+     ───────────────────────────────────────────────────────────────── -->
   <script>
     (function() {
-      //
-      // ───────────────────────────────────────────────────────────────
-      // 1) DATA STRUCTURES: Domains + Their Subcategories
-      // ───────────────────────────────────────────────────────────────
+      // 1) The four top‐level domains and their display labels
       const domains = [
-        {
-          id: 'Structural',
-          name: 'Structural / Scaffold novelty',
-          subs: [
-            { id: 'Structural1', text: 'New carbon/heteroatom scaffold' },
-            { id: 'Structural2', text: 'Unusual functional group (e.g., N=N=N)' },
-            { id: 'Structural3', text: 'Rare stereochemical pattern' },
-            { id: 'Structural4', text: 'Presence of “exotic” atoms (e.g., F or Br)' },
-            { id: 'Structural5', text: 'Extreme size/complexity related to carbons (ratio C/Hetero)' }
-          ]
-        },
-        {
-          id: 'Biosynthetic',
-          name: 'Biosynthetic / Catalytic novelty',
-          subs: [
-            { id: 'Biosynthetic1', text: 'Entirely new enzyme class (e.g. new fold + AA homology low)' },
-            { id: 'Biosynthetic2', text: 'Known folds, new catalytic chemistry' },
-            { id: 'Biosynthetic3', text: 'Use of uncommon cofactors' },
-            { id: 'Biosynthetic4', text: 'Compounds produced by convergence of 2 pathways' }
-          ]
-        },
-        {
-          id: 'Functional',
-          name: 'Functional / Phenotypic novelty',
-          subs: [
-            { id: 'Functional1', text: 'New bioactivity spectrum' },
-            { id: 'Functional2', text: 'New mode of action for a known target' },
-            { id: 'Functional3', text: 'New Ecological role for a taxonomic rank' }
-          ]
-        },
-        {
-          id: 'Evolutionary',
-          name: 'Evolutionary / Ecological novelty',
-          subs: [
-            { id: 'Evolutionary1', text: 'Produced by a previously unsuspected taxon' },
-            { id: 'Evolutionary2', text: 'Unique to a taxon (signature compound)' },
-            { id: 'Evolutionary3', text: 'Horizontal transfer' }
-          ]
-        }
+        { id: 'Structural',  label: 'Structural / Scaffold novelty' },
+        { id: 'Biosynthetic', label: 'Biosynthetic / Catalytic novelty' },
+        { id: 'Functional',   label: 'Functional / Phenotypic novelty' },
+        { id: 'Evolutionary', label: 'Evolutionary / Ecological novelty' }
       ];
 
-      // ───────────────────────────────────────────────────────────────
-      // 2) UTILITY: Fisher–Yates shuffle (in-place)
-      // ───────────────────────────────────────────────────────────────
-      function shuffle(array) {
-        for (let i = array.length - 1; i > 0; i--) {
+      // 2) Fisher–Yates shuffle (in‐place)
+      function shuffle(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
-          [array[i], array[j]] = [array[j], array[i]];
+          [arr[i], arr[j]] = [arr[j], arr[i]];
         }
       }
 
-      // ───────────────────────────────────────────────────────────────
-      // 3) LOCALSTORAGE KEYS
-      // ───────────────────────────────────────────────────────────────
-      const KEY_CAT_ORDER        = 'block3-category-order';
-      const KEY_SUB_PARENT       = 'block3-chosen-parent';
-      const KEY_SUB_ORDER        = 'block3-subcategory-order';
+      // 3) Ensure we have a single “order” for these four domains in memory
+      //    If not defined yet, shuffle once and store in window.block3Order.
+      let order = window.block3Order;
+      if (!order) {
+        order = domains.map(d => d.id);
+        shuffle(order);
+        window.block3Order = order;
+      }
 
-      // ───────────────────────────────────────────────────────────────
-      // 4) REFERENCE TO STAGE 1 & STAGE 2 CONTAINERS
-      // ───────────────────────────────────────────────────────────────
-      const stage1Div        = document.getElementById('stage1');
-      const stage2Div        = document.getElementById('stage2');
-      const categoryList     = document.getElementById('category-list');
-      const subcategoryList  = document.getElementById('subcategory-list');
-      const stage2Prompt     = document.getElementById('stage2-prompt');
+      // 4) Retrieve (or initialize) any saved answers in window.block3Answers
+      //    This lives only in memory and is cleared on a full reload.
+      if (!window.block3Answers) {
+        window.block3Answers = {};
+        // e.g. { Structural: "2", Biosynthetic: "1", … } as the user fills in
+      }
 
-      // ───────────────────────────────────────────────────────────────
-      // 5) RENDER STAGE 1 (CATEGORY RANKING)
-      // ───────────────────────────────────────────────────────────────
-      function renderStage1() {
-        // (A) See if localStorage already has a saved category order
-        let savedOrder = JSON.parse(localStorage.getItem(KEY_CAT_ORDER) || 'null');
+      // 5) Grab the container where we’ll render the four ranking‐items
+      const container = document.getElementById('vignette-list');
+      container.innerHTML = ''; // clear any previous render
 
-        if (!savedOrder) {
-          // First time: create an array of domain IDs, shuffle, and save
-          savedOrder = domains.map(d => d.id);
-          shuffle(savedOrder);
-          localStorage.setItem(KEY_CAT_ORDER, JSON.stringify(savedOrder));
+      // 6) For each domain ID in `order`, build a .ranking-item block
+      order.forEach(domainId => {
+        // (a) Find the label from our `domains` array
+        const domainObj = domains.find(d => d.id === domainId);
+
+        // (b) Create the outer wrapper <div class="ranking-item">
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'ranking-item';
+
+        // (c) Inside it, create <div class="number-wrapper">…</div>
+        const numberWrapper = document.createElement('div');
+        numberWrapper.className = 'number-wrapper';
+
+        // Create the <input type="number" class="rank-input">
+        const input = document.createElement('input');
+        input.type = 'number';
+        input.name = `rank_${domainObj.id}`;
+        input.id = `rank_${domainObj.id}`;
+        input.className = 'rank-input';
+        input.min = '1';
+        input.max = '4';
+        input.required = true;
+        input.setAttribute('oninput', 'checkDups()'); // call duplicate checker on every change
+
+        // If the user already typed something, restore it now:
+        const savedVal = window.block3Answers[domainObj.id];
+        if (savedVal) {
+          input.value = savedVal;
         }
 
-        // (B) Render cards in that saved order
-        categoryList.innerHTML = ''; // clear existing
-        savedOrder.forEach(catId => {
-          const domainObj = domains.find(d => d.id === catId);
-          const card = document.createElement('div');
-          card.className = 'draggable-item';
-          card.draggable = true;
-          card.dataset.id = domainObj.id;
-          card.textContent = domainObj.name;
-          categoryList.appendChild(card);
+        // Save any new changes into window.block3Answers immediately:
+        input.addEventListener('input', () => {
+          const v = input.value.trim();
+          if (/^[1-4]$/.test(v)) {
+            window.block3Answers[domainObj.id] = v;
+          } else {
+            delete window.block3Answers[domainObj.id];
+          }
+          checkDups();
         });
 
-        // (C) Attach drag/drop listeners
-        attachDragAndDrop(categoryList, updateCategoryOrder);
+        // Create the up/down arrows
+        const upArrow = document.createElement('div');
+        upArrow.className = 'arrow up';
+        const downArrow = document.createElement('div');
+        downArrow.className = 'arrow down';
 
-        // Show Stage 1, hide Stage 2
-        stage1Div.style.display = 'block';
-        stage2Div.style.display = 'none';
-      }
-
-      // ───────────────────────────────────────────────────────────────
-      // 6) UPDATE localStorage WHEN CATEGORY ORDER CHANGES
-      // ───────────────────────────────────────────────────────────────
-      function updateCategoryOrder() {
-        const newOrder = Array.from(categoryList.children).map(div => div.dataset.id);
-        localStorage.setItem(KEY_CAT_ORDER, JSON.stringify(newOrder));
-      }
-
-      // ───────────────────────────────────────────────────────────────
-      // 7) RENDER STAGE 2 (SUBCATEGORY RANKING)
-      // ───────────────────────────────────────────────────────────────
-      function renderStage2() {
-        // (A) Determine the user’s top-two categories from localStorage
-        const catOrder = JSON.parse(localStorage.getItem(KEY_CAT_ORDER));
-        // Top 2 IDs:
-        const topTwo = catOrder.slice(0, 2);
-
-        // (B) See if we already chose a “parent” subcategory before
-        let chosenParent = localStorage.getItem(KEY_SUB_PARENT);
-        if (!chosenParent) {
-          // Randomly pick one of the topTwo
-          chosenParent = topTwo[Math.floor(Math.random() * 2)];
-          localStorage.setItem(KEY_SUB_PARENT, chosenParent);
-        }
-
-        // (C) Find that domain object (so we know its full name and subs)
-        const parentObj = domains.find(d => d.id === chosenParent);
-
-        // (D) Update the prompt text to reference the chosen parent’s full name
-        stage2Prompt.innerHTML = `
-          Rank the following subcategories of <strong>${parentObj.name}</strong>:
-        `;
-
-        // (E) Check if localStorage has a saved subcategory order for this parent
-        let savedSubOrder = JSON.parse(localStorage.getItem(KEY_SUB_ORDER) || 'null');
-
-        if (!savedSubOrder) {
-          // First time in Stage 2: build an array of sub-IDs, shuffle, and save
-          savedSubOrder = parentObj.subs.map(s => s.id);
-          shuffle(savedSubOrder);
-          localStorage.setItem(KEY_SUB_ORDER, JSON.stringify(savedSubOrder));
-        }
-
-        // (F) Render the subcategory cards in that saved order
-        subcategoryList.innerHTML = '';
-        savedSubOrder.forEach(subId => {
-          const subObj = parentObj.subs.find(s => s.id === subId);
-          const card = document.createElement('div');
-          card.className = 'draggable-item';
-          card.draggable = true;
-          card.dataset.id = subObj.id;
-          card.textContent = subObj.text;
-          subcategoryList.appendChild(card);
-        });
-
-        // (G) Attach drag/drop listeners for subcategories
-        attachDragAndDrop(subcategoryList, updateSubcategoryOrder);
-
-        // Show Stage 2, hide Stage 1
-        stage1Div.style.display = 'none';
-        stage2Div.style.display = 'block';
-      }
-
-      // ───────────────────────────────────────────────────────────────
-      // 8) UPDATE localStorage WHEN SUBCATEGORY ORDER CHANGES
-      // ───────────────────────────────────────────────────────────────
-      function updateSubcategoryOrder() {
-        const newOrder = Array.from(subcategoryList.children).map(div => div.dataset.id);
-        localStorage.setItem(KEY_SUB_ORDER, JSON.stringify(newOrder));
-      }
-
-      // ───────────────────────────────────────────────────────────────
-      // 9) UNIVERSAL DRAG-AND-DROP ATTACHER
-      //
-      //    - Takes a container <div> (e.g. #category-list or #subcategory-list)
-      //    - Allows its direct children with class="draggable-item" to be
-      //      freely reordered by dragging & dropping.
-      //    - Calls the provided callback () => void whenever a drop happens,
-      //      so we can update localStorage.
-      // ───────────────────────────────────────────────────────────────
-      function attachDragAndDrop(container, onOrderChange) {
-        let draggedItem = null;
-
-        Array.from(container.children).forEach(item => {
-          item.addEventListener('dragstart', function(e) {
-            draggedItem = this;
-            e.dataTransfer.effectAllowed = 'move';
-          });
-
-          item.addEventListener('dragover', function(e) {
-            e.preventDefault();
-            e.dataTransfer.dropEffect = 'move';
-          });
-
-          item.addEventListener('drop', function(e) {
-            e.preventDefault();
-            if (draggedItem && draggedItem !== this) {
-              // Insert draggedItem before the drop target
-              const parent = this.parentNode;
-              parent.insertBefore(draggedItem, this);
-              draggedItem = null;
-              onOrderChange();
-            }
-          });
-        });
-
-        // Also allow dropping at the end (when dragged over the container itself)
-        container.addEventListener('dragover', function(e) {
-          e.preventDefault();
-          e.dataTransfer.dropEffect = 'move';
-        });
-        container.addEventListener('drop', function(e) {
-          e.preventDefault();
-          if (draggedItem && draggedItem.parentNode === container) {
-            // If dropped on empty space in the container, move to end
-            container.appendChild(draggedItem);
-            draggedItem = null;
-            onOrderChange();
+        // Bind arrow click handlers (exactly as your original code did)
+        upArrow.addEventListener('click', () => {
+          let value = parseInt(input.value || '0', 10);
+          if (value < 4) {
+            input.value = value + 1;
+            input.dispatchEvent(new Event('input', { bubbles: true }));
           }
         });
-      }
+        downArrow.addEventListener('click', () => {
+          let value = parseInt(input.value || '0', 10);
+          if (value > 1) {
+            input.value = value - 1;
+            input.dispatchEvent(new Event('input', { bubbles: true }));
+          }
+        });
 
-      // ───────────────────────────────────────────────────────────────
-      // 10) INITIAL ENTRY POINT
-      //
-      //     Decide: Should we show Stage 1 or Stage 2?
-      //     If localStorage has both a category order AND a chosen parent,
-      //     assume the user already finished Stage 1 and show Stage 2.
-      //     Otherwise, start at Stage 1.
-      // ───────────────────────────────────────────────────────────────
-      function initBlock3() {
-        const hasCatOrder  = localStorage.getItem(KEY_CAT_ORDER) !== null;
-        const hasSubParent = localStorage.getItem(KEY_SUB_PARENT) !== null;
+        // Nest input + arrows inside numberWrapper
+        numberWrapper.appendChild(input);
+        numberWrapper.appendChild(upArrow);
+        numberWrapper.appendChild(downArrow);
 
-        if (hasCatOrder && hasSubParent) {
-          renderStage2();
-        } else {
-          renderStage1();
-        }
-      }
+        // (d) Create the <label> for this domain
+        const label = document.createElement('label');
+        label.setAttribute('for', `rank_${domainObj.id}`);
+        label.innerHTML = `<strong>${domainObj.label}</strong>`;
 
-      // ───────────────────────────────────────────────────────────────
-      // 11) BUTTON HANDLERS FOR NAVIGATION INSIDE BLOCK 3
-      // ───────────────────────────────────────────────────────────────
-      // (A) Stage 1 → Stage 2
-      document.getElementById('stage1-next').addEventListener('click', function() {
-        // Before advancing, ensure we have an up-to-date category order stored.
-        updateCategoryOrder();
+        // (e) Assemble the ranking‐item: [numberWrapper] + [label]
+        itemDiv.appendChild(numberWrapper);
+        itemDiv.appendChild(label);
 
-        // Then render Stage 2
-        renderStage2();
+        // (f) Append this ranking‐item to the container
+        container.appendChild(itemDiv);
       });
 
-      // (B) Stage 2 → Stage 1 (Back)
-      document.getElementById('stage2-back').addEventListener('click', function() {
-        renderStage1();
-      });
-
-      // (C) Stage 2 → Next (class="next-btn") will be handled by main.js,
-      //     because this has class="next-btn" inside a .survey-block. That
-      //     click will move to Block 4 (just as for other blocks).
-
-      // Finally, initialize:
-      initBlock3();
+      // 7) After rendering, run checkDups() once (to highlight any duplicates)
+      checkDups();
     })();
   </script>
 </section>
