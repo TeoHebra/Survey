@@ -5,8 +5,8 @@
     For each statement below, please choose the option that best reflects your opinion.
   </p>
 
-  <!-- A horizontal rule to separate heading/prompt from the questions -->
-  <hr />
+  <!-- Add a horizontal rule to separate heading/prompt from questions -->
+  <hr/>
 
   <!-- Container where 8 questions (2 from each category) will be injected -->
   <div id="likert-container"></div>
@@ -18,7 +18,7 @@
 
   <script>
     (function() {
-      // 1) Define all 16 statements by category:
+      // 1) Define all 16 statements by category
       const categories = {
         'Structural Novelty': [
           { id: 'S1', text: 'Incorporation of rare elements such as selenium or boron increases a metabolite’s novelty.' },
@@ -57,7 +57,7 @@
         'Strongly agree'
       ];
 
-      // 3) Fisher–Yates shuffle utility:
+      // 3) Fisher–Yates shuffle (in-place):
       function shuffle(array) {
         for (let i = array.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
@@ -65,60 +65,78 @@
         }
       }
 
-      // 4) Grab the container where questions will go:
+      // 4) Build a single array of “2 random items per category”
+      let selectedItems = [];
+      Object.values(categories).forEach(categoryArray => {
+        // Make a shallow copy, shuffle it, pick the first 2
+        const copy = categoryArray.slice();
+        shuffle(copy);
+        selectedItems.push(copy[0], copy[1]);
+      });
+
+      // 5) Now shuffle those 8 items so categories are intermingled
+      shuffle(selectedItems);
+
+      // 6) Grab the container where we’ll append our questions
       const container = document.getElementById('likert-container');
 
-      // 5) For each category, shuffle & pick two items:
-      Object.keys(categories).forEach((categoryName) => {
-        const pool = categories[categoryName].slice();
-        shuffle(pool);
-        const chosenTwo = pool.slice(0, 2);
+      // 7) Loop through selectedItems, rendering each with a bold number
+      selectedItems.forEach((item, index) => {
+        // index goes 0..7, but we want to display “1.” through “8.”
+        const displayNumber = index + 1;
 
-        chosenTwo.forEach((item) => {
-          // Create a wrapper <div> so each question is its own block
-          const questionDiv = document.createElement('div');
-          questionDiv.className = 'question-block';
+        // Create a wrapper <div> so each question is a distinct block
+        const questionDiv = document.createElement('div');
+        questionDiv.className = 'question-block';
 
-          // 5a) Add the statement text:
-          const p = document.createElement('p');
-          p.className = 'statement';
-          p.textContent = item.text;
-          questionDiv.appendChild(p);
+        // 7a) Create the statement <p>, with bold “1.”, “2.”, etc.
+        const p = document.createElement('p');
+        p.className = 'statement';
+        // Use innerHTML so we can embed the <strong> number
+        p.innerHTML = `<strong>${displayNumber}.</strong> ${item.text}`;
+        questionDiv.appendChild(p);
 
-          // 5b) Build the <fieldset class="likert-7">…</fieldset>
-          const fieldset = document.createElement('fieldset');
-          fieldset.className = 'likert-7';
-          // (We have removed the <legend> since “visually-hidden” wasn’t hiding it in your build.)
+        // 7b) Wrap the <fieldset> in a div.likert-wrapper for spacing control:
+        const likertWrapper = document.createElement('div');
+        likertWrapper.className = 'likert-wrapper';
 
-          // 5c) Create seven <input type="radio"> + <label> pairs:
-          likertLabels.forEach((labelText, idx) => {
-            const val = idx + 1; // 1..7
+        // 7c) Build the <fieldset class="likert-7">
+        const fieldset = document.createElement('fieldset');
+        fieldset.className = 'likert-7';
 
-            // Create the radio <input>
-            const input = document.createElement('input');
-            input.type = 'radio';
-            input.id = `${item.id}-${val}`;
-            input.name = item.id;
-            input.value = `${val}`;
-            // Only the first radio in each group needs “required”
-            if (val === 1) input.required = true;
+        // (We are omitting a visible <legend> so respondents only see the statement text.
+        // If you need a screen-reader label, you could add e.g. fieldset.setAttribute('aria-label', item.id); )
 
-            // Create the corresponding <label>
-            const label = document.createElement('label');
-            label.setAttribute('for', `${item.id}-${val}`);
-            const span = document.createElement('span');
-            const small = document.createElement('small');
-            small.textContent = labelText;
-            span.appendChild(small);
-            label.appendChild(span);
+        // 7d) Create seven <input type="radio"> + <label> pairs
+        likertLabels.forEach((labelText, idx) => {
+          const value = idx + 1; // 1..7
 
-            fieldset.appendChild(input);
-            fieldset.appendChild(label);
-          });
+          // <input type="radio" id="S1-1" name="S1" value="1" required>
+          const input = document.createElement('input');
+          input.type = 'radio';
+          input.id = `${item.id}-${value}`;
+          input.name = item.id;
+          input.value = `${value}`;
+          // Only the first radio in each group needs “required”
+          if (value === 1) input.required = true;
 
-          questionDiv.appendChild(fieldset);
-          container.appendChild(questionDiv);
+          // <label for="S1-1"><span><small>Strongly disagree</small></span></label>
+          const label = document.createElement('label');
+          label.setAttribute('for', `${item.id}-${value}`);
+          const span = document.createElement('span');
+          const small = document.createElement('small');
+          small.textContent = labelText;
+          span.appendChild(small);
+          label.appendChild(span);
+
+          fieldset.appendChild(input);
+          fieldset.appendChild(label);
         });
+
+        // 7e) Nest the fieldset inside likert-wrapper, then append both
+        likertWrapper.appendChild(fieldset);
+        questionDiv.appendChild(likertWrapper);
+        container.appendChild(questionDiv);
       });
     })();
   </script>
