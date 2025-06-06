@@ -10,7 +10,7 @@
     </ul>
   </p>
 
-  <!-- This is where the script will insert eight vignette rows -->
+  <!-- Container where the script will insert eight “N. Is this novel?” + 3-column rows -->
   <div id="vignette-container"></div>
 
   <div class="nav-buttons">
@@ -19,47 +19,45 @@
   </div>
 
   <!-- ───────────────────────────────────────────────────────────────────
-       SCRIPT: 
-         1) Reads Block 3’s domain‐rank answers from window.block3DomainAnswers,
-         2) Picks exactly 8 vignettes (4 from Rank 1, 2 from Rank 2, 1 from Rank 3, 1 from Rank 4),
-         3) Displays each with its category image (from survey/img/<Domain>/<ID>.png),
-            plus the three “Yes/No/I don’t know” circle‐radios and two sliders,
-         4) Preserves answers in window.block4Answers (in‐memory) so Back/Next does not clear them.
+       SCRIPT:
+       1) Fetch img/vignettes.json (manifest of all possible vignettes) :contentReference[oaicite:0]{index=0}
+       2) Read window.block3DomainAnswers to group domains by rank
+       3) Pick exactly 8 vignettes: 4 from Rank 1, 2 from Rank 2, 1 from Rank 3, 1 from Rank 4
+       4) Randomize order, store in window.block4Vignettes
+       5) Render each as:
+            <p class="vignette-label"><strong>N.</strong> Is this novel?</p>
+            <div class="block-4-row">
+              [Column 1: <img src="img/<Domain>/<filename>"…>]
+              [Column 2: three circle‐radios “Yes/No/I don’t know”]
+              [Column 3: two sliders (Confidence + “Wow”)]
+            </div>
+       6) Store answers in window.block4Answers so that Next→Back preserves them.
      ─────────────────────────────────────────────────────────────────── -->
   <script>
-    (function() {
+    (async function() {
       // ─────────────────────────────────────────────────────────────────────
-      // 1) DEFINE ALL VIGNETTES WITH domain & text (and ID)
-      //    Replace “text” with your actual vignette descriptions.
-      //    Make sure each image file matches the ID and sits in /img/<Domain>/<ID>.png
+      // 1) FETCH THE JSON MANIFEST OF ALL VIGNETTES
+      //    Each object must have: { id, domain, filename, text? }
+      //    (We will assume “text” is not needed here, since the question line is always “Is this novel?”)
+      //    If you want to display vignette text below the image, you can add a “text” property in JSON.
       // ─────────────────────────────────────────────────────────────────────
-      const allVignettes = [
-        // Structural / Scaffold novelty
-        { id: 'S_vig1', domain: 'Structural', text: 'A metabolite bearing a fused tetracyclic core never reported in any bacterial species.' },
-        { id: 'S_vig2', domain: 'Structural', text: 'A linear peptide chain containing selenium and boron linkages in its backbone.' },
-        { id: 'S_vig3', domain: 'Structural', text: 'A macrocyclic scaffold with an unprecedented 14‐membered ring.' },
-        { id: 'S_vig4', domain: 'Structural', text: 'A hybrid scaffold linking two classic alkaloid rings via an ether bridge.' },
-        { id: 'S_vig5', domain: 'Structural', text: 'A highly strained bicyclic molecule that spontaneously rearranges under mild conditions.' },
-
-        // Biosynthetic / Catalytic novelty
-        { id: 'B_vig1', domain: 'Biosynthetic', text: 'An enzyme with a new fold catalyzing a rearrangement never seen in nature.' },
-        { id: 'B_vig2', domain: 'Biosynthetic', text: 'Biosynthesis that uses FAD‐dependent radical chemistry on a sugar moiety.' },
-        { id: 'B_vig3', domain: 'Biosynthetic', text: 'Convergent co‐expression of two unrelated pathways to yield a single hybrid product.' },
-        { id: 'B_vig4', domain: 'Biosynthetic', text: 'A known oxidase scaffold repurposed to install a nitrile in one step.' },
-
-        // Functional / Phenotypic novelty
-        { id: 'F_vig1', domain: 'Functional', text: 'Potent activity against a pathogen with a novel mode of action never reported.' },
-        { id: 'F_vig2', domain: 'Functional', text: 'Dual activity as both an anticancer agent and a microbial signaling molecule.' },
-        { id: 'F_vig3', domain: 'Functional', text: 'Selective inhibition of a drug‐resistant strain through an unexplored target.' },
-
-        // Evolutionary / Ecological novelty
-        { id: 'E_vig1', domain: 'Evolutionary', text: 'Produced only by a deep‐sea fungus previously thought incapable of secondary metabolism.' },
-        { id: 'E_vig2', domain: 'Evolutionary', text: 'A known soil metabolite now found in an Antarctic microbe—first marine convergence.' },
-        { id: 'E_vig3', domain: 'Evolutionary', text: 'Gene cluster suggests horizontal transfer from a plant lineage into bacteria.' }
-      ];
+      let allVignettes;
+      try {
+        const response = await fetch('img/vignettes.json');
+        allVignettes = await response.json();
+        // Now allVignettes is an array like:
+        // [
+        //   { "id": "B01", "domain": "Biosynthetic", "filename": "Vignette_B01.png" },
+        //   { "id": "B02", "domain": "Biosynthetic", "filename": "Vignette_B02.png" },
+        //   … etc …
+        // ]
+      } catch (err) {
+        console.error('Could not load img/vignettes.json:', err);
+        return;
+      }
 
       // ─────────────────────────────────────────────────────────────────────
-      // 2) SHUFFLE UTILITY (Fisher–Yates, in‐place)
+      // 2) FISHER–YATES SHUFFLE (in‐place)
       // ─────────────────────────────────────────────────────────────────────
       function shuffle(arr) {
         for (let i = arr.length - 1; i > 0; i--) {
@@ -69,9 +67,10 @@
       }
 
       // ─────────────────────────────────────────────────────────────────────
-      // 3) READ BLOCK 3 DOMAINS AND GROUP BY RANK
-      //    Expect window.block3DomainAnswers = { Structural: "1", … }
-      //    If missing/invalid, default that domain to rank 4.
+      // 3) READ BLOCK 3 DOMAIN RANKS
+      //    window.block3DomainAnswers should be like:
+      //      { Structural: "1", Biosynthetic: "2", Functional: "3", Evolutionary: "4" }
+      //    If any domain is missing or invalid, assign it to rank 4 by default.
       // ─────────────────────────────────────────────────────────────────────
       const domainRanks = window.block3DomainAnswers || {};
       const rankToDomains = { 1: [], 2: [], 3: [], 4: [] };
@@ -85,14 +84,14 @@
       });
 
       // ─────────────────────────────────────────────────────────────────────
-      // 4) PICK 8 VIGNETTES BASED ON RANK TIERS, THEN SHUFFLE THE FINAL 8
-      //    Rank 1:  4 picks
-      //    Rank 2:  2 picks
-      //    Rank 3:  1 pick
-      //    Rank 4:  1 pick
-      //    If fewer available in a tier, adjust as needed (e.g. split among multiple domains).
-      //    Once 8 are chosen, shuffle for random display order.
-      //    Store in window.block4Vignettes so it persists across Next/Back.
+      // 4) PICK 8 VIGNETTES BASED ON RANK TIERS, THEN SHUFFLE
+      //    Rank 1 → 4 picks
+      //    Rank 2 → 2 picks
+      //    Rank 3 → 1 pick
+      //    Rank 4 → 1 pick
+      //    If a rank tier has multiple domains, split picks among them (see logic below).
+      //    Finally, if fewer than 8 (pool exhausted), fill from any remaining.
+      //    Save result in window.block4Vignettes so it persists across Next/Back.
       // ─────────────────────────────────────────────────────────────────────
       if (!window.block4Vignettes) {
         const picks = [];
@@ -114,7 +113,6 @@
         } else if (rank1.length >= 3) {
           const chosen = rank1.slice();
           shuffle(chosen);
-          // Pick one each from first three, plus one more from the fourth (wrap if only 3).
           picks.push(...pickRandomForDomain(chosen[0], 1));
           picks.push(...pickRandomForDomain(chosen[1], 1));
           picks.push(...pickRandomForDomain(chosen[2], 1));
@@ -148,74 +146,66 @@
           picks.push(...pickRandomForDomain(choice, 1));
         }
 
-        // If fewer than 8 (pool ran out), fill from any remaining unpicked vignettes
+        // If fewer than 8, fill from any remaining
         let usedIds = new Set(picks.map(v => v.id));
         while (picks.length < 8) {
-          const pool = allVignettes.filter(v => !usedIds.has(v.id));
-          if (!pool.length) break;
-          shuffle(pool);
-          picks.push(pool[0]);
-          usedIds.add(pool[0].id);
+          const remaining = allVignettes.filter(v => !usedIds.has(v.id));
+          if (!remaining.length) break;
+          shuffle(remaining);
+          picks.push(remaining[0]);
+          usedIds.add(remaining[0].id);
         }
 
-        // Finally, shuffle the 8 picks so display order is random
         shuffle(picks);
         window.block4Vignettes = picks;
       }
 
       // ─────────────────────────────────────────────────────────────────────
-      // 5) INITIALIZE OR RETRIEVE ANSWERS OBJECT
-      //    window.block4Answers = { <vignetteID>: { novelty: "Yes"/"No"/"IDK", 
-      //                                             confidence: "7", wow: "3" }, … }
+      // 5) INITIALIZE OR RETRIEVE ANSWERS
+      //    window.block4Answers = { <vignetteID>: {novelty, confidence, wow}, … }
       // ─────────────────────────────────────────────────────────────────────
       if (!window.block4Answers) {
         window.block4Answers = {};
       }
 
       // ─────────────────────────────────────────────────────────────────────
-      // 6) RENDER THE VIGNETTES
-      //    For each picking (window.block4Vignettes), we:
-      //      - Insert a <p class="vignette-label"><strong>N.</strong> Is this novel?</p>
-      //      - Insert a <div class="block-4-row"> with three columns:
-      //           [Column 1] <div class="image-col"><img … ></div>
-      //           [Column 2] <div class="novel-group"> three circle‐radios </div>
-      //           [Column 3] <div class="slider-col"> two sliders (confidence + wow) </div>
-      //    Each radio/slider uses window.block4Answers to restore any previous value.
+      // 6) RENDER THE 8 VIGNETTES
+      //    For each of the 8 picks (window.block4Vignettes):
+      //      6A) Insert <p class="vignette-label"><strong>N.</strong> Is this novel?</p>
+      //      6B) Insert <div class="block-4-row"> with three columns:
+      //            [1] <div class="image-col"><img src="img/<domain>/<filename>"></div>
+      //            [2] <div class="novel-group"> three circle‐radios </div>
+      //            [3] <div class="slider-col"> two sliders </div>
+      //    Restore any previous value from window.block4Answers so Next→Back preserves answers.
       // ─────────────────────────────────────────────────────────────────────
       const container = document.getElementById('vignette-container');
       container.innerHTML = ''; // clear any old content
 
       window.block4Vignettes.forEach((vig, idx) => {
-        // ───────────────────────────────────────────────────────────────
-        // 6A) LINE ABOVE ROW: “N. Is this novel?”
-        // ───────────────────────────────────────────────────────────────
+        // 6A) “N. Is this novel?” above the row
         const labelLine = document.createElement('p');
         labelLine.className = 'vignette-label';
         labelLine.innerHTML = `<strong>${idx + 1}.</strong> Is this novel?`;
         container.appendChild(labelLine);
 
-        // ───────────────────────────────────────────────────────────────
-        // 6B) CREATE THE FLEX ROW WRAPPER
-        // ───────────────────────────────────────────────────────────────
+        // 6B) Create the flex row wrapper
         const row = document.createElement('div');
         row.className = 'block-4-row';
 
-        // ───────── [Column 1] IMAGE: load from survey/img/<Domain>/<ID>.png ─────────
+        // [Column 1] IMAGE
         const imgCol = document.createElement('div');
         imgCol.className = 'image-col';
         const img = document.createElement('img');
         img.className = 'vignette-img';
-        // ASSUME your images are in survey/img/<Domain>/<ID>.png
-        // If your files are .jpg or .jpeg, adjust the extension accordingly.
-        img.src = `img/${vig.domain}/${vig.id}.png`;
+        // Use the domain + filename from JSON to form the image path:
+        img.src = `img/${vig.domain}/${vig.filename}`;
         img.alt = `Vignette ${idx + 1} illustration`;
-        // Force 100×100 px (you can also override via CSS if needed)
         img.width = 100;
         img.height = 100;
         imgCol.appendChild(img);
         row.appendChild(imgCol);
 
-        // ───────── [Column 2] NOVEL? three circle-radios ─────────
+        // [Column 2] NOVEL? three radio options
         const novelCol = document.createElement('div');
         novelCol.className = 'novel-group';
 
@@ -227,11 +217,11 @@
           input.type = 'radio';
           input.className = 'novel-radio';
           input.name = `${vig.id}-novelty`;
-          input.id = `${vig.id}-novelty-${option.replace(/\s+/g,'')}`;
+          input.id   = `${vig.id}-novelty-${option.replace(/\s+/g,'')}`;
           input.value = option;
-          // Restore if previously chosen
-          const savedObj = window.block4Answers[vig.id];
-          if (savedObj && savedObj.novelty === option) {
+          // Restore previously chosen value (if any)
+          const saved = window.block4Answers[vig.id];
+          if (saved && saved.novelty === option) {
             input.checked = true;
           }
           input.addEventListener('change', () => {
@@ -255,7 +245,7 @@
 
         row.appendChild(novelCol);
 
-        // ───────── [Column 3] TWO SLIDERS: “Confidence” + “Wow” ─────────
+        // [Column 3] Two sliders: Confidence + “Wow”
         const sliderCol = document.createElement('div');
         sliderCol.className = 'slider-col';
 
@@ -295,7 +285,7 @@
         } else {
           confInput.value = '0';
         }
-        // Initialize the CSS fill for blue track
+        // Initialize blue fill using CSS variable
         confInput.style.setProperty('--slider-fill', `${(confInput.value / 10) * 100}%`);
 
         confInput.addEventListener('input', () => {
@@ -364,9 +354,7 @@
 
         row.appendChild(sliderCol);
 
-        // ───────────────────────────────────────────────────────────────
-        // 6C) APPEND THE COMPLETED ROW TO THE CONTAINER
-        // ───────────────────────────────────────────────────────────────
+        // 6C) Append the completed row to the container
         container.appendChild(row);
       });
     })();
