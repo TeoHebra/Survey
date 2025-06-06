@@ -20,12 +20,19 @@
 
   <!-- ───────────────────────────────────────────────────────────────────
        SCRIPT: Choose 8 vignettes once (based on Block 3 ranks), then
-       render each vignette as a 3-column row: [image] [Vignette X + radios] [sliders]
+       render each vignette as a 3-column row: [image] [circle‐radios] [sliders]
+       Prepend each row with “N. Is this novel?” in bold.
        Answers persist in window.block4Answers (memory only).
      ─────────────────────────────────────────────────────────────────── -->
   <script>
     (function() {
-      // 1) Full pool of vignettes (replace with your real text later)
+      // ─────────────────────────────────────────────────────────────────────
+      // 1) FULL POOL OF VIGNETTES (replace these with actual vignette text)
+      //    Each vignette object must have:
+      //      - id: unique string
+      //      - domain: 'Structural'|'Biosynthetic'|'Functional'|'Evolutionary'
+      //      - text: the vignette description
+      // ─────────────────────────────────────────────────────────────────────
       const allVignettes = [
         // Structural / Scaffold novelty
         { id: 'S_vig1', domain: 'Structural', text: 'A metabolite bearing a fused tetracyclic core never reported in any bacterial species.' },
@@ -51,7 +58,9 @@
         { id: 'E_vig3', domain: 'Evolutionary', text: 'Gene cluster suggests horizontal transfer from a plant lineage into bacteria.' }
       ];
 
-      // 2) Fisher–Yates shuffle helper
+      // ─────────────────────────────────────────────────────────────────────
+      // 2) FISHER–YATES SHUFFLE FUNCTION (in‐place)
+      // ─────────────────────────────────────────────────────────────────────
       function shuffle(arr) {
         for (let i = arr.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
@@ -59,18 +68,30 @@
         }
       }
 
-      // 3) Read Block 3’s domain ranks from window.block3DomainAnswers
+      // ─────────────────────────────────────────────────────────────────────
+      // 3) READ BLOCK 3 DOMAIN RANKS
+      //    window.block3DomainAnswers should be an object:
+      //      { Structural: "1", Biosynthetic: "2", Functional: "3", Evolutionary: "4" }
+      //    If any rank is missing or invalid, default it to 4.
+      // ─────────────────────────────────────────────────────────────────────
       const domainRanks = window.block3DomainAnswers || {};
-      const rankToDomains = {1: [], 2: [], 3: [], 4: []};
+      const rankToDomains = { 1: [], 2: [], 3: [], 4: [] };
       ['Structural','Biosynthetic','Functional','Evolutionary'].forEach(dom => {
         const r = parseInt(domainRanks[dom] || '5', 10);
-        if (r >= 1 && r <= 4) rankToDomains[r].push(dom);
-        else rankToDomains[4].push(dom);
+        if (r >= 1 && r <= 4) {
+          rankToDomains[r].push(dom);
+        } else {
+          rankToDomains[4].push(dom);
+        }
       });
 
-      // 4) Build (or reuse) window.block4Vignettes = exactly 8 picks
+      // ─────────────────────────────────────────────────────────────────────
+      // 4) BUILD OR REUSE window.block4Vignettes (exactly 8 picks)
+      //    Once picked, they remain fixed until a full page reload.
+      // ─────────────────────────────────────────────────────────────────────
       if (!window.block4Vignettes) {
         const picks = [];
+
         function pickRandomForDomain(domain, count) {
           const pool = allVignettes.filter(v => v.domain === domain);
           if (pool.length <= count) return pool.slice();
@@ -78,7 +99,7 @@
           return pool.slice(0, count);
         }
 
-        // Rank 1 → 4 vignettes
+        // (A) Rank 1 → 4 vignettes
         const rank1 = rankToDomains[1];
         if (rank1.length === 1) {
           picks.push(...pickRandomForDomain(rank1[0], 4));
@@ -93,7 +114,7 @@
           picks.push(...pickRandomForDomain(chosen[3 % chosen.length], 1));
         }
 
-        // Rank 2 → 2 vignettes
+        // (B) Rank 2 → 2 vignettes
         const rank2 = rankToDomains[2];
         if (rank2.length === 1) {
           picks.push(...pickRandomForDomain(rank2[0], 2));
@@ -106,72 +127,77 @@
           picks.push(...pickRandomForDomain(rank2[1], 1));
         }
 
-        // Rank 3 → 1 vignette
+        // (C) Rank 3 → 1 vignette
         const rank3 = rankToDomains[3];
         if (rank3.length >= 1) {
           const choice = rank3[Math.floor(Math.random() * rank3.length)];
           picks.push(...pickRandomForDomain(choice, 1));
         }
 
-        // Rank 4 → 1 vignette
+        // (D) Rank 4 → 1 vignette
         const rank4 = rankToDomains[4];
         if (rank4.length >= 1) {
           const choice = rank4[Math.floor(Math.random() * rank4.length)];
           picks.push(...pickRandomForDomain(choice, 1));
         }
 
-        // If fewer than 8 (pool exhausted), fill from any remaining
+        // (E) If fewer than 8, fill from any remaining pool
         let usedIds = new Set(picks.map(v => v.id));
         while (picks.length < 8) {
           const pool = allVignettes.filter(v => !usedIds.has(v.id));
-          if (pool.length === 0) break;
+          if (!pool.length) break;
           shuffle(pool);
           picks.push(pool[0]);
           usedIds.add(pool[0].id);
         }
 
+        // (F) Shuffle the final 8 so display order is random
         shuffle(picks);
         window.block4Vignettes = picks;
       }
 
-      // 5) Initialize (or reuse) answers in window.block4Answers
+      // ─────────────────────────────────────────────────────────────────────
+      // 5) RETRIEVE OR INITIALIZE ANSWERS
+      //    window.block4Answers = { vignetteID: { novelty: "Yes"/"No"/"IDK", confidence: "7", wow: "3" }, … }
+      // ─────────────────────────────────────────────────────────────────────
       if (!window.block4Answers) {
         window.block4Answers = {};
       }
 
-      // 6) Render the 8 vignettes into #vignette-container
+      // ─────────────────────────────────────────────────────────────────────
+      // 6) RENDER THE 8 VIGNETTES INTO #vignette-container
+      // ─────────────────────────────────────────────────────────────────────
       const container = document.getElementById('vignette-container');
-      container.innerHTML = ''; // clear any prior content
+      container.innerHTML = ''; // clear any previous content
 
       window.block4Vignettes.forEach((vig, idx) => {
-        // (A) Create the flex‐row wrapper
+        // ─────────────────────────────────────────────────────────────────
+        // [A] Create a “numbered label” above the row: “1. Is this novel?”
+        // ─────────────────────────────────────────────────────────────────
+        const labelLine = document.createElement('p');
+        labelLine.className = 'vignette-label';
+        labelLine.innerHTML = `<strong>${idx + 1}.</strong> Is this novel?`;
+        container.appendChild(labelLine);
+
+        // ─────────────────────────────────────────────────────────────────
+        // [B] Create the flex‐row wrapper for this vignette
+        // ─────────────────────────────────────────────────────────────────
         const row = document.createElement('div');
         row.className = 'block-4-row';
 
-        // ----------------------------
-        // [Column 1] Image‐placeholder
-        // ----------------------------
+        // ───────── [Column 1] IMAGE PLACEHOLDER ─────────
         const imgCol = document.createElement('div');
         imgCol.className = 'image-col';
         const placeholder = document.createElement('div');
         placeholder.className = 'img-placeholder';
-        placeholder.textContent = `Placeholder\nvignette ${idx+1} image`;
+        placeholder.textContent = `Placeholder\nvignette ${idx + 1} image`;
         imgCol.appendChild(placeholder);
         row.appendChild(imgCol);
 
-        // ----------------------------------------------
-        // [Column 2] “Vignette X:” label + circle‐radio group
-        // ----------------------------------------------
+        // ───────── [Column 2] NOVEL? CIRCLE‐RADIOS ─────────
         const novelCol = document.createElement('div');
         novelCol.className = 'novel-group';
 
-        // (1) “Vignette X:” label at top of this column
-        const labelDiv = document.createElement('div');
-        labelDiv.className = 'group-label';
-        labelDiv.textContent = `Vignette ${idx + 1}:`;
-        novelCol.appendChild(labelDiv);
-
-        // (2) Three circle‐radio options: Yes / No / I don't know
         ['Yes','No',"I don’t know"].forEach(option => {
           const optDiv = document.createElement('div');
           optDiv.className = 'novel-option';
@@ -182,7 +208,7 @@
           input.name = `${vig.id}-novelty`;
           input.id   = `${vig.id}-novelty-${option.replace(/\s+/g,'')}`;
           input.value = option;
-          // Restore previous choice if present
+          // Restore if previously chosen
           const savedObj = window.block4Answers[vig.id];
           if (savedObj && savedObj.novelty === option) {
             input.checked = true;
@@ -196,25 +222,23 @@
           circle.className = 'novel-circle';
           circle.setAttribute('for', input.id);
 
-          const textDiv = document.createElement('div');
-          textDiv.className = 'novel-text';
-          textDiv.textContent = option;
+          const text = document.createElement('div');
+          text.className = 'novel-text';
+          text.textContent = option;
 
           optDiv.appendChild(input);
           optDiv.appendChild(circle);
-          optDiv.appendChild(textDiv);
+          optDiv.appendChild(text);
           novelCol.appendChild(optDiv);
         });
 
         row.appendChild(novelCol);
 
-        // ----------------------------------
-        // [Column 3] Two sliders stacked
-        // ----------------------------------
+        // ───────── [Column 3] SLIDERS ─────────
         const sliderCol = document.createElement('div');
         sliderCol.className = 'slider-col';
 
-        // (A) Confidence slider
+        // (1) Confidence slider group
         const confWrapper = document.createElement('div');
         confWrapper.className = 'confidence-group';
 
@@ -250,6 +274,7 @@
         } else {
           confInput.value = '0';
         }
+        // Initialize CSS fill
         confInput.style.setProperty('--slider-fill', `${(confInput.value / 10) * 100}%`);
 
         confInput.addEventListener('input', () => {
@@ -265,7 +290,7 @@
         confWrapper.appendChild(confInputWrapper);
         sliderCol.appendChild(confWrapper);
 
-        // (B) “Wow” factor slider
+        // (2) “Wow” factor slider group
         const wowWrapper = document.createElement('div');
         wowWrapper.className = 'wow-group';
 
@@ -318,7 +343,9 @@
 
         row.appendChild(sliderCol);
 
-        // Append this vignette row to the container
+        // ─────────────────────────────────────────────────────────────────
+        // Append the completed “3-column” row after its label
+        // ─────────────────────────────────────────────────────────────────
         container.appendChild(row);
       });
     })();
