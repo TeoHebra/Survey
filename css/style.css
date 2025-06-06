@@ -515,10 +515,13 @@ fieldset.likert-7 label span {
 
 /* 2) IMAGE COLUMN: fixed 100×100 placeholder */
 .image-col {
-  flex: 0 0 auto;            /* do not grow or shrink */
+  flex: 0 0 auto;
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 300px;   /* fix the column to 100 px wide */
+  height: 150px;  /* fix the column to 100 px tall  */
+  overflow: hidden; /* hide any overflow if image is weirdly large */
 }
 
 .image-col .img-placeholder {
@@ -534,6 +537,20 @@ fieldset.likert-7 label span {
   font-size: 0.85rem;
   border-radius: 4px;
 }
+
+/* ===================================================
+   11a. Block 4: Uniform Vignette Images (100×100)
+   =================================================== */
+.vignette-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;     /* preserve aspect ratio and letterbox if needed */
+  background-color: #00000; /* light‐gray “letterbox” background */
+  border-radius: 4px;      /* match the placeholder style */
+  border: 0px solid #ddd;  /* subtle frame around each image */
+}
+
+
 
 /* 3) NOVEL COLUMN: “Vignette X:” + radios stacked vertically */
 .novel-group {
