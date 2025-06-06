@@ -1,5 +1,5 @@
 <!-- File: blocks/block4-scaling.html -->
-<section id="block4" class="survey‐block">
+<section id="block4" class="survey-block">
   <h2>Rate The Novelty</h2>
   <p class="prompt">
     You will now see <strong>8</strong> short vignettes. For each one:
@@ -10,8 +10,8 @@
     </ul>
   </p>
 
-  <!-- This is where the script will insert eight vignette rows -->
-  <div id="vignette‐container"></div>
+  <!-- Container where the script will inject the 8 vignette rows -->
+  <div id="vignette-container"></div>
 
   <div class="nav-buttons">
     <button class="prev-btn">Back</button>
@@ -19,12 +19,13 @@
   </div>
 
   <!-- ───────────────────────────────────────────────────────────────────
-       SCRIPT: select 8 vignette texts once, then render rows with
-       [image‐placeholder] [circle‐radios] [two‐sliders], preserving answers
+       SCRIPT: Choose 8 vignettes once (based on Block 3 ranks), then
+       render each vignette as a 3-column row: [image] [Vignette X + radios] [sliders]
+       Answers persist in window.block4Answers (memory only).
      ─────────────────────────────────────────────────────────────────── -->
   <script>
     (function() {
-      // 1) Full pool of vignettes (replace the “S_vig1…” examples with real text)
+      // 1) Full pool of vignettes (replace with your real text later)
       const allVignettes = [
         // Structural / Scaffold novelty
         { id: 'S_vig1', domain: 'Structural', text: 'A metabolite bearing a fused tetracyclic core never reported in any bacterial species.' },
@@ -50,7 +51,7 @@
         { id: 'E_vig3', domain: 'Evolutionary', text: 'Gene cluster suggests horizontal transfer from a plant lineage into bacteria.' }
       ];
 
-      // 2) Fisher–Yates shuffle (in‐place)
+      // 2) Fisher–Yates shuffle helper
       function shuffle(arr) {
         for (let i = arr.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
@@ -58,16 +59,16 @@
         }
       }
 
-      // 3) Read Block 3’s domain ranks (memory only)
+      // 3) Read Block 3’s domain ranks from window.block3DomainAnswers
       const domainRanks = window.block3DomainAnswers || {};
-      const rankToDomains = { 1: [], 2: [], 3: [], 4: [] };
+      const rankToDomains = {1: [], 2: [], 3: [], 4: []};
       ['Structural','Biosynthetic','Functional','Evolutionary'].forEach(dom => {
         const r = parseInt(domainRanks[dom] || '5', 10);
         if (r >= 1 && r <= 4) rankToDomains[r].push(dom);
         else rankToDomains[4].push(dom);
       });
 
-      // 4) Build or reuse window.block4Vignettes (the 8 picks)
+      // 4) Build (or reuse) window.block4Vignettes = exactly 8 picks
       if (!window.block4Vignettes) {
         const picks = [];
         function pickRandomForDomain(domain, count) {
@@ -77,7 +78,7 @@
           return pool.slice(0, count);
         }
 
-        // Rank 1 → 4 picks
+        // Rank 1 → 4 vignettes
         const rank1 = rankToDomains[1];
         if (rank1.length === 1) {
           picks.push(...pickRandomForDomain(rank1[0], 4));
@@ -92,7 +93,7 @@
           picks.push(...pickRandomForDomain(chosen[3 % chosen.length], 1));
         }
 
-        // Rank 2 → 2 picks
+        // Rank 2 → 2 vignettes
         const rank2 = rankToDomains[2];
         if (rank2.length === 1) {
           picks.push(...pickRandomForDomain(rank2[0], 2));
@@ -105,126 +106,129 @@
           picks.push(...pickRandomForDomain(rank2[1], 1));
         }
 
-        // Rank 3 → 1 pick
+        // Rank 3 → 1 vignette
         const rank3 = rankToDomains[3];
         if (rank3.length >= 1) {
           const choice = rank3[Math.floor(Math.random() * rank3.length)];
           picks.push(...pickRandomForDomain(choice, 1));
         }
 
-        // Rank 4 → 1 pick
+        // Rank 4 → 1 vignette
         const rank4 = rankToDomains[4];
         if (rank4.length >= 1) {
           const choice = rank4[Math.floor(Math.random() * rank4.length)];
           picks.push(...pickRandomForDomain(choice, 1));
         }
 
-        // If fewer than 8, fill from any remaining
+        // If fewer than 8 (pool exhausted), fill from any remaining
         let usedIds = new Set(picks.map(v => v.id));
         while (picks.length < 8) {
           const pool = allVignettes.filter(v => !usedIds.has(v.id));
-          if (!pool.length) break;
+          if (pool.length === 0) break;
           shuffle(pool);
           picks.push(pool[0]);
           usedIds.add(pool[0].id);
         }
 
-        // Shuffle the final picks
         shuffle(picks);
         window.block4Vignettes = picks;
       }
 
-      // 5) Initialize or retrieve answers (memory only)
+      // 5) Initialize (or reuse) answers in window.block4Answers
       if (!window.block4Answers) {
         window.block4Answers = {};
       }
 
-      // 6) Render the 8 vignettes into #vignette‐container
-      const container = document.getElementById('vignette‐container');
-      container.innerHTML = '';
+      // 6) Render the 8 vignettes into #vignette-container
+      const container = document.getElementById('vignette-container');
+      container.innerHTML = ''; // clear any prior content
 
       window.block4Vignettes.forEach((vig, idx) => {
-        // -- Create the red “Vignette N” text
-        const textPara = document.createElement('p');
-        textPara.className = 'vignette‐text';
-        textPara.innerHTML = `<strong>Vignette ${idx + 1}:</strong> ${vig.text}`;
-        container.appendChild(textPara);
-
-        // -- Create one flex‐row for this vignette
+        // (A) Create the flex‐row wrapper
         const row = document.createElement('div');
-        row.className = 'block‐4‐row';
+        row.className = 'block-4-row';
 
-        // [A] Left column: Image placeholder
+        // ----------------------------
+        // [Column 1] Image‐placeholder
+        // ----------------------------
         const imgCol = document.createElement('div');
-        imgCol.className = 'image‐col';
-        // A simple placeholder box—replace with <img src="…"> when ready
+        imgCol.className = 'image-col';
         const placeholder = document.createElement('div');
-        placeholder.className = 'img‐placeholder';
-        placeholder.textContent = `Placeholder\nvignette ${idx+1}\nimage`;
+        placeholder.className = 'img-placeholder';
+        placeholder.textContent = `Placeholder\nvignette ${idx+1} image`;
         imgCol.appendChild(placeholder);
         row.appendChild(imgCol);
 
-        // [B] Middle column: Novel? circle radios
+        // ----------------------------------------------
+        // [Column 2] “Vignette X:” label + circle‐radio group
+        // ----------------------------------------------
         const novelCol = document.createElement('div');
-        novelCol.className = 'novel‐group';
+        novelCol.className = 'novel-group';
 
+        // (1) “Vignette X:” label at top of this column
+        const labelDiv = document.createElement('div');
+        labelDiv.className = 'group-label';
+        labelDiv.textContent = `Vignette ${idx + 1}:`;
+        novelCol.appendChild(labelDiv);
+
+        // (2) Three circle‐radio options: Yes / No / I don't know
         ['Yes','No',"I don’t know"].forEach(option => {
           const optDiv = document.createElement('div');
-          optDiv.className = 'novel‐option';
+          optDiv.className = 'novel-option';
 
           const input = document.createElement('input');
           input.type = 'radio';
-          input.className = 'novel‐radio';
-          input.name = `${vig.id}‐novelty`;
-          input.id   = `${vig.id}‐novelty‐${option.replace(/\s+/g,'')}`;
+          input.className = 'novel-radio';
+          input.name = `${vig.id}-novelty`;
+          input.id   = `${vig.id}-novelty-${option.replace(/\s+/g,'')}`;
           input.value = option;
-
-          // Restore if previously chosen
+          // Restore previous choice if present
           const savedObj = window.block4Answers[vig.id];
           if (savedObj && savedObj.novelty === option) {
             input.checked = true;
           }
-
           input.addEventListener('change', () => {
             if (!window.block4Answers[vig.id]) window.block4Answers[vig.id] = {};
             window.block4Answers[vig.id].novelty = option;
           });
 
           const circle = document.createElement('label');
-          circle.className = 'novel‐circle';
+          circle.className = 'novel-circle';
           circle.setAttribute('for', input.id);
 
-          const text = document.createElement('div');
-          text.className = 'novel‐text';
-          text.textContent = option;
+          const textDiv = document.createElement('div');
+          textDiv.className = 'novel-text';
+          textDiv.textContent = option;
 
           optDiv.appendChild(input);
           optDiv.appendChild(circle);
-          optDiv.appendChild(text);
+          optDiv.appendChild(textDiv);
           novelCol.appendChild(optDiv);
         });
 
         row.appendChild(novelCol);
 
-        // [C] Right column: two sliders stacked vertically
+        // ----------------------------------
+        // [Column 3] Two sliders stacked
+        // ----------------------------------
         const sliderCol = document.createElement('div');
-        sliderCol.className = 'slider‐col';
+        sliderCol.className = 'slider-col';
 
-        // (1) Confidence slider
+        // (A) Confidence slider
         const confWrapper = document.createElement('div');
-        confWrapper.className = 'confidence‐group';
+        confWrapper.className = 'confidence-group';
 
         const confHeader = document.createElement('div');
-        confHeader.className = 'group‐header';
+        confHeader.className = 'group-header';
         const confLabel = document.createElement('div');
-        confLabel.className = 'group‐label';
+        confLabel.className = 'group-label';
         confLabel.textContent = 'Confidence:';
         const confVal = document.createElement('div');
-        confVal.className = 'slider‐value';
-        confVal.id = `${vig.id}‐confidence‐val`;
+        confVal.className = 'slider-value';
+        confVal.id = `${vig.id}-confidence-val`;
         confVal.textContent = window.block4Answers[vig.id]?.confidence || '0';
         const confMax = document.createElement('div');
-        confMax.className = 'slider‐max';
+        confMax.className = 'slider-max';
         confMax.textContent = '/10';
 
         confHeader.appendChild(confLabel);
@@ -232,12 +236,12 @@
         confHeader.appendChild(confMax);
 
         const confInputWrapper = document.createElement('div');
-        confInputWrapper.className = 'slider‐wrapper';
+        confInputWrapper.className = 'slider-wrapper';
         const confInput = document.createElement('input');
         confInput.type = 'range';
-        confInput.className = 'slider‐input';
-        confInput.id = `${vig.id}‐confidence`;
-        confInput.name = `${vig.id}‐confidence`;
+        confInput.className = 'slider-input';
+        confInput.id = `${vig.id}-confidence`;
+        confInput.name = `${vig.id}-confidence`;
         confInput.min = '0';
         confInput.max = '10';
         confInput.step = '1';
@@ -246,13 +250,12 @@
         } else {
           confInput.value = '0';
         }
-        // Initialize CSS fill
-        confInput.style.setProperty('--slider‐fill', `${(confInput.value/10)*100}%`);
+        confInput.style.setProperty('--slider-fill', `${(confInput.value / 10) * 100}%`);
 
         confInput.addEventListener('input', () => {
           const v = confInput.value;
           confVal.textContent = v;
-          confInput.style.setProperty('--slider‐fill', `${(v/10)*100}%`);
+          confInput.style.setProperty('--slider-fill', `${(v / 10) * 100}%`);
           if (!window.block4Answers[vig.id]) window.block4Answers[vig.id] = {};
           window.block4Answers[vig.id].confidence = v;
         });
@@ -262,21 +265,21 @@
         confWrapper.appendChild(confInputWrapper);
         sliderCol.appendChild(confWrapper);
 
-        // (2) “Wow” factor slider
+        // (B) “Wow” factor slider
         const wowWrapper = document.createElement('div');
-        wowWrapper.className = 'wow‐group';
+        wowWrapper.className = 'wow-group';
 
         const wowHeader = document.createElement('div');
-        wowHeader.className = 'group‐header';
+        wowHeader.className = 'group-header';
         const wowLabel = document.createElement('div');
-        wowLabel.className = 'group‐label';
+        wowLabel.className = 'group-label';
         wowLabel.textContent = '“Wow” factor:';
         const wowVal = document.createElement('div');
-        wowVal.className = 'slider‐value';
-        wowVal.id = `${vig.id}‐wow‐val`;
+        wowVal.className = 'slider-value';
+        wowVal.id = `${vig.id}-wow-val`;
         wowVal.textContent = window.block4Answers[vig.id]?.wow || '0';
         const wowMax = document.createElement('div');
-        wowMax.className = 'slider‐max';
+        wowMax.className = 'slider-max';
         wowMax.textContent = '/10';
 
         wowHeader.appendChild(wowLabel);
@@ -284,12 +287,12 @@
         wowHeader.appendChild(wowMax);
 
         const wowInputWrapper = document.createElement('div');
-        wowInputWrapper.className = 'slider‐wrapper';
+        wowInputWrapper.className = 'slider-wrapper';
         const wowInput = document.createElement('input');
         wowInput.type = 'range';
-        wowInput.className = 'slider‐input';
-        wowInput.id = `${vig.id}‐wow`;
-        wowInput.name = `${vig.id}‐wow`;
+        wowInput.className = 'slider-input';
+        wowInput.id = `${vig.id}-wow`;
+        wowInput.name = `${vig.id}-wow`;
         wowInput.min = '0';
         wowInput.max = '10';
         wowInput.step = '1';
@@ -298,12 +301,12 @@
         } else {
           wowInput.value = '0';
         }
-        wowInput.style.setProperty('--slider‐fill', `${(wowInput.value/10)*100}%`);
+        wowInput.style.setProperty('--slider-fill', `${(wowInput.value / 10) * 100}%`);
 
         wowInput.addEventListener('input', () => {
           const v = wowInput.value;
           wowVal.textContent = v;
-          wowInput.style.setProperty('--slider‐fill', `${(v/10)*100}%`);
+          wowInput.style.setProperty('--slider-fill', `${(v / 10) * 100}%`);
           if (!window.block4Answers[vig.id]) window.block4Answers[vig.id] = {};
           window.block4Answers[vig.id].wow = v;
         });
@@ -315,7 +318,7 @@
 
         row.appendChild(sliderCol);
 
-        // Finally append this single‐vignette row
+        // Append this vignette row to the container
         container.appendChild(row);
       });
     })();
