@@ -1,146 +1,326 @@
-<section class="survey-block" id="block4" data-type="scaling">
-  <!-- ────────── FLEX ROW: Novel? | Confidence | Wow effect ────────── -->
-  <div class="block-4-row">
+<!-- File: blocks/block4-vignettes.html -->
+<section class="survey-block" id="block4" data-type="vignettes">
+  <h2>Block 4 – Vignette Evaluations</h2>
+  <p class="prompt">
+    You will now see a series of 8 short vignettes. For each one:
+    <ol>
+      <li>Would you consider this metabolite “truly novel”? <strong>Yes</strong> / <strong>No</strong> / <strong>I don’t know</strong></li>
+      <li>How confident are you in that judgment? (0 = not confident, 10 = completely sure)</li>
+      <li>Rate its “Wow” factor (0 = not impressive, 10 = extremely impressive)</li>
+    </ol>
+  </p>
 
-    <!-- ───── 1) NOVEL? (Yes / No) ───── -->
-    <div class="novel-group">
-      <div class="group-label">novel?</div>
+  <!-- Container where the script will inject 8 vignettes -->
+  <div id="vignette-container"></div>
 
-      <!-- YES option -->
-      <div class="novel-option">
-        <input
-          type="radio"
-          id="novel-yes"
-          name="novel"
-          value="yes"
-          class="novel-radio"
-        />
-        <label for="novel-yes" class="novel-circle"></label>
-        <span class="novel-text">Yes</span>
-      </div>
-
-      <!-- NO option -->
-      <div class="novel-option">
-        <input
-          type="radio"
-          id="novel-no"
-          name="novel"
-          value="no"
-          class="novel-radio"
-        />
-        <label for="novel-no" class="novel-circle"></label>
-        <span class="novel-text">No</span>
-      </div>
-    </div>
-
-    <!-- ───── 2) CONFIDENCE slider (0–10) ───── -->
-    <div class="confidence-group">
-      <div class="group-header">
-        <span class="group-label">Confidence</span>
-        <span class="slider-value" id="confidence-value">4</span>
-        <span class="slider-max">/ 10</span>
-      </div>
-      <div class="slider-wrapper">
-        <input
-          type="range"
-          id="confidence-slider"
-          name="confidence"
-          min="0"
-          max="10"
-          value="4"
-          step="1"
-          list="tickmarks-confidence"
-          class="slider-input"
-        />
-        <datalist id="tickmarks-confidence">
-          <option value="0"></option>
-          <option value="1"></option>
-          <option value="2"></option>
-          <option value="3"></option>
-          <option value="4"></option>
-          <option value="5"></option>
-          <option value="6"></option>
-          <option value="7"></option>
-          <option value="8"></option>
-          <option value="9"></option>
-          <option value="10"></option>
-        </datalist>
-      </div>
-    </div>
-
-    <!-- ───── 3) WOW EFFECT slider (0–10) ───── -->
-    <div class="wow-group">
-      <div class="group-header">
-        <span class="group-label">Wow effect</span>
-        <span class="slider-value" id="wow-value">4</span>
-        <span class="slider-max">/ 10</span>
-      </div>
-      <div class="slider-wrapper">
-        <input
-          type="range"
-          id="wow-slider"
-          name="wow"
-          min="0"
-          max="10"
-          value="4"
-          step="1"
-          list="tickmarks-wow"
-          class="slider-input"
-        />
-        <datalist id="tickmarks-wow">
-          <option value="0"></option>
-          <option value="1"></option>
-          <option value="2"></option>
-          <option value="3"></option>
-          <option value="4"></option>
-          <option value="5"></option>
-          <option value="6"></option>
-          <option value="7"></option>
-          <option value="8"></option>
-          <option value="9"></option>
-          <option value="10"></option>
-        </datalist>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- ──────────────────────────────────────────────────────────── -->
-  <!-- 4) (Optional) Statement / Image can go here if needed     -->
-  <!-- ──────────────────────────────────────────────────────────── -->
-
-  <!-- ──────────────────────────────────────────────────────────── -->
-  <!-- 5) Navigation Buttons (Back / Next)                        -->
-  <!-- ──────────────────────────────────────────────────────────── -->
   <div class="navigation">
     <button class="prev-btn">Back</button>
     <button class="next-btn">Next</button>
   </div>
 
-  <!-- ──────────────────────────────────────────────────────────── -->
-  <!-- 6) Inline Script: Update slider → <span> updates           -->
-  <!-- ──────────────────────────────────────────────────────────── -->
+  <!-- ─────────────────────────────────────────────────────────────────
+       SCRIPT: 
+       1) Build or retrieve window.block4Vignettes (8 items chosen once)
+       2) Render each vignette + its three questions
+       3) Persist answers in window.block4Answers (memory only)
+     ───────────────────────────────────────────────────────────────── -->
   <script>
     (function() {
-      // CONFIDENCE SLIDER
-      const confSlider = document.getElementById('confidence-slider');
-      const confValue  = document.getElementById('confidence-value');
-      if (confSlider && confValue) {
-        confValue.textContent = confSlider.value; // initialize
-        confSlider.addEventListener('input', function() {
-          confValue.textContent = this.value;
-        });
+      // ─────────────────────────────────────────────────────────────────────
+      // 1) DEFINE YOUR FULL POOL OF VIGNETTES, GROUPED BY DOMAIN
+      //
+      //    Each object must have:
+      //      - id: a unique string
+      //      - domain: one of 'Structural','Biosynthetic','Functional','Evolutionary'
+      //      - text: the vignette description
+      //
+      //    Replace these example texts with your real vignettes.
+      // ─────────────────────────────────────────────────────────────────────
+      const allVignettes = [
+        // ─ Structural / Scaffold novelty ───────────────────────────
+        { id: 'S_vig1', domain: 'Structural', text: 'Vignette S1: A metabolite with a new carbon ring fused to an existing scaffold.' },
+        { id: 'S_vig2', domain: 'Structural', text: 'Vignette S2: A linear peptide with an unusual heteroatom substitution (selenium).' },
+        { id: 'S_vig3', domain: 'Structural', text: 'Vignette S3: A complex tetracyclic core never reported before.' },
+        { id: 'S_vig4', domain: 'Structural', text: 'Vignette S4: A bulky macrocycle containing fluorinated side chains.' },
+        { id: 'S_vig5', domain: 'Structural', text: 'Vignette S5: A hybrid scaffold combining two classic ring systems in one.' },
+
+        // ─ Biosynthetic / Catalytic novelty ────────────────────────
+        { id: 'B_vig1', domain: 'Biosynthetic', text: 'Vignette B1: Produced by an enzyme with a novel fold never described in any pathway.' },
+        { id: 'B_vig2', domain: 'Biosynthetic', text: 'Vignette B2: Produced using an uncommon cofactor (pyrroloquinoline quinone) in its biosynthesis.' },
+        { id: 'B_vig3', domain: 'Biosynthetic', text: 'Vignette B3: Result of convergent biosynthesis from two unrelated pathways in the same organism.' },
+        { id: 'B_vig4', domain: 'Biosynthetic', text: 'Vignette B4: Uses a known enzyme scaffold but catalyzes a completely new type of ring formation.' },
+
+        // ─ Functional / Phenotypic novelty ─────────────────────────
+        { id: 'F_vig1', domain: 'Functional', text: 'Vignette F1: Shows potent activity against a pathogen previously untargeted by small molecules.' },
+        { id: 'F_vig2', domain: 'Functional', text: 'Vignette F2: Acts through a newly discovered mechanism on a well-known enzyme.' },
+        { id: 'F_vig3', domain: 'Functional', text: 'Vignette F3: Serves as both an antibiotic and a signaling molecule in bacteria.' },
+
+        // ─ Evolutionary / Ecological novelty ───────────────────────
+        { id: 'E_vig1', domain: 'Evolutionary', text: 'Vignette E1: Produced by an extremophile fungus never known to produce metabolites.' },
+        { id: 'E_vig2', domain: 'Evolutionary', text: 'Vignette E2: Found only in a deep‐sea bacterium, never detected in any terrestrial microbe.' },
+        { id: 'E_vig3', domain: 'Evolutionary', text: 'Vignette E3: Sequences suggest horizontal gene transfer from plants to the producing microbe.' }
+      ];
+
+      // ─────────────────────────────────────────────────────────────────────
+      // 2) UTILITY: Fisher–Yates shuffle (in‐place)
+      // ─────────────────────────────────────────────────────────────────────
+      function shuffle(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
       }
 
-      // WOW EFFECT SLIDER
-      const wowSlider = document.getElementById('wow-slider');
-      const wowValue  = document.getElementById('wow-value');
-      if (wowSlider && wowValue) {
-        wowValue.textContent = wowSlider.value; // initialize
-        wowSlider.addEventListener('input', function() {
-          wowValue.textContent = this.value;
-        });
+      // ─────────────────────────────────────────────────────────────────────
+      // 3) PULL DOMAIN RANKS FROM BLOCK 3
+      //
+      //    We expect window.block3DomainAnswers to look like:
+      //      { Structural: "1", Biosynthetic: "2", Functional: "3", Evolutionary: "4" }
+      //    If any rank is missing, treat it as ∞ so those domains become rank 3/4 by default.
+      // ─────────────────────────────────────────────────────────────────────
+      const domainRanks = window.block3DomainAnswers || {};
+      // Build a mapping: rank (integer) → array of domain IDs at that rank
+      const rankToDomains = { 1: [], 2: [], 3: [], 4: [] };
+      ['Structural','Biosynthetic','Functional','Evolutionary'].forEach(dom => {
+        const r = parseInt(domainRanks[dom] || '5', 10);
+        if (r >= 1 && r <= 4) {
+          rankToDomains[r].push(dom);
+        } else {
+          // If no valid rank, treat it as 3 or 4 by pushing into 4
+          rankToDomains[4].push(dom);
+        }
+      });
+
+      // If a user accidentally gave the same numeric rank to multiple domains,
+      // we’ll treat all of them as that rank. The counts below remain approximate.
+
+      // ─────────────────────────────────────────────────────────────────────
+      // 4) BUILD OR RETRIEVE THE “8 SELECTED VIGNETTES” ARRAY IN MEMORY
+      //    We store in window.block4Vignettes so that Next→Back does not reshuffle.
+      // ─────────────────────────────────────────────────────────────────────
+      if (!window.block4Vignettes) {
+        const picks = [];
+
+        // (A) Helper: pick N random items from vignettes array for a given domain
+        function pickRandomForDomain(domain, count) {
+          // Filter full pool for this domain
+          const pool = allVignettes.filter(v => v.domain === domain);
+          if (pool.length <= count) {
+            return pool.slice(); // if fewer than N exist, take them all
+          }
+          shuffle(pool);
+          return pool.slice(0, count);
+        }
+
+        // (B) For rank 1 domains: pick 4 combined. If two domains share rank 1,
+        //     split 4 randomly between them (e.g. 2 & 2), then pick. Otherwise if one domain is rank 1,
+        //     pick all 4 from it.
+        const rank1 = rankToDomains[1];
+        if (rank1.length === 1) {
+          picks.push(...pickRandomForDomain(rank1[0], 4));
+        } else if (rank1.length === 2) {
+          // 4 → 2 + 2
+          picks.push(...pickRandomForDomain(rank1[0], 2));
+          picks.push(...pickRandomForDomain(rank1[1], 2));
+        } else if (rank1.length >= 3) {
+          // three or more domains tied for rank 1: give each 1, then the leftover 1 goes to a random
+          const chosen = rank1.slice();
+          shuffle(chosen);
+          // each of the first 3 gets 1 pick
+          picks.push(...pickRandomForDomain(chosen[0], 1));
+          picks.push(...pickRandomForDomain(chosen[1], 1));
+          picks.push(...pickRandomForDomain(chosen[2], 1));
+          // last pick goes to whoever is at random among them
+          picks.push(...pickRandomForDomain(chosen[3 % chosen.length], 1));
+        }
+
+        // (C) Rank 2: pick 2 total. If multiple domains share rank 2, split as evenly as possible.
+        const rank2 = rankToDomains[2];
+        if (rank2.length === 1) {
+          picks.push(...pickRandomForDomain(rank2[0], 2));
+        } else if (rank2.length === 2) {
+          picks.push(...pickRandomForDomain(rank2[0], 1));
+          picks.push(...pickRandomForDomain(rank2[1], 1));
+        } else if (rank2.length >= 3) {
+          // if more than 2 share rank 2, pick 1 from any two of them at random
+          const chosen = rank2.slice();
+          shuffle(chosen);
+          picks.push(...pickRandomForDomain(chosen[0], 1));
+          picks.push(...pickRandomForDomain(chosen[1], 1));
+        }
+
+        // (D) Rank 3: pick 1. If multiple share rank 3, pick from a random one.
+        const rank3 = rankToDomains[3];
+        if (rank3.length >= 1) {
+          picks.push(...pickRandomForDomain(rank3[Math.floor(Math.random() * rank3.length)], 1));
+        }
+
+        // (E) Rank 4: pick 1. If multiple share rank 4, pick from a random one.
+        const rank4 = rankToDomains[4];
+        if (rank4.length >= 1) {
+          picks.push(...pickRandomForDomain(rank4[Math.floor(Math.random() * rank4.length)], 1));
+        }
+
+        // (F) If picks < 8 (e.g., pool exhaustion), fill from any domain randomly until length 8
+        let allIds = new Set(picks.map(v => v.id));
+        while (picks.length < 8) {
+          // pick a random vignette from allVignettes that isn’t already included
+          const pool = allVignettes.filter(v => !allIds.has(v.id));
+          if (pool.length === 0) break;
+          shuffle(pool);
+          picks.push(pool[0]);
+          allIds.add(pool[0].id);
+        }
+
+        // (G) Finally, shuffle the 8 picks so their display order is random
+        shuffle(picks);
+        window.block4Vignettes = picks;
       }
+
+      // ─────────────────────────────────────────────────────────────────────
+      // 5) RETRIEVE OR INITIALIZE ANSWERS IN MEMORY
+      //
+      //    window.block4Answers will be a map:
+      //      {
+      //         S_vig1: { novelty: "Yes"|"No"|"IDK", confidence: "7", wow: "3" },
+      //         B_vig4: { ... },
+      //         …
+      //      }
+      // ─────────────────────────────────────────────────────────────────────
+      if (!window.block4Answers) {
+        window.block4Answers = {};
+      }
+
+      // ─────────────────────────────────────────────────────────────────────
+      // 6) RENDER THOSE 8 VIGNETTES INTO #vignette-container
+      // ─────────────────────────────────────────────────────────────────────
+      const container = document.getElementById('vignette-container');
+      container.innerHTML = ''; // clear any previous content
+
+      window.block4Vignettes.forEach((vig, idx) => {
+        const vignetteDiv = document.createElement('div');
+        vignetteDiv.className = 'vignette-block';
+
+        // (A) Show the vignette text
+        const p = document.createElement('p');
+        p.className = 'vignette-text';
+        p.innerHTML = `<strong>Vignette ${idx + 1}.</strong> ${vig.text}`;
+        vignetteDiv.appendChild(p);
+
+        // (B) Question 1: Would you consider this novel? (Yes/No/IDK)
+        const radioGroup = document.createElement('fieldset');
+        radioGroup.className = 'radio-group';
+        // Visually hidden legend for accessibility
+        const legend = document.createElement('legend');
+        legend.className = 'visually-hidden';
+        legend.textContent = `Novelty judgment for ${vig.id}`;
+        radioGroup.appendChild(legend);
+
+        ['Yes', 'No', "I don’t know"].forEach(option => {
+          const value = option; // store exactly this string
+          const input = document.createElement('input');
+          input.type = 'radio';
+          input.id = `${vig.id}-novelty-${value.replace(/\s+/g, '')}`;
+          input.name = `${vig.id}-novelty`;
+          input.value = value;
+          // Restore previous if set
+          const savedObj = window.block4Answers[vig.id];
+          if (savedObj && savedObj.novelty === value) {
+            input.checked = true;
+          }
+          // On change, save
+          input.addEventListener('change', () => {
+            if (!window.block4Answers[vig.id]) {
+              window.block4Answers[vig.id] = {};
+            }
+            window.block4Answers[vig.id].novelty = value;
+          });
+
+          const label = document.createElement('label');
+          label.setAttribute('for', input.id);
+          label.innerHTML = `<small>${value}</small>`;
+
+          radioGroup.appendChild(input);
+          radioGroup.appendChild(label);
+        });
+        vignetteDiv.appendChild(radioGroup);
+
+        // (C) Question 2: Confidence slider (0–10)
+        const confContainer = document.createElement('div');
+        confContainer.className = 'slider-container';
+        const confLabel = document.createElement('label');
+        confLabel.setAttribute('for', `${vig.id}-confidence`);
+        confLabel.textContent = 'Confidence: ';
+        const confValueSpan = document.createElement('span');
+        confValueSpan.id = `${vig.id}-confidence-val`;
+        confValueSpan.textContent = window.block4Answers[vig.id]?.confidence || '0';
+
+        const confInput = document.createElement('input');
+        confInput.type = 'range';
+        confInput.min = '0';
+        confInput.max = '10';
+        confInput.step = '1';
+        confInput.id = `${vig.id}-confidence`;
+        confInput.name = `${vig.id}-confidence`;
+        // Restore previous if exists
+        if (window.block4Answers[vig.id]?.confidence) {
+          confInput.value = window.block4Answers[vig.id].confidence;
+        } else {
+          confInput.value = '0';
+        }
+        confInput.addEventListener('input', () => {
+          const v = confInput.value;
+          confValueSpan.textContent = v;
+          if (!window.block4Answers[vig.id]) {
+            window.block4Answers[vig.id] = {};
+          }
+          window.block4Answers[vig.id].confidence = v;
+        });
+
+        confLabel.appendChild(confValueSpan);
+        confContainer.appendChild(confLabel);
+        confContainer.appendChild(confInput);
+        vignetteDiv.appendChild(confContainer);
+
+        // (D) Question 3: Wow‐factor slider (0–10)
+        const wowContainer = document.createElement('div');
+        wowContainer.className = 'slider-container';
+        const wowLabel = document.createElement('label');
+        wowLabel.setAttribute('for', `${vig.id}-wow`);
+        wowLabel.textContent = '“Wow” factor: ';
+        const wowValueSpan = document.createElement('span');
+        wowValueSpan.id = `${vig.id}-wow-val`;
+        wowValueSpan.textContent = window.block4Answers[vig.id]?.wow || '0';
+
+        const wowInput = document.createElement('input');
+        wowInput.type = 'range';
+        wowInput.min = '0';
+        wowInput.max = '10';
+        wowInput.step = '1';
+        wowInput.id = `${vig.id}-wow`;
+        wowInput.name = `${vig.id}-wow`;
+        if (window.block4Answers[vig.id]?.wow) {
+          wowInput.value = window.block4Answers[vig.id].wow;
+        } else {
+          wowInput.value = '0';
+        }
+        wowInput.addEventListener('input', () => {
+          const v = wowInput.value;
+          wowValueSpan.textContent = v;
+          if (!window.block4Answers[vig.id]) {
+            window.block4Answers[vig.id] = {};
+          }
+          window.block4Answers[vig.id].wow = v;
+        });
+
+        wowLabel.appendChild(wowValueSpan);
+        wowContainer.appendChild(wowLabel);
+        wowContainer.appendChild(wowInput);
+        vignetteDiv.appendChild(wowContainer);
+
+        // Finally, append this vignette’s block to the container
+        container.appendChild(vignetteDiv);
+      });
     })();
   </script>
 </section>
