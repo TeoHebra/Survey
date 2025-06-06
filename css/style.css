@@ -230,6 +230,26 @@ textarea {
   max-width: 700px;       /* limit line‐length so it doesn’t stretch too far */
 }
 
+#block4 > h2 {
+  font-size: 1.75rem;     /* ~28px; increase/decrease as desired */
+  font-weight: 600;       /* make it bold */
+  color: #1F2937;         /* a deep charcoal gray instead of plain black */
+  margin: 0;              /* remove default top/bottom margin */
+  margin-bottom: 0.0rem; /* space below the heading */
+  text-align: left;       /* you can also use “center” if you prefer */
+  letter-spacing: 0.5px;  /* slight tracking for a polished look */
+}
+
+#block4 > p.prompt {
+  font-size: 1rem;        /* ~16px; adjust up/down as needed */
+  line-height: 1.0;       /* give it breathing room if it wraps to two lines */
+  color: #4B5563;         /* mid‐gray (so it’s less “heavy” than h2) */
+  margin: 0;              /* reset default margins */
+  margin-bottom: 1.2rem; /* space between prompt and the <hr> */
+  max-width: 700px;       /* limit line‐length so it doesn’t stretch too far */
+}
+
+
 /* ===========================
    Question text (p.statement)
    =========================== */
@@ -469,45 +489,82 @@ fieldset.likert-7 label span {
 
 
 /* ===================================================
-   11. Block 4: Novel? + Sliders (you deleted container above)
+   11. Block 4: Novel? + Sliders (three‐column row)
    =================================================== */
 
-/* → Remove any prior `.survey-block { background-color: #fafafa; … }` */
-
-/* 2) FLEX ROW: Novel? | Confidence | Wow effect */
+/* 1) Make each vignette row a single flex line:
+      [ image‐col ]   [ novel‐group ]   [ slider‐col ] */
 .block-4-row {
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 24px;
-  margin-bottom: 32px;
+  align-items: flex-start;   /* all three columns align at their top edges */
+  gap: 24px;                 /* horizontal spacing between columns */
+  margin-bottom: 32px;       /* space below each vignette row */
+  /* Removed justify-content: space-between so the three columns stay grouped */
 }
 
-/* 3) NOVEL Group */
+/* ================================
+   Vignette Label (“N. Is this novel?”)
+   ================================ */
+.vignette-label {
+  font-weight: bold;
+  font-size: 1rem;         /* ~16px—adjust as needed */
+  margin-bottom: 12px;     /* space between the label and the row */
+  color: #1F2937;          /* match your heading color, or use #000 */
+}
+
+
+/* 2) IMAGE COLUMN: fixed 100×100 placeholder */
+.image-col {
+  flex: 0 0 auto;            /* do not grow or shrink */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.image-col .img-placeholder {
+  width: 100px;
+  height: 100px;
+  background-color: #0057D9; /* dark‐blue background */
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  white-space: pre-wrap;     /* allow line breaks: “Placeholder↵vignette 1 image” */
+  font-size: 0.85rem;
+  border-radius: 4px;
+}
+
+/* 3) NOVEL COLUMN: “Vignette X:” + radios stacked vertically */
 .novel-group {
-  flex: 0 1 20%;
+  flex: 0 1 200px;           /* prefer 200px wide but shrink if needed */
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: flex-start;   /* left‐align text and radios */
 }
+
 .novel-group .group-label {
   font-weight: bold;
   font-size: 1rem;
   color: #444;
-  margin-bottom: 8px;
+  margin-bottom: 8px;        /* space between “Vignette X:” and the radio list */
 }
+
 .novel-option {
   display: flex;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: 12px;       /* vertical spacing between each option */
 }
+
 .novel-option input.novel-radio {
-  display: none;
+  display: none;             /* hide default radio circle */
 }
+
+/* The circle that users click */
 .novel-option label.novel-circle {
   position: relative;
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
   border: 3px solid #000;
   border-radius: 50%;
   background-color: #fff;
@@ -516,11 +573,14 @@ fieldset.likert-7 label span {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-right: 8px;
+  margin-right: 8px;        
 }
+
 .novel-option label.novel-circle:hover {
   border-color: #000;
 }
+
+/* When checked, draw the ✖ inside */
 .novel-option input.novel-radio:checked + label.novel-circle::after {
   content: "✖";
   position: absolute;
@@ -531,46 +591,54 @@ fieldset.likert-7 label span {
   font-size: 2rem;
   line-height: 1;
 }
+
 .novel-option .novel-text {
-  font-size: 1.4rem;
+  font-size: 1.0rem;
   color: #222;
   user-select: none;
 }
 
-/* 4) SLIDER Groups */
-.confidence-group,
-.wow-group {
-  flex: 0 1 38%;
+/* 4) SLIDER COLUMN: stack two slider groups vertically */
+.slider-col {
+  flex: 0 1 240px;           /* prefer 240px wide but shrink if needed */
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: flex-start;   /* left‐align slider headers */
 }
+
+/* Shared header style for each slider (Confidence / “Wow”) */
 .group-header {
   display: flex;
-  align-items: baseline;
-  margin-bottom: 8px;
+  align-items: baseline;     /* baseline align the label & number */
+  margin-bottom: 8px;        /* space below header before the track */
 }
+
 .group-header .group-label {
   font-weight: bold;
   font-size: 1rem;
   color: #444;
-  margin-right: 8px;
+  margin-right: 8px;         /* gap between text “Confidence:” and the number */
 }
+
 .group-header .slider-value {
   font-size: 1rem;
   font-weight: bold;
-  color: #007BFF;
+  color: #007BFF;            /* blue color for the numeric value */
   margin-right: 4px;
 }
+
 .group-header .slider-max {
   font-size: 0.9rem;
   color: #666;
 }
+
+/* Wrapper that holds the actual <input type="range"> */
 .slider-wrapper {
-  width: 100%;
+  width: 100%;               /* fill whatever width this column has */
 }
 
-/* 5) Range Input + Tick Marks */
+/* 5) STYLE THE RANGE INPUTS (sliders) */
+/* Remove default outline on focus */
 .slider-input {
   width: 100%;
   height: 28px;
@@ -581,22 +649,39 @@ fieldset.likert-7 label span {
 .slider-input:focus {
   outline: none;
 }
+
+/* 5a) Track appearance (background) */
 .slider-input::-webkit-slider-runnable-track {
   height: 6px;
-  background: #ddd;
   border-radius: 3px;
+  /* Use a left‐to‐right gradient that reads from the custom var “--slider-fill”. */
+  background: linear-gradient(
+    to right,
+    #007BFF var(--slider-fill, 0%),
+    #ddd var(--slider-fill, 0%),
+    #ddd 100%
+  );
 }
 .slider-input::-moz-range-track {
   height: 6px;
   background: #ddd;
   border-radius: 3px;
 }
-.slider-input::-ms-track {
+/* The “filled” portion on Firefox */
+.slider-input::-moz-range-progress {
+  background-color: #007BFF;
   height: 6px;
-  background: #ddd;
   border-radius: 3px;
-  color: transparent;
 }
+/* IE/Edge: lower‐fill */
+.slider-input::-ms-fill-lower {
+  background-color: #007BFF;
+}
+.slider-input::-ms-fill-upper {
+  background-color: #ddd;
+}
+
+/* 5b) Thumb appearance (handle) */
 .slider-input::-webkit-slider-thumb {
   -webkit-appearance: none;
   width: 24px;
@@ -604,7 +689,7 @@ fieldset.likert-7 label span {
   background: #222;
   border: 3px solid #fff;
   border-radius: 50%;
-  margin-top: -9px;
+  margin-top: -9px;         /* center vertically on the 6px track */
   cursor: pointer;
 }
 .slider-input::-moz-range-thumb {
@@ -623,17 +708,32 @@ fieldset.likert-7 label span {
   border-radius: 50%;
   cursor: pointer;
 }
-.slider-input::-webkit-slider-runnable-track {
-  background: #ddd;
+
+/* 6) OPTIONAL: Prevent the “Novel?” or sliders from expanding too wide */
+.novel-group {
+  max-width: 200px;
 }
-.slider-input::-moz-range-progress {
-  background: transparent;
+.slider-col {
+  max-width: 240px;
 }
-.slider-input::-moz-range-ticks {
-  color: #888;
+
+/* 7) NAV BUTTONS AT BOTTOM (sticky on mobile) */
+.nav-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 24px;
 }
-.slider-input::-ms-ticks-after {
-  color: #888;
+.nav-buttons button {
+  padding: 8px 16px;
+  font-size: 1rem;
+  background-color: #007BFF;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.nav-buttons button:hover {
+  background-color: #0056b3;
 }
 
 /* 6) Navigation Buttons */
@@ -727,13 +827,6 @@ fieldset.likert-7 label span {
   /* 5 ─ Textarea grows to a comfortable height */
   textarea { min-height: 34vh; }
 
-  /* 8 ─ Block 4 stacks vertically (extra safety) */
-  .block-4-row { flex-direction: column; gap: 24px; }
-  .slider-input::-webkit-slider-thumb,
-  .slider-input::-moz-range-thumb {
-    width: 28px; height: 28px; margin-top: -11px;   /* easier to grab */
-  }
-}
 
 /* ────────────────────────────────────────────────
    MOBILE FIX: center the “✖” inside the circle
